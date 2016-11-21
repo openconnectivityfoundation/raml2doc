@@ -26,7 +26,9 @@ pyraml-parser-385f952ed352fcaa9bb810de72d541767d433b09.zip
  the file entities.py needs to be replaced with the supplied version.
  the file parser.py needs to be replaced with the supplied version.
 
- Note that the parse tree is changed if an (newer) version of pyraml is installed.
+ note that the pyramloic directory contains these changes.
+ 
+ 
 
 - jsonschema
 pip install jsonschema
@@ -37,7 +39,7 @@ this can be installed with:
 pip install functools32
 
 
-# raml-cop
+## raml-cop
 
 external tool to check RAML files.
 this tool is called from the python code on the supplied RAML file.
@@ -59,6 +61,7 @@ C:\Python27\python.exe  raml2doc.py <<raml.file>>
 usage: raml2doc.py [-h] 
 (see current version for all options)
 
+```
 <<current version>>
 ===================================
 version:  201511171441
@@ -102,9 +105,10 @@ optional arguments:
                         additional (referenced) schema (section With Table)
                         used in the resource (--schema "schema file1" "schema
                         file2" )
+```
 
+start tool:
 
-start tool
 C:\Python27\python.exe  raml2doc.py <args>
 
 
@@ -120,7 +124,7 @@ generating documentation:
 - saves word file as <<>>.docx
 
 # syntax checking
-raml-cop:
+##raml-cop:
 - external tool called from python.
   validates the RAML structure
 example (json) checking:
@@ -131,7 +135,7 @@ example (json) checking:
     if the schema references schemas by means of an URL, then the validator reads and uses the referenced schema.
 - schemas and referenced must be located in the same directory as the executable file (e.g. current directory)
 
-# build in proxy
+## build in proxy
 
 the raml2doc tool has an build in proxy
 this means that the actual URLs can be used in the files.
@@ -150,8 +154,10 @@ Issues:
 - file draft3.json and/or draft4.json not found by the tool (executable)
   These files should be placed on the disk by the tool. 
   If this does not happen, then download them from the raml2doc folder and put them in the same directory as the exectuable.
+  (part of github)
 - placed all raml and json files in 1 directory (same dir as executable)
-  this is due to that during verification the current directory is used by the tool. no other directories are being searched if an include file exist.
+  this is due to that during verification the current directory is used by the tool. 
+  no other directories are being searched if an include file exist.
 
   
   
