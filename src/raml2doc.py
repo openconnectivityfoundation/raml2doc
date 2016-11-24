@@ -546,6 +546,7 @@ class CreateDoc(object):
 
 
         """
+        # input arguments
         self.annex_switch = False
         self.composite_switch = False
         self.sensor_switch = False
@@ -555,11 +556,13 @@ class CreateDoc(object):
         self.schemaWT_switch = False
         self.schemaWT_files = None
         self.schema_files = None
+        self.derived_name = None
+        self.resourcedoc = "ResourceTemplate.docx"
+        # internal variables
         self.table = None
         self.title = None
-
         self.inputname = name
-        self.resourcedoc = "ResourceTemplate.docx"
+        
         if docx_name is not None:
             if os.path.isfile(docx_name):
                 self.resourcedoc = docx_name
@@ -853,7 +856,43 @@ class CreateDoc(object):
                 traceback.print_exc()
                 pass
                 
-    def list_attribute(self, level, resource, obj):
+    def parse_schema_derived(self, input_string_schema):
+        """
+
+        :param input_string_schema:
+        """
+        required_props = self.parse_schema_requires(input_string_schema)
+        print "parse_schema: required properties found:", required_props
+        json_dict =json.loads(input_string_schema)
+
+        properties = find_key_link(json_dict, 'properties')
+
+        for prop in properties:
+            # fill the table
+            try:
+                if isinstance(properties, dict):
+                    print "parse_schema: property:", prop
+                    description_text = properties[prop].get('description', "")
+                    ocf_resource = to_ocf = from_ocf = ""
+                    my_dict =  properties[prop].get("ocf-conversion")
+                    if my_dict is not None:
+                        ocf_resource = my_dict.get('ocf-alias', "")
+                        to_ocf = my_dict.get('to-ocf',"")
+                        from_ocf = my_dict.get('from-ocf',"")
+                    
+                    row_cells = self.tableAttribute.add_row().cells
+                    row_cells[0].text = str(prop)
+                    row_cells[1].text = str(ocf_resource)
+                    row_cells[2].text = self.list_to_string(to_ocf)
+                    row_cells[3].text = self.list_to_string(from_ocf)
+                    row_cells[4].text = description_text
+
+            except:
+                traceback.print_exc()
+                pass
+                
+                
+    def list_attribute(self, level, resource, obj, derived=False):
         """
         list all attributes of an indicated resource
         e.g. put it in the table
@@ -878,13 +917,15 @@ class CreateDoc(object):
                                     if response_type == "application/json":
                                         text = self.get_schema_string_from_body(body)
                                         if text is not None:
-                                            self.parse_schema(text)
+                                            if derived is False:
+                                                self.parse_schema(text)
+                                            else:
+                                                self.parse_schema_derived(text)
 
         for res_name, res_obj in obj.resources.items():
             self.list_attribute(level + 1, res_name, res_obj)
 
     def list_attributes(self, parse_tree, select_resource=None):
-
         """
         list all properties (attributes) in an table.
         create the table and fill it up
@@ -917,6 +958,40 @@ class CreateDoc(object):
             row_cells[2].text = "yes"
             row_cells[3].text = "Read Only"
             row_cells[4].text = "True = Sensed, False = Not Sensed."
+
+        if self.schema_switch is True:
+            # add values from external schema.
+            for schema_file in self.schema_files:
+                linestring = open(schema_file, 'r').read()
+                # add fields in table with contents..
+                self.parse_schema(linestring)
+                
+    def list_attributes_derived(self, parse_tree, select_resource=None):
+
+        """
+        list all properties (attributes) in an table.
+        create the table and fill it up
+        :param parse_tree:
+        :param select_resource:
+        """
+        self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
+        hdr_cells = self.tableAttribute.rows[0].cells
+        hdr_cells[0].text = str(self.derived_name) +' Property name'
+        hdr_cells[1].text = 'OCF Resource'
+        hdr_cells[2].text = 'To OCF'
+        hdr_cells[3].text = 'From OCF'
+        hdr_cells[4].text = 'Description'
+
+        level = 1
+
+        if select_resource is None:
+            for resource, obj in parse_tree.resources.items():
+                self.list_attribute(level, resource, obj, derived=True)
+        else:
+            for resource, obj in parse_tree.resources.items():
+                if resource[1:] == select_resource:
+                    self.list_attribute(level, resource, obj, derived=True)
+
 
         if self.schema_switch is True:
             # add values from external schema.
@@ -1459,7 +1534,10 @@ class CreateDoc(object):
             par = self.document.add_heading('Property Definition', level=3)
             if self.annex_switch is True:
                 par.style = 'ANNEX-heading2'
-            self.list_attributes(parse_tree, select_resource=section_name)
+            if self.derived_name is not None:
+                self.list_attributes_derived(parse_tree, select_resource=section_name)
+            else:
+                self.list_attributes(parse_tree, select_resource=section_name)
 
         # section CRUDN definition
         par = self.document.add_heading('CRUDN behavior', level=3)
@@ -1758,6 +1836,7 @@ if __name__ == '__main__':
     parser.add_argument('-resource', '--resource', help='resource to be processed')
 
     parser.add_argument('-annex', '--annex', help='uses a annex heading instead of normal heading (--annex true)')
+    parser.add_argument('-derived', '--derived', help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table')
     parser.add_argument('-put', '--put', help='uses put command as property table input instead of get (--put true)')
     parser.add_argument('-composite', '--composite',
          help='treats the resource as an composite resource, e.g. no property definition table (--composite true)')
@@ -1780,6 +1859,7 @@ if __name__ == '__main__':
     sensor_switch = args['sensor']
     schema_file = args['schema']
     schemaWT_file = args['schemaWT']
+    derived_name = args['derived']
 
     # annex_switch = True
 
@@ -1833,6 +1913,7 @@ if __name__ == '__main__':
     print "using sensor                 :", sensor_switch
     print "schema switch                :", schema_switch
     print "schema (WT) switch           :", schemaWT_switch
+    print "derived                      :", derived_name
     if schema_switch == True:
         print "schema file                  :", schema_file
     if schemaWT_switch == True:
@@ -1874,6 +1955,7 @@ if __name__ == '__main__':
         processor.sensor_switch = sensor_switch
         processor.schema_switch = schema_switch
         processor.schemaWT_switch = schemaWT_switch
+        processor.derived_name = derived_name
         processor.dir = args['schemadir']
         if args['outdocx'] is not None:
             processor.resource_out = args['outdocx']

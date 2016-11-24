@@ -1,0 +1,45 @@
+===================================
+version:  20171123
+===================================
+using raml file              : ../test/in/test_5_derived_data_modeling/AudioVolume.raml
+using docx file              : ../input/ResourceTemplate.docx
+using docx output file       : ../test/./out/test_derived_1.docx
+using schema dir             : ../test/in/test_5_derived_data_modeling/
+using resource               : AudioVolumeResURI
+using header0                : None
+using annex                  : False
+using put for property table : False
+using composite              : False
+using sensor                 : False
+schema switch                : False
+schema (WT) switch           : False
+derived                      : ASA
+styles:
+ heading: Heading 1 or ANNEX-heading1
+ table style: TABLE-A
+ table header style: TABLEHEADER
+ color (code) style: CODE-AQUA
+                   : CODE-YELLOW
+                   : CODE-GREY
+                   : CODE-BLACK
+                   : CODE-BLUE
+                   : CODE-GREEN
+===================================
+HTTPPRoxy: serving at port 4321
+DisplayName: Audio Volume Mapping
+Title Audio Volume Mapping
+RT =  oic.r.audio
+resolve schema reference: RetrieveSchema operation.audiovolume.json
+xx=> validation schema (jsonschema)
+resolve schema reference: RetrieveSchema operation.audiovolume.json
+xx=xx=> schema & json VALID
+xxx=> validation schema (jsonschema) done
+resolve schema reference: UpdateSchema operation.audiovolume.json
+resolve schema reference: UpdateSchema operation.audiovolume.json
+resolve schema reference: RetrieveSchema operation.audiovolume.json
+parse_schema: required properties found: ['volume', 'maxvolume', 'mute']
+parse_schema: property: volume
+parse_schema: property: maxvolume
+parse_schema: property: mute
+document saved.. ../test/./out/test_derived_1.docx
+resource : /AudioVolumeResURI

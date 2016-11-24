@@ -2,8 +2,8 @@
 version:  20171123
 usage: raml2doc.py [-h] [-docx DOCX] [-outdocx OUTDOCX] [-raml RAML]
                    [-schemadir SCHEMADIR] [-heading1 HEADING1]
-                   [-resource RESOURCE] [-annex ANNEX] [-put PUT]
-                   [-composite COMPOSITE] [-sensor SENSOR]
+                   [-resource RESOURCE] [-annex ANNEX] [-derived DERIVED]
+                   [-put PUT] [-composite COMPOSITE] [-sensor SENSOR]
                    [-schema [SCHEMA [SCHEMA ...]]]
                    [-schemaWT [SCHEMAWT [SCHEMAWT ...]]]
 
@@ -26,6 +26,9 @@ optional arguments:
   -annex ANNEX, --annex ANNEX
                         uses a annex heading instead of normal heading
                         (--annex true)
+  -derived DERIVED, --derived DERIVED
+                        derived data model specificaton (--derived XXX) e.g.
+                        XXX Property Name in table
   -put PUT, --put PUT   uses put command as property table input instead of
                         get (--put true)
   -composite COMPOSITE, --composite COMPOSITE

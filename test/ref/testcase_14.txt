@@ -13,6 +13,7 @@ using composite              : False
 using sensor                 : False
 schema switch                : False
 schema (WT) switch           : True
+derived                      : None
 schema (WT) file             : ['../test/in/test_1/oic.core.json', '../test/in/test_1/oic.baseResource.json']
 styles:
  heading: Heading 1 or ANNEX-heading1
