@@ -1,0 +1,44 @@
+===================================
+version:  20171123
+usage: raml2doc.py [-h] [-docx DOCX] [-outdocx OUTDOCX] [-raml RAML]
+                   [-schemadir SCHEMADIR] [-heading1 HEADING1]
+                   [-resource RESOURCE] [-annex ANNEX] [-put PUT]
+                   [-composite COMPOSITE] [-sensor SENSOR]
+                   [-schema [SCHEMA [SCHEMA ...]]]
+                   [-schemaWT [SCHEMAWT [SCHEMAWT ...]]]
+
+Process RAML files.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -docx DOCX, --docx DOCX
+                        word template file
+  -outdocx OUTDOCX, --outdocx OUTDOCX
+                        word output file
+  -raml RAML, --raml RAML
+                        raml input file
+  -schemadir SCHEMADIR, --schemadir SCHEMADIR
+                        schema dir input file
+  -heading1 HEADING1, --heading1 HEADING1
+                        creates an heading 1 to the document (and exit)
+  -resource RESOURCE, --resource RESOURCE
+                        resource to be processed
+  -annex ANNEX, --annex ANNEX
+                        uses a annex heading instead of normal heading
+                        (--annex true)
+  -put PUT, --put PUT   uses put command as property table input instead of
+                        get (--put true)
+  -composite COMPOSITE, --composite COMPOSITE
+                        treats the resource as an composite resource, e.g. no
+                        property definition table (--composite true)
+  -sensor SENSOR, --sensor SENSOR
+                        treats the resource as an sensor resource, e.g. add
+                        the value "value" to the property table (--sensor
+                        true)
+  -schema [SCHEMA [SCHEMA ...]], --schema [SCHEMA [SCHEMA ...]]
+                        additional (referenced) schema used in the resource
+                        (--schema "schema file1" "schema file2" )
+  -schemaWT [SCHEMAWT [SCHEMAWT ...]], --schemaWT [SCHEMAWT [SCHEMAWT ...]]
+                        additional (referenced) schema (section With Table)
+                        used in the resource (--schema "schema file1" "schema
+                        file2" )

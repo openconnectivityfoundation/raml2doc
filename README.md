@@ -1,11 +1,9 @@
 # raml2doc
 RAML to doc conversion tool
 
-
 Tool to generate document section in word files from an Raml file.
-The tool automatically checks the RAML by means of raml-cop
 
-# Dependencies
+## Dependencies
 python code uses: 
 - python2.7 (default instalation on C:)
 
@@ -29,7 +27,6 @@ pyraml-parser-385f952ed352fcaa9bb810de72d541767d433b09.zip
  note that the pyramloic directory contains these changes.
  
  
-
 - jsonschema
 pip install jsonschema
 https://pypi.python.org/pypi/jsonschema
@@ -149,8 +146,7 @@ oic.rd.publish.json
 in the local directory.
 
 
-Issues:
-----------------
+# Issues:
 - file draft3.json and/or draft4.json not found by the tool (executable)
   These files should be placed on the disk by the tool. 
   If this does not happen, then download them from the raml2doc folder and put them in the same directory as the exectuable.
@@ -159,8 +155,7 @@ Issues:
   this is due to that during verification the current directory is used by the tool. 
   no other directories are being searched if an include file exist.
 
-  
-  
-  
-wanted features list:
-- make more generic
+# TODO list
+ - replace proxy with direct calls
+ - add derived modeling
+ - add mechanism to compare word output

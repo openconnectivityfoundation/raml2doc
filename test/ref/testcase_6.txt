@@ -1,0 +1,227 @@
+===================================
+version:  20171123
+===================================
+using raml file              : ../test/in/test_3_error/binarySwitch.raml
+using docx file              : ../input/ResourceTemplate.docx
+using docx output file       : ../test/./out/testcase_6.docx
+using schema dir             : ../test/in/test_3_error
+using resource               : BinarySwitchResURI
+using header0                : None
+using annex                  : False
+using put for property table : False
+using composite              : False
+using sensor                 : False
+schema switch                : False
+schema (WT) switch           : False
+styles:
+ heading: Heading 1 or ANNEX-heading1
+ table style: TABLE-A
+ table header style: TABLEHEADER
+ color (code) style: CODE-AQUA
+                   : CODE-YELLOW
+                   : CODE-GREY
+                   : CODE-BLACK
+                   : CODE-BLUE
+                   : CODE-GREEN
+===================================
+HTTPPRoxy: serving at port 4321
+DisplayName: Binary Switch
+Title Binary Switch
+RT =  oic.r.switch.binary
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+xx=> validation schema (jsonschema)
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: oic.core.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_3_error\oic.core.json
+ProxyHandler: local file found: ../test/in/test_3_error\oic.core.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: ../test/in/test_3_error\oic.baseResource.json
+ProxyHandler: local file found: ../test/in/test_3_error\oic.baseResource.json
+u'value' is a required property
+u'value' is a required property
+
+Failed validating u'required' in schema:
+    {u'$schema': u'http://json-schema.org/draft-04/schema#',
+     u'allOf': [{u'$ref': u'oic.core.json#/definitions/oic.core'},
+                {u'$ref': u'oic.baseResource.json#/definitions/oic.r.baseResource'},
+                {u'$ref': u'#/definitions/oic.r.switch.binary'}],
+     u'definitions': {u'oic.r.switch.binary': {u'properties': {u'value': {u'description': u'Status of the switch',
+                                                                          u'type': u'boolean'}},
+                                               u'type': u'object'}},
+     u'description': u'copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.',
+     u'id': u'http://openinterconnect.org/schemas/oic.r.switch.binary#',
+     u'required': [u'value'],
+     u'title': u'Binary Switch',
+     u'type': u'object'}
+
+On instance:
+    {u'id': u'unique_example_id',
+     u'rt': u'oic.r.switch.binary',
+     u'valuex': False}
+validation failed, input information:
+body (json):
+{
+  "rt":     "oic.r.switch.binary",
+  "id":     "unique_example_id",
+  "valuex":  false
+}
+
+
+schema (json):
+{
+  "id": "http://openinterconnect.org/schemas/oic.r.switch.binary#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description" : "copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.",
+  "title": "Binary Switch",
+  "definitions": {
+    "oic.r.switch.binary": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "boolean",
+          "description": "Status of the switch"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "allOf": [
+    {"$ref": "oic.core.json#/definitions/oic.core"},
+    {"$ref": "oic.baseResource.json#/definitions/oic.r.baseResource"},
+    {"$ref": "#/definitions/oic.r.switch.binary"}
+  ],
+  "required": [ "value" ]
+}
+
+xxx=> validation schema (jsonschema) done
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+xx=> validation schema (jsonschema)
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: oic.core.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_3_error\oic.core.json
+ProxyHandler: local file found: ../test/in/test_3_error\oic.core.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: ../test/in/test_3_error\oic.baseResource.json
+ProxyHandler: local file found: ../test/in/test_3_error\oic.baseResource.json
+u'value' is a required property
+u'value' is a required property
+
+Failed validating u'required' in schema:
+    {u'$schema': u'http://json-schema.org/draft-04/schema#',
+     u'allOf': [{u'$ref': u'oic.core.json#/definitions/oic.core'},
+                {u'$ref': u'oic.baseResource.json#/definitions/oic.r.baseResource'},
+                {u'$ref': u'#/definitions/oic.r.switch.binary'}],
+     u'definitions': {u'oic.r.switch.binary': {u'properties': {u'value': {u'description': u'Status of the switch',
+                                                                          u'type': u'boolean'}},
+                                               u'type': u'object'}},
+     u'description': u'copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.',
+     u'id': u'http://openinterconnect.org/schemas/oic.r.switch.binary#',
+     u'required': [u'value'],
+     u'title': u'Binary Switch',
+     u'type': u'object'}
+
+On instance:
+    {u'id': u'unique_example_id', u'valuey': True}
+validation failed, input information:
+body (json):
+{
+  "id":    "unique_example_id",
+  "valuey": true
+}
+
+
+schema (json):
+{
+  "id": "http://openinterconnect.org/schemas/oic.r.switch.binary#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description" : "copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.",
+  "title": "Binary Switch",
+  "definitions": {
+    "oic.r.switch.binary": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "boolean",
+          "description": "Status of the switch"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "allOf": [
+    {"$ref": "oic.core.json#/definitions/oic.core"},
+    {"$ref": "oic.baseResource.json#/definitions/oic.r.baseResource"},
+    {"$ref": "#/definitions/oic.r.switch.binary"}
+  ],
+  "required": [ "value" ]
+}
+
+xxx=> validation schema (jsonschema) done
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+xx=> validation schema (jsonschema)
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: oic.core.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_3_error\oic.core.json
+ProxyHandler: local file found: ../test/in/test_3_error\oic.core.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: ../test/in/test_3_error\oic.baseResource.json
+ProxyHandler: local file found: ../test/in/test_3_error\oic.baseResource.json
+u'value' is a required property
+u'value' is a required property
+
+Failed validating u'required' in schema:
+    {u'$schema': u'http://json-schema.org/draft-04/schema#',
+     u'allOf': [{u'$ref': u'oic.core.json#/definitions/oic.core'},
+                {u'$ref': u'oic.baseResource.json#/definitions/oic.r.baseResource'},
+                {u'$ref': u'#/definitions/oic.r.switch.binary'}],
+     u'definitions': {u'oic.r.switch.binary': {u'properties': {u'value': {u'description': u'Status of the switch',
+                                                                          u'type': u'boolean'}},
+                                               u'type': u'object'}},
+     u'description': u'copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.',
+     u'id': u'http://openinterconnect.org/schemas/oic.r.switch.binary#',
+     u'required': [u'value'],
+     u'title': u'Binary Switch',
+     u'type': u'object'}
+
+On instance:
+    {u'id': u'unique_example_id', u'valuez': True}
+validation failed, input information:
+body (json):
+{
+  "id":    "unique_example_id",
+  "valuez": true
+}
+
+
+schema (json):
+{
+  "id": "http://openinterconnect.org/schemas/oic.r.switch.binary#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description" : "copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.",
+  "title": "Binary Switch",
+  "definitions": {
+    "oic.r.switch.binary": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "boolean",
+          "description": "Status of the switch"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "allOf": [
+    {"$ref": "oic.core.json#/definitions/oic.core"},
+    {"$ref": "oic.baseResource.json#/definitions/oic.r.baseResource"},
+    {"$ref": "#/definitions/oic.r.switch.binary"}
+  ],
+  "required": [ "value" ]
+}
+
+xxx=> validation schema (jsonschema) done
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+parse_schema: required properties found: ['value']
+parse_schema: property: value
+document saved.. ../test/./out/testcase_6.docx
+resource : /BinarySwitchResURI

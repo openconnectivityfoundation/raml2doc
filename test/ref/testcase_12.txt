@@ -1,0 +1,66 @@
+===================================
+version:  20171123
+===================================
+using raml file              : ../test/in/test_1/binarySwitch.raml
+using docx file              : ../input/ResourceTemplate.docx
+using docx output file       : ../test/./out/testcase_12.docx
+using schema dir             : ../test/in/test_1/
+using resource               : BinarySwitchResURI
+using header0                : None
+using annex                  : False
+using put for property table : False
+using composite              : False
+using sensor                 : False
+schema switch                : True
+schema (WT) switch           : False
+schema file                  : ['../test/in/test_1/oic.core.json', '../test/in/test_1/oic.baseResource.json']
+styles:
+ heading: Heading 1 or ANNEX-heading1
+ table style: TABLE-A
+ table header style: TABLEHEADER
+ color (code) style: CODE-AQUA
+                   : CODE-YELLOW
+                   : CODE-GREY
+                   : CODE-BLACK
+                   : CODE-BLUE
+                   : CODE-GREEN
+===================================
+HTTPPRoxy: serving at port 4321
+DisplayName: Binary Switch
+Title Binary Switch
+RT =  oic.r.switch.binary
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+xx=> validation schema (jsonschema)
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+xx=xx=> schema & json VALID
+xxx=> validation schema (jsonschema) done
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+xx=> validation schema (jsonschema)
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+xx=xx=> schema & json VALID
+xxx=> validation schema (jsonschema) done
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+xx=> validation schema (jsonschema)
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+xx=xx=> schema & json VALID
+xxx=> validation schema (jsonschema) done
+resolve schema reference: BinarySwitch oic.r.switch.binary.json
+parse_schema: required properties found: ['value']
+parse_schema: property: BLAH2
+parse_schema: property: BLAH3
+parse_schema: property: BLAH1
+parse_schema: property: value
+parse_schema: property: value2
+parse_schema: property: BLAHF1
+parse_schema: property: BLAHF3
+parse_schema: property: BLAHF2
+parse_schema: required properties found: []
+parse_schema: property: rt
+parse_schema: property: n
+parse_schema: property: id
+parse_schema: property: if
+parse_schema: required properties found: []
+parse_schema: property: range
+parse_schema: property: value
+document saved.. ../test/./out/testcase_12.docx
+resource : /BinarySwitchResURI

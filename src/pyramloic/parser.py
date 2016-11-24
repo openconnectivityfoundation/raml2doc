@@ -237,7 +237,7 @@ def parse_resource_type(c):
         return None
 
     # We got list of dict from c.get('resourceTypes') so we need to convert it to dict
-    print json_resource_types[0], c.relative_path
+    #print json_resource_types[0], c.relative_path
     resource_types_context = ParseContext(json_resource_types[0], c.relative_path)
 
     resource_types = {}
@@ -377,7 +377,7 @@ def parse_body(c):
         return None
 
         
-    print "parse_body:",c.data
+    #print "parse_body:",c.data
     
     body = RamlBody()
 
