@@ -93,12 +93,21 @@ my_test -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_1/ -reso
 
 function tests_derived {
 
-# option -outdcx
+# option -derived
 TEST_CASE="test_derived_1"
 my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_5_derived_data_modeling/ -resource AudioVolumeResURI -raml ../test/in/test_5_derived_data_modeling/AudioVolume.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -derived ASA
 
 }
 
 
+function tests_swagger {
+
+# option -swagger
+TEST_CASE="test_swagger_1"
+my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_1/ -resource BinarySwitchResURI -raml ../test/in/test_1/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
+
+}
+
 tests  
 tests_derived
+tests_swagger

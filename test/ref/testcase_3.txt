@@ -14,6 +14,7 @@ using sensor                 : False
 schema switch                : False
 schema (WT) switch           : False
 derived                      : None
+swagger                      : None
 styles:
  heading: Heading 1 or ANNEX-heading1
  table style: TABLE-A

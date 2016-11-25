@@ -557,6 +557,7 @@ class CreateDoc(object):
         self.schemaWT_files = None
         self.schema_files = None
         self.derived_name = None
+        self.swagger = None
         self.resourcedoc = "ResourceTemplate.docx"
         # internal variables
         self.table = None
@@ -1705,7 +1706,262 @@ class CreateDoc(object):
 
         self.document.save(self.resource_out)
         print "document saved..", self.resource_out
+    
+    def swag_sanitize_description(self, description):
+        text = description.replace("\n","@cr").replace("'","<COMMA>").replace('"',"<COMMA>")
+        return text
+        
+    def swag_increase_indent(self):
+        self.swag_indent += self.tab
+        
+    def swag_decrease_indent(self):
+        length = len(self.tab)
+        total_lenght = len(self.swag_indent)
+        self.swag_indent = self.swag_indent[:total_lenght-length]
+        
+    def swag_write_stringln(self, string):
+        self.f.write(self.swag_indent + string + "\n")
+        
+    def swag_write_string_raw(self, string):
+        self.f.write(string)
+        
+    def swag_write_string(self, string):
+        self.f.write(self.swag_indent + string)
+    
+    def swag_openfile(self, version, title ):
+        self.f = open(self.swagger, "w")
+        self.swag_indent = ""
+        
+        self.swag_write_stringln("{")
+        self.swag_increase_indent()
+        self.swag_write_stringln('"swagger": "2.0",')
+        self.swag_write_stringln('"info": {')
+        self.swag_increase_indent() 
+        self.swag_write_stringln('"title": "'+str(title)+'",')
+        self.swag_write_stringln('"version": "'+str(version)+'"')
+        self.swag_decrease_indent() 
+        self.swag_write_stringln('},')
+        self.swag_write_stringln('"schemes": ["http"],')
+        self.swag_write_stringln('"consumes": ["application/json"],')
+        self.swag_write_stringln('"produces": ["application/json"],')
+    
+    def swag_write_query_parameter_block(self, query_parameters, body=None):
+        if query_parameters is not None:
+            for query_name, query_object in query_parameters.items():
+                self.swag_write_stringln('{')
+                self.swag_increase_indent()
+                self.swag_write_stringln('"name": "'+str(query_name)+'",')
+                self.swag_write_stringln('"in": "query",')
+                query_description = query_object.description
+                if query_object.type is not None:
+                    self.swag_write_stringln('"description": "'+str(query_description)+'",')
+                if query_object.type is not None:
+                    self.swag_write_stringln('"type": "'+str(query_object.type)+'",')
+                if query_object.required is not None:
+                    if query_object.required == True:
+                        self.swag_write_stringln('"required": true,')
+                self.swag_decrease_indent()
+                if body is None:
+                    self.swag_write_stringln('}')
+                else:
+                    self.swag_write_stringln('},')
+                
+    def swag_write_body_parameter_block(self, body):
+        if body is not None:
+            if body.schema:
+                self.swag_write_stringln('{')
+                self.swag_increase_indent()
+                self.swag_write_stringln('"name": "body",')
+                self.swag_write_stringln('"in": "body",')
+                self.swag_write_stringln('"required": true,')
+                self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" },')
+                if body.example:
+                    self.swag_write_stringln('"x-example":')
+                    self.swag_increase_indent()
+                    adjusted_text = self.add_justification_smart(self.swag_indent, body.example)
+                    self.swag_write_string_raw(adjusted_text)                    
+                    self.swag_decrease_indent()
+                self.swag_decrease_indent()
+                self.swag_write_stringln('}')
+    
+    def swag_write_reponses(self, responses):
+        nr_responses = len(responses.items())
+        for response_name, response in responses.items():
+            #print response_name
+            self.swag_increase_indent()
+            self.swag_write_stringln('"'+str(response_name)+'": {')
+            self.swag_increase_indent()
+            
+            for sName, body in response.body.items():
+                if sName == "application/json":
+                    description = ""
+                    #if (body.description is not None):
+                    #    description = body.description
+                    example = body.example
+                    # TODO add description itself
+                    # without the description field swagger won't validate
+                    self.swag_write_stringln('"description" : "",')
+                    if example:
+                        self.swag_write_stringln('"x-example":')
+                        self.swag_increase_indent()
+                        if body.schema is not None:
+                            example += ","
+                        adjusted_text = self.add_justification_smart(self.swag_indent, example)
+                        self.swag_write_string_raw(adjusted_text)                    
+                        self.swag_decrease_indent() 
+                    if body.schema:
+                        self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" }')
+                        
+            # close response
+            self.swag_decrease_indent()
+            if nr_responses > 1:
+                self.swag_write_stringln('},')
+            else:
+                self.swag_write_stringln('}')    
+            nr_responses -= 1
+            self.swag_decrease_indent()            
+    
+    def swag_add_resource(self, parse_tree ):
+        self.swag_write_stringln('"paths": {')
+        self.swag_increase_indent() 
+        nr_resources = len(parse_tree.resources.items()) 
+        # write all the resources
+        for resource, obj in parse_tree.resources.items():
+            self.swag_write_stringln('"'+str(resource)+'" : {')
+            if obj.methods is not None:
+                nr_methods = len(obj.methods.items())
+                self.swag_increase_indent()
+                resource_description = obj.description
+                print "resource_description", resource_description
+                for method, method_obj in obj.methods.items():
+                    # write the method
+                    self.swag_write_stringln('"'+str(method)+'": {')
+                    self.swag_increase_indent()
+                    if method_obj.description is not None:
+                        text = self.swag_sanitize_description(method_obj.description)
+                        self.swag_write_stringln('"description": "'+str(text)+ '",')
+                    else:
+                        if method == "get" and resource_description is not None:
+                            text = self.swag_sanitize_description(resource_description)
+                            self.swag_write_stringln('"description": "'+str(text)+ '",')
+                        
+                    # write the parameters (query parametes and body)
+                    self.swag_write_stringln('"parameters": [')
+                    self.swag_increase_indent()
+                    self.swag_write_query_parameter_block(method_obj.queryParameters, body = method_obj.body)
+                    self.swag_write_body_parameter_block(method_obj.body)    
+                    # close parameters block
+                    self.swag_decrease_indent()
+                    self.swag_write_stringln('],')
+                    self.swag_decrease_indent()
+                    
+                     # write the responses block
+                    self.swag_increase_indent()
+                    self.swag_write_stringln('"responses": {')
+                    self.swag_increase_indent()
+                    self.swag_write_reponses(method_obj.responses)    
+                    # close response block
+                    self.swag_decrease_indent()
+                    self.swag_write_stringln('}')
+                    self.swag_decrease_indent()
+                    
+                    # close method
+                    if nr_methods > 1:
+                        self.swag_write_stringln('},')
+                    else:
+                        self.swag_write_stringln('}')    
+                    nr_methods -= 1
+                self.swag_decrease_indent()
+                
+            # close paths
+            if nr_resources > 1:
+                self.swag_write_stringln('},')
+            else:
+                self.swag_write_stringln('}')
+            nr_resources -= 1
+       
+        self.swag_decrease_indent()
+        self.swag_write_stringln('},')
+    
+    def swag_add_definitions(self, parse_tree ):
+        self.swag_write_stringln('"definitions": {')
+        self.swag_increase_indent() 
+        processed_schemas = []
+        
+        # write all the definitions 
+        for resource, obj in parse_tree.resources.items():
+            if obj.methods is not None:
+                nr_methods = len(obj.methods.items())
+               
+                for method, method_obj in obj.methods.items():
+                    # write schema block 
+                    if method_obj.body is not None:
+                        if method_obj.body.schema:
+                            schema_name = str(method_obj.body.schema)
+                            if schema_name not in processed_schemas:
+                                self.swag_write_stringln('"'+schema_name+'" : ')
+                                
+                                self.swag_increase_indent()
+                                processed_schemas.append(schema_name)
+                                schema_string = self.get_schema_string_from_body(method_obj.body)
+                                json_dict = json.loads(schema_string)
+                                required = find_key_link(json_dict, 'required')
+                                definitions = find_key_link(json_dict, 'definitions')
+                                required_inobject = find_key_link(definitions, 'required')
+                                print "required_inobject", required_inobject
+                                for name, object in definitions.items():
+                                    if required is not None and required_inobject is None:
+                                        # add the required string
+                                        print "adding required:", required
+                                        object["required"] = required
+                                
+                                    object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
+                                    adjusted_text = self.add_justification_smart(self.swag_indent, object_string)
+                                    self.swag_write_stringln(adjusted_text)
+                                
+                                self.swag_decrease_indent()
+   
 
+                    ##self.swag_write_reponses(method_obj.responses)   
+                    
+        
+        # close definitions
+        self.swag_decrease_indent()
+        self.swag_write_stringln('}')
+    
+    def swag_closefile(self):   
+        #self.swag_decrease_indent() 
+        self.swag_write_string_raw("}\n")
+        self.f.close();
+    
+    
+    def swag_verify(self):   
+        print "swag_verify"
+        input_string_schema = open(self.swagger, 'r').read()
+        json_dict =json.loads(input_string_schema)
+    
+    def generate_swagger(self):
+        """
+        conversion of the raml info into swagger
+
+        :return:
+        """
+        try:
+            parse_tree = ramlparser.load(self.inputname)
+        except ValidationError as e:
+            print 'validation error:', e.errors
+            print "could not load file: error loading file"
+            traceback.print_exc()
+            return
+        title = parse_tree.title
+        version = parse_tree.version
+        self.swag_openfile(version, title)
+        self.swag_add_resource(parse_tree)
+        self.swag_add_definitions(parse_tree)
+        self.swag_closefile()
+        print "swagger document saved..", self.swagger
+        self.swag_verify()
+        
     def add_header(self, level_nr, header_title):
         """
         add an header to the document.
@@ -1837,6 +2093,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-annex', '--annex', help='uses a annex heading instead of normal heading (--annex true)')
     parser.add_argument('-derived', '--derived', help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table')
+    parser.add_argument('-swagger', '--swagger', help='generate swagger output file (--swagger <outputfile>) ')
     parser.add_argument('-put', '--put', help='uses put command as property table input instead of get (--put true)')
     parser.add_argument('-composite', '--composite',
          help='treats the resource as an composite resource, e.g. no property definition table (--composite true)')
@@ -1860,6 +2117,7 @@ if __name__ == '__main__':
     schema_file = args['schema']
     schemaWT_file = args['schemaWT']
     derived_name = args['derived']
+    swagger = args['swagger']
 
     # annex_switch = True
 
@@ -1914,6 +2172,7 @@ if __name__ == '__main__':
     print "schema switch                :", schema_switch
     print "schema (WT) switch           :", schemaWT_switch
     print "derived                      :", derived_name
+    print "swagger                      :", swagger
     if schema_switch == True:
         print "schema file                  :", schema_file
     if schemaWT_switch == True:
@@ -1956,6 +2215,7 @@ if __name__ == '__main__':
         processor.schema_switch = schema_switch
         processor.schemaWT_switch = schemaWT_switch
         processor.derived_name = derived_name
+        processor.swagger = swagger
         processor.dir = args['schemadir']
         if args['outdocx'] is not None:
             processor.resource_out = args['outdocx']
@@ -1969,6 +2229,9 @@ if __name__ == '__main__':
 
     if processor is not None:
         processor.convert()
+        
+    if swagger is not None:
+        processor.generate_swagger()
 
     for resource, obj in processor.parsetree.resources.items():
         print "resource :", resource

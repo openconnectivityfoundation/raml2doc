@@ -14,6 +14,7 @@ using sensor                 : False
 schema switch                : True
 schema (WT) switch           : False
 derived                      : None
+swagger                      : None
 schema file                  : ['../test/in/test_1/oic.core.json']
 styles:
  heading: Heading 1 or ANNEX-heading1

@@ -3,8 +3,8 @@ version:  20171123
 usage: raml2doc.py [-h] [-docx DOCX] [-outdocx OUTDOCX] [-raml RAML]
                    [-schemadir SCHEMADIR] [-heading1 HEADING1]
                    [-resource RESOURCE] [-annex ANNEX] [-derived DERIVED]
-                   [-put PUT] [-composite COMPOSITE] [-sensor SENSOR]
-                   [-schema [SCHEMA [SCHEMA ...]]]
+                   [-swagger SWAGGER] [-put PUT] [-composite COMPOSITE]
+                   [-sensor SENSOR] [-schema [SCHEMA [SCHEMA ...]]]
                    [-schemaWT [SCHEMAWT [SCHEMAWT ...]]]
 
 Process RAML files.
@@ -29,6 +29,8 @@ optional arguments:
   -derived DERIVED, --derived DERIVED
                         derived data model specificaton (--derived XXX) e.g.
                         XXX Property Name in table
+  -swagger SWAGGER, --swagger SWAGGER
+                        generate swagger output file (--swagger <outputfile>)
   -put PUT, --put PUT   uses put command as property table input instead of
                         get (--put true)
   -composite COMPOSITE, --composite COMPOSITE
