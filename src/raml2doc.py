@@ -2075,6 +2075,16 @@ class ProxyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.copyfile(open(full_path), self.wfile)
             return
 
+            
+        # filename(.json) with path of schemas
+        full_path = os.path.join(schema_dir, base_name + ".json")
+        print "ProxyHandler: url:", self.path, " localfile:", full_path
+        if os.path.exists(full_path):
+            print "ProxyHandler: local file found:", full_path
+            self.copyfile(open(full_path), self.wfile)
+            return
+            
+            
         filenamejson = base_name + ".json"
         print "ProxyHandler: local file NOT found:", base_name, " trying: ", filenamejson
         if os.path.exists(filenamejson):
