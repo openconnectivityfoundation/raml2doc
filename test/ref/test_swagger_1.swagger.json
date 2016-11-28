@@ -12,6 +12,7 @@
       "get": {
         "description": "This resource describes a binary switch (on/off).@crThe value is a boolean.@crA value of <COMMA>true<COMMA> means that the switch is on.@crA value of <COMMA>false<COMMA> means that the switch is off.@cr",
         "parameters": [
+          {"$ref": "#/parameters/interface"}
         ],
         "responses": {
             "200": {
@@ -29,6 +30,7 @@
       },
       "post": {
         "parameters": [
+          {"$ref": "#/parameters/interface"},
           {
             "name": "body",
             "in": "body",
@@ -54,6 +56,14 @@
             }
         }
       }
+    }
+  },
+  "parameters": {
+    "interface" : {
+      "in" : "query",
+      "name" : "if",
+      "type" : "string",
+      "enum" : ["oic.if.a"]
     }
   },
   "definitions": {

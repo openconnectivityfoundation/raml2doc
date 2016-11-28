@@ -1745,6 +1745,19 @@ class CreateDoc(object):
         self.swag_write_stringln('"consumes": ["application/json"],')
         self.swag_write_stringln('"produces": ["application/json"],')
     
+    def swag_write_query_reference_parameter_block(self, method_obj, query=None, body=None):
+        add_comma = False
+        if body is not None:
+            add_comma = True
+        if query is not None:
+            add_comma = True
+        if method_obj.is_ is not None:
+            for ref_value in method_obj.is_:
+                text = '{"$ref": "#/parameters/'+str(ref_value)+'"}'
+                if add_comma is True:
+                    text +=","
+                self.swag_write_stringln(text)
+                    
     def swag_write_query_parameter_block(self, query_parameters, body=None):
         if query_parameters is not None:
             for query_name, query_object in query_parameters.items():
@@ -1848,14 +1861,15 @@ class CreateDoc(object):
                     # write the parameters (query parametes and body)
                     self.swag_write_stringln('"parameters": [')
                     self.swag_increase_indent()
-                    self.swag_write_query_parameter_block(method_obj.queryParameters, body = method_obj.body)
+                    # query parameters from the path variable..
+                    self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
+                    self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_body_parameter_block(method_obj.body)    
                     # close parameters block
                     self.swag_decrease_indent()
                     self.swag_write_stringln('],')
                     self.swag_decrease_indent()
-                    
-                     # write the responses block
+                    # write the responses block
                     self.swag_increase_indent()
                     self.swag_write_stringln('"responses": {')
                     self.swag_increase_indent()
@@ -1864,7 +1878,6 @@ class CreateDoc(object):
                     self.swag_decrease_indent()
                     self.swag_write_stringln('}')
                     self.swag_decrease_indent()
-                    
                     # close method
                     if nr_methods > 1:
                         self.swag_write_stringln('},')
@@ -1872,16 +1885,61 @@ class CreateDoc(object):
                         self.swag_write_stringln('}')    
                     nr_methods -= 1
                 self.swag_decrease_indent()
-                
             # close paths
             if nr_resources > 1:
                 self.swag_write_stringln('},')
             else:
                 self.swag_write_stringln('}')
-            nr_resources -= 1
-       
+            nr_resources -= 1   
         self.swag_decrease_indent()
         self.swag_write_stringln('},')
+    
+    def swag_add_generic_parameters(self, parse_tree ):
+        self.swag_write_stringln('"parameters": {')
+        self.swag_increase_indent() 
+        processed_query_params = []
+        traits = parse_tree.traits
+        # write all the generic parameters 
+        num_traits = len (traits.items())
+        for query_name, query_obj in traits.items():
+            self.swag_write_stringln('"'+query_name+'" : {')
+            self.swag_increase_indent() 
+            self.swag_write_stringln('"in" : "query",')
+            for name, q_obj in query_obj.queryParameters.items():
+                self.swag_write_stringln('"name" : "'+name+'",')
+                num_items = len (q_obj.items())
+                # add type = string if not available
+                is_type_available = False
+                for tag, tag_value in q_obj.items(): 
+                    if tag == "type":
+                        is_type_available
+                if is_type_available is False:
+                    self.swag_write_stringln('"type" : "string",')
+                for tag, tag_value in q_obj.items(): 
+                    print "tag:",tag
+                    print "tag_value:", tag_value
+                    text = ""
+                    text = '"'+tag+'" : '
+                    if tag == "enum":
+                        text += self.list_to_array(tag_value)
+                    else:
+                        text += '"'+self.list_to_string(q_obj)+'"'
+                    if num_items > 1:
+                        text += ","
+                    num_items -= 1 
+                    self.swag_write_stringln(text)                            
+            self.swag_decrease_indent()           
+            if num_traits > 1:
+                self.swag_write_stringln('},')
+            else:
+                self.swag_write_stringln('}')
+            num_traits -= 1
+  
+        # close definitions
+        self.swag_decrease_indent()
+        self.swag_write_stringln('},')
+    
+    
     
     def swag_add_definitions(self, parse_tree ):
         self.swag_write_stringln('"definitions": {')
@@ -1900,7 +1958,6 @@ class CreateDoc(object):
                             schema_name = str(method_obj.body.schema)
                             if schema_name not in processed_schemas:
                                 self.swag_write_stringln('"'+schema_name+'" : ')
-                                
                                 self.swag_increase_indent()
                                 processed_schemas.append(schema_name)
                                 schema_string = self.get_schema_string_from_body(method_obj.body)
@@ -1914,17 +1971,10 @@ class CreateDoc(object):
                                         # add the required string
                                         print "adding required:", required
                                         object["required"] = required
-                                
                                     object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
                                     adjusted_text = self.add_justification_smart(self.swag_indent, object_string)
                                     self.swag_write_stringln(adjusted_text)
-                                
-                                self.swag_decrease_indent()
-   
-
-                    ##self.swag_write_reponses(method_obj.responses)   
-                    
-        
+                                self.swag_decrease_indent()       
         # close definitions
         self.swag_decrease_indent()
         self.swag_write_stringln('}')
@@ -1957,6 +2007,7 @@ class CreateDoc(object):
         version = parse_tree.version
         self.swag_openfile(version, title)
         self.swag_add_resource(parse_tree)
+        self.swag_add_generic_parameters(parse_tree)
         self.swag_add_definitions(parse_tree)
         self.swag_closefile()
         print "swagger document saved..", self.swagger
