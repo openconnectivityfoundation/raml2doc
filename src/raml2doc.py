@@ -44,8 +44,8 @@ except ImportError:
 
     
     
-OCF_licence_name = '''copyright 2016 Open Connectivity Foundation, Inc. All rights reserved.'''
-OCF_licence = '''Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+OCF_license_name = '''copyright 2016 Open Connectivity Foundation, Inc. All rights reserved.'''
+OCF_license = '''Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
         1.  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
         2.  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
@@ -1750,23 +1750,24 @@ class CreateDoc(object):
         self.swag_write_stringln('"info": {')
         self.swag_increase_indent() 
         self.swag_write_stringln('"title": "'+str(title)+'",')
-        self.swag_write_stringln('"version": "'+str(version)+'"')
+        self.swag_write_stringln('"version": "'+str(version)+'",')
+        self.swag_license()
         self.swag_decrease_indent() 
         self.swag_write_stringln('},')
         self.swag_write_stringln('"schemes": ["http"],')
         self.swag_write_stringln('"consumes": ["application/json"],')
         self.swag_write_stringln('"produces": ["application/json"],')
     
-    def swag_licence(self):
-        self.swag_write_stringln('"licence": {')
+    def swag_license(self):
+        self.swag_write_stringln('"license": {')
         self.swag_increase_indent() 
-        self.swag_write_stringln('"name": "'+str(OCF_licence_name)+'",')
+        self.swag_write_stringln('"name": "'+str(OCF_license_name)+'",')
         
-        text = self.swag_sanitize_description(OCF_licence)
+        text = self.swag_sanitize_description(OCF_license)
         self.swag_write_stringln('"x-description": "'+str(text)+'"')
         
         self.swag_decrease_indent() 
-        self.swag_write_stringln('},')
+        self.swag_write_stringln('}')
     
     def swag_write_query_reference_parameter_block(self, method_obj, query=None, body=None):
         add_comma = False
@@ -1965,8 +1966,6 @@ class CreateDoc(object):
         self.swag_decrease_indent()
         self.swag_write_stringln('},')
     
-    
-    
     def swag_add_definitions(self, parse_tree ):
         self.swag_write_stringln('"definitions": {')
         self.swag_increase_indent() 
@@ -2032,7 +2031,6 @@ class CreateDoc(object):
         title = parse_tree.title
         version = parse_tree.version
         self.swag_openfile(version, title)
-        self.swag_licence()
         self.swag_add_resource(parse_tree)
         self.swag_add_generic_parameters(parse_tree)
         self.swag_add_definitions(parse_tree)
