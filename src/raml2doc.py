@@ -1423,6 +1423,9 @@ class CreateDoc(object):
                 # print the query parameters
                 if mobj.queryParameters is not None:
                     self.print_query_parameters(ttdepth, mobj.queryParameters)
+                               # print the query parameters
+                if mobj.is_ is not None:
+                    self.printIS_(ttdepth, mobj.is_)
                 # print the body
                 if mobj.body is not None:
                     self.print_post_put_body(ttdepth, "", mobj.body)
@@ -1871,6 +1874,7 @@ class CreateDoc(object):
                 self.swag_increase_indent()
                 resource_description = obj.description
                 print "resource_description", resource_description
+                print "obj", obj
                 
                 for method, method_obj in obj.methods.items():
                     # write the method
@@ -1890,6 +1894,7 @@ class CreateDoc(object):
                     self.swag_increase_indent()
                     # query parameters from the path variable..
                     self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
+                    self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_body_parameter_block(method_obj.body)    
                     # close parameters block

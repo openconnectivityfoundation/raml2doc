@@ -291,6 +291,7 @@ def parse_method(c, parent_object):
     context = ParseContext(c.get("body"), c.relative_path)
     method.body = parse_body(context)
     method.queryParameters = c.get_property_with_schema("queryParameters", RamlMethod.queryParameters)
+    method.is_ = c.get_string_property("is")
 
     return method
 
