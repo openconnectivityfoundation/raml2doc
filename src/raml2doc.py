@@ -42,6 +42,18 @@ try:
 except ImportError:
     from yaml import Loader, Dumper, SafeDumper
 
+    
+    
+OCF_licence_name = '''copyright 2016 Open Connectivity Foundation, Inc. All rights reserved.'''
+OCF_licence = '''Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+        1.  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+        2.  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+        THIS SOFTWARE IS PROVIDED BY THE Open Connectivity Foundation, INC. "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE OR WARRANTIES OF NON-INFRINGEMENT, ARE DISCLAIMED. 
+        IN NO EVENT SHALL THE Open Connectivity Foundation, INC. OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+        HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+'''
+
 draft3schemafile = """{
     "$schema": "http://json-schema.org/draft-03/schema#",
     "dependencies": {
@@ -1745,6 +1757,17 @@ class CreateDoc(object):
         self.swag_write_stringln('"consumes": ["application/json"],')
         self.swag_write_stringln('"produces": ["application/json"],')
     
+    def swag_licence(self):
+        self.swag_write_stringln('"licence": {')
+        self.swag_increase_indent() 
+        self.swag_write_stringln('"name": "'+str(OCF_licence_name)+'",')
+        
+        text = self.swag_sanitize_description(OCF_licence)
+        self.swag_write_stringln('"x-description": "'+str(text)+'"')
+        
+        self.swag_decrease_indent() 
+        self.swag_write_stringln('},')
+    
     def swag_write_query_reference_parameter_block(self, method_obj, query=None, body=None):
         add_comma = False
         if body is not None:
@@ -1804,16 +1827,17 @@ class CreateDoc(object):
             self.swag_increase_indent()
             self.swag_write_stringln('"'+str(response_name)+'": {')
             self.swag_increase_indent()
+            response_description = response.description
             
             for sName, body in response.body.items():
                 if sName == "application/json":
                     description = ""
-                    #if (body.description is not None):
-                    #    description = body.description
+                    if response_description is not None:
+                        description = str(response_description)
+                    text = self.swag_sanitize_description(description)
                     example = body.example
-                    # TODO add description itself
                     # without the description field swagger won't validate
-                    self.swag_write_stringln('"description" : "",')
+                    self.swag_write_stringln('"description" : "'+text+'",')
                     if example:
                         self.swag_write_stringln('"x-example":')
                         self.swag_increase_indent()
@@ -1846,18 +1870,20 @@ class CreateDoc(object):
                 self.swag_increase_indent()
                 resource_description = obj.description
                 print "resource_description", resource_description
+                
                 for method, method_obj in obj.methods.items():
                     # write the method
                     self.swag_write_stringln('"'+str(method)+'": {')
                     self.swag_increase_indent()
+                    # add the description
+                    text = ""
+                    if method == "get" and resource_description is not None:
+                        text = str(resource_description)
                     if method_obj.description is not None:
-                        text = self.swag_sanitize_description(method_obj.description)
-                        self.swag_write_stringln('"description": "'+str(text)+ '",')
-                    else:
-                        if method == "get" and resource_description is not None:
-                            text = self.swag_sanitize_description(resource_description)
-                            self.swag_write_stringln('"description": "'+str(text)+ '",')
-                        
+                        text += str(method_obj.description)
+                    s_text = self.swag_sanitize_description(text)                        
+                    self.swag_write_stringln('"description": "'+str(s_text)+ '",')
+                     
                     # write the parameters (query parametes and body)
                     self.swag_write_stringln('"parameters": [')
                     self.swag_increase_indent()
@@ -2006,6 +2032,7 @@ class CreateDoc(object):
         title = parse_tree.title
         version = parse_tree.version
         self.swag_openfile(version, title)
+        self.swag_licence()
         self.swag_add_resource(parse_tree)
         self.swag_add_generic_parameters(parse_tree)
         self.swag_add_definitions(parse_tree)
