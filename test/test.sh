@@ -106,6 +106,15 @@ function tests_swagger {
 TEST_CASE="test_swagger_1"
 my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_1/ -resource BinarySwitchResURI -raml ../test/in/test_1/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
 
+# option -swagger
+TEST_CASE="test_swagger_2"
+my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_2_schema_dir/ -resource BinarySwitchResURI -raml ../test/in/test_2_schema_dir/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
+
+
+# option -swagger
+#TEST_CASE="test_swagger_3"
+#my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_6_compound/ -resource AirFlowControlResURI -raml ../test/in/test_6_compound/airFlowControl.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
+
 }
 
 tests  

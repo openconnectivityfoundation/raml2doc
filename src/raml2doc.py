@@ -1971,6 +1971,14 @@ class CreateDoc(object):
         self.swag_decrease_indent()
         self.swag_write_stringln('},')
     
+    def swag_add_references_as_include(self, full_source, dict_to_add_to ):
+        allOf = find_key_link(full_source, 'allOf')
+        # this is an array
+        for property in allOf:
+            #print property
+            pass
+        return dict_to_add_to
+    
     def swag_add_definitions(self, parse_tree ):
         self.swag_write_stringln('"definitions": {')
         self.swag_increase_indent() 
@@ -1995,6 +2003,7 @@ class CreateDoc(object):
                                 required = find_key_link(json_dict, 'required')
                                 definitions = find_key_link(json_dict, 'definitions')
                                 required_inobject = find_key_link(definitions, 'required')
+                                definitions = self.swag_add_references_as_include(json_dict, definitions)
                                 print "required_inobject", required_inobject
                                 for name, object in definitions.items():
                                     if required is not None and required_inobject is None:
