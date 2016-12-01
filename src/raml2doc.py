@@ -1873,8 +1873,8 @@ class CreateDoc(object):
                 nr_methods = len(obj.methods.items())
                 self.swag_increase_indent()
                 resource_description = obj.description
-                print "resource_description", resource_description
-                print "obj", obj
+                print "swag_add_resource: resource_description", resource_description
+                print "swag_add_resource: object", obj
                 
                 for method, method_obj in obj.methods.items():
                     # write the method
@@ -1972,11 +1972,33 @@ class CreateDoc(object):
         self.swag_write_stringln('},')
     
     def swag_add_references_as_include(self, full_source, dict_to_add_to ):
+        # find the first level of allOf... most of the time this is the definition part..
         allOf = find_key_link(full_source, 'allOf')
-        # this is an array
-        for property in allOf:
-            #print property
-            pass
+        #get the pointer to the properties dict, there is where we have to add all the referenced properties
+        to_property_list = find_key_link(dict_to_add_to,"properties")
+        # make sure we skip duplicate ones, other wise we will overwrite
+        tag_add = []
+        for name, object in to_property_list.items():
+            tag_add.append(name)
+        # loop over the array of the allOf properties, only 1 level...
+        for property_list in allOf:
+            for name, value in property_list.items():
+                #print name, value
+                if value[0] != "#":
+                    # get the filename, it is the first part..
+                    filename = value.split('#', 1)[0]
+                    schema_string = self.read_file(filename)
+                    if schema_string is not None:
+                        json_dict = json.loads(schema_string)
+                        properties = find_key_link(json_dict, 'properties')
+                        for name, object in properties.items():
+                            #print "name, object",name, object
+                            if name not in tag_add:
+                                to_property_list[name] = object
+                                tag_add.append(name)
+        #print ""
+        #print dict_to_add_to
+        #print ""
         return dict_to_add_to
     
     def swag_add_definitions(self, parse_tree ):
@@ -2003,13 +2025,16 @@ class CreateDoc(object):
                                 required = find_key_link(json_dict, 'required')
                                 definitions = find_key_link(json_dict, 'definitions')
                                 required_inobject = find_key_link(definitions, 'required')
-                                definitions = self.swag_add_references_as_include(json_dict, definitions)
-                                print "required_inobject", required_inobject
-                                for name, object in definitions.items():
+                                full_definitions = self.swag_add_references_as_include(json_dict, definitions)
+                                #print "required_inobject", required_inobject
+                                for name, object in full_definitions.items():
+                                    # looping over all schema names..
+                                    print "swag_add_definitions: name", name, object
                                     if required is not None and required_inobject is None:
                                         # add the required string
                                         print "adding required:", required
                                         object["required"] = required
+                                        required_inobject = 1
                                     object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
                                     adjusted_text = self.add_justification_smart(self.swag_indent, object_string)
                                     self.swag_write_stringln(adjusted_text)

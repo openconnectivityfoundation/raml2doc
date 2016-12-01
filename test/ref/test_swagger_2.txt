@@ -4,7 +4,7 @@ version:  20171123
 using raml file              : ../test/in/test_2_schema_dir/binarySwitch.raml
 using docx file              : ../input/ResourceTemplate.docx
 using docx output file       : ../test/./out/test_swagger_2.docx
-using schema dir             : ../test/in/test_2_schema_dir/
+using schema dir             : ../test/in/test_2_schema_dir/schemas
 using resource               : BinarySwitchResURI
 using header0                : None
 using annex                  : False
@@ -34,152 +34,49 @@ resolve schema reference: BinarySwitch schemas/oic.r.switch.binary.json
 xx=> validation schema (jsonschema)
 resolve schema reference: BinarySwitch schemas/oic.r.switch.binary.json
 ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: oic.core.json
-ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_2_schema_dir/oic.core.json
-ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_2_schema_dir/oic.core.json.json
-ProxyHandler: local file NOT found: oic.core.json  trying:  oic.core.json.json
-ProxyHandler: trying url: http://openinterconnect.org/schemas/oic.core.json
-ProxyHandler: file not found: http://openinterconnect.org/schemas/oic.core.json
-
-ERROR: failure in body (json):
-{
-  "rt":     "oic.r.switch.binary",
-  "id":     "unique_example_id",
-  "value":  false
-}
-
-
-schema (json):
-{
-  "id": "http://openinterconnect.org/schemas/oic.r.switch.binary#",
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "description" : "copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.",
-  "title": "Binary Switch",
-  "definitions": {
-    "oic.r.switch.binary": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "boolean",
-          "description": "Status of the switch"
-        }
-      }
-    }
-  },
-  "type": "object",
-  "allOf": [
-    {"$ref": "oic.core.json#/definitions/oic.core"},
-    {"$ref": "oic.baseResource.json#/definitions/oic.r.baseResource"},
-    {"$ref": "#/definitions/oic.r.switch.binary"}
-  ],
-  "required": [ "value" ]
-}
-
-
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_2_schema_dir/schemas\oic.core.json
+ProxyHandler: local file found: ../test/in/test_2_schema_dir/schemas\oic.core.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: ../test/in/test_2_schema_dir/schemas\oic.baseResource.json
+ProxyHandler: local file found: ../test/in/test_2_schema_dir/schemas\oic.baseResource.json
+xx=xx=> schema & json VALID
 xxx=> validation schema (jsonschema) done
 resolve schema reference: BinarySwitch schemas/oic.r.switch.binary.json
 xx=> validation schema (jsonschema)
 resolve schema reference: BinarySwitch schemas/oic.r.switch.binary.json
 ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: oic.core.json
-ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_2_schema_dir/oic.core.json
-ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_2_schema_dir/oic.core.json.json
-ProxyHandler: local file NOT found: oic.core.json  trying:  oic.core.json.json
-ProxyHandler: trying url: http://openinterconnect.org/schemas/oic.core.json
-ProxyHandler: file not found: http://openinterconnect.org/schemas/oic.core.json
-
-ERROR: failure in body (json):
-{
-  "id":    "unique_example_id",
-  "value": true
-}
-
-
-schema (json):
-{
-  "id": "http://openinterconnect.org/schemas/oic.r.switch.binary#",
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "description" : "copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.",
-  "title": "Binary Switch",
-  "definitions": {
-    "oic.r.switch.binary": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "boolean",
-          "description": "Status of the switch"
-        }
-      }
-    }
-  },
-  "type": "object",
-  "allOf": [
-    {"$ref": "oic.core.json#/definitions/oic.core"},
-    {"$ref": "oic.baseResource.json#/definitions/oic.r.baseResource"},
-    {"$ref": "#/definitions/oic.r.switch.binary"}
-  ],
-  "required": [ "value" ]
-}
-
-
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_2_schema_dir/schemas\oic.core.json
+ProxyHandler: local file found: ../test/in/test_2_schema_dir/schemas\oic.core.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: ../test/in/test_2_schema_dir/schemas\oic.baseResource.json
+ProxyHandler: local file found: ../test/in/test_2_schema_dir/schemas\oic.baseResource.json
+xx=xx=> schema & json VALID
 xxx=> validation schema (jsonschema) done
 resolve schema reference: BinarySwitch schemas/oic.r.switch.binary.json
 xx=> validation schema (jsonschema)
 resolve schema reference: BinarySwitch schemas/oic.r.switch.binary.json
 ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: oic.core.json
-ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_2_schema_dir/oic.core.json
-ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_2_schema_dir/oic.core.json.json
-ProxyHandler: local file NOT found: oic.core.json  trying:  oic.core.json.json
-ProxyHandler: trying url: http://openinterconnect.org/schemas/oic.core.json
-ProxyHandler: file not found: http://openinterconnect.org/schemas/oic.core.json
-
-ERROR: failure in body (json):
-{
-  "id":    "unique_example_id",
-  "value": true
-}
-
-
-schema (json):
-{
-  "id": "http://openinterconnect.org/schemas/oic.r.switch.binary#",
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "description" : "copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.",
-  "title": "Binary Switch",
-  "definitions": {
-    "oic.r.switch.binary": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "boolean",
-          "description": "Status of the switch"
-        }
-      }
-    }
-  },
-  "type": "object",
-  "allOf": [
-    {"$ref": "oic.core.json#/definitions/oic.core"},
-    {"$ref": "oic.baseResource.json#/definitions/oic.r.baseResource"},
-    {"$ref": "#/definitions/oic.r.switch.binary"}
-  ],
-  "required": [ "value" ]
-}
-
-
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.core.json  localfile: ../test/in/test_2_schema_dir/schemas\oic.core.json
+ProxyHandler: local file found: ../test/in/test_2_schema_dir/schemas\oic.core.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.baseResource.json  localfile: ../test/in/test_2_schema_dir/schemas\oic.baseResource.json
+ProxyHandler: local file found: ../test/in/test_2_schema_dir/schemas\oic.baseResource.json
+xx=xx=> schema & json VALID
 xxx=> validation schema (jsonschema) done
 resolve schema reference: BinarySwitch schemas/oic.r.switch.binary.json
 parse_schema: required properties found: ['value']
 parse_schema: property: value
 document saved.. ../test/./out/test_swagger_2.docx
-resource_description This resource describes a binary switch (on/off).
+swag_add_resource: resource_description This resource describes a binary switch (on/off).
 The value is a boolean.
 A value of 'true' means that the switch is on.
 A value of 'false' means that the switch is off.
 
-obj {'parentResource': None, 'is_': ['interface'], 'description': "This resource describes a binary switch (on/off).\nThe value is a boolean.\nA value of 'true' means that the switch is on.\nA value of 'false' means that the switch is off.\n", 'uri': '/BinarySwitchResURI', 'displayName': 'Binary Switch', 'type': None, 'resources': OrderedDict(), 'methods': OrderedDict([('get', {'body': None, 'responses': OrderedDict([(200, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "rt":     "oic.r.switch.binary",\n  "id":     "unique_example_id",\n  "value":  false\n}\n', 'schema': 'BinarySwitch'})]), 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None})]), 'notNull': None, 'description': None, 'queryParameters': None}), ('post', {'body': {'body': None, 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': '{\n  "id":    "unique_example_id",\n  "value": true\n}\n', 'schema': 'BinarySwitch'}, 'responses': OrderedDict([(200, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "id":    "unique_example_id",\n  "value": true\n}\n', 'schema': 'BinarySwitch'})]), 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None})]), 'notNull': None, 'description': None, 'queryParameters': None})])}
+swag_add_resource: object {'parentResource': None, 'is_': ['interface'], 'description': "This resource describes a binary switch (on/off).\nThe value is a boolean.\nA value of 'true' means that the switch is on.\nA value of 'false' means that the switch is off.\n", 'uri': '/BinarySwitchResURI', 'displayName': 'Binary Switch', 'type': None, 'resources': OrderedDict(), 'methods': OrderedDict([('get', {'body': None, 'responses': OrderedDict([(200, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "rt":     "oic.r.switch.binary",\n  "id":     "unique_example_id",\n  "value":  false\n}\n', 'schema': 'BinarySwitch'})]), 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None})]), 'notNull': None, 'description': None, 'queryParameters': None}), ('post', {'body': {'body': None, 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': '{\n  "id":    "unique_example_id",\n  "value": true\n}\n', 'schema': 'BinarySwitch'}, 'responses': OrderedDict([(200, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "id":    "unique_example_id",\n  "value": true\n}\n', 'schema': 'BinarySwitch'})]), 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None})]), 'notNull': None, 'description': None, 'queryParameters': None})])}
 tag: enum
 tag_value: ['oic.if.a']
 resolve schema reference: BinarySwitch schemas/oic.r.switch.binary.json
-required_inobject None
+swag_add_definitions: name oic.r.switch.binary {u'type': u'object', u'properties': {u'rt': {u'type': u'string', u'description': u'ReadOnly, Resource Type'}, u'value': {u'type': u'boolean', u'description': u'Status of the switch'}, u'n': {u'type': u'string', u'description': u'Friendly name of the resource'}, u'p': {u'type': u'string', u'description': u'ReadOnly, bitmap indicating observable and discoverable'}, u'range': {u'type': u'string'}, u'id': {u'type': u'string', u'description': u'ReadOnly, Instance ID of this specific resource'}, u'if': {u'minItems': 1, u'items': [{u'enum': [u'oic.if.def', u'oic.if.ll', u'oic.if.b', u'oic.if.rp', u'oic.if.p', u'oic.if.a', u'oic.if.s'], u'type': u'string'}], u'type': u'array', u'description': u'ReadOnly, The interface set supported by this resource'}}}
 adding required: [u'value']
 swagger document saved.. ../test/./out/test_swagger_2.swagger.json
 swag_verify
