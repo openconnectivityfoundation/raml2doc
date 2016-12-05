@@ -14,13 +14,18 @@ function compare_output {
     #echo "blah"
 }
 
-
 function compare_to_reference_file {
     diff -w $OUTPUT_DIR/$1 $REF_DIR/$1
     echo "output $1 difference: $TEST_CASE $?"
     #echo "blah"
 }
 
+
+function compare_to_reference_file_in_dir {
+    diff -w $OUTPUT_DIR/$1 $REF_DIR/$2/$1
+    echo "output $1 difference: $TEST_CASE $?"
+    #echo "blah"
+}
 
 function compare_file {
     echo "comparing ($TEST_CASE): " $1 $2
@@ -32,6 +37,12 @@ function compare_file {
 function my_test {
     $PYTHON_EXE $RAML2DOC $* > $OUTPUT_DIR/$TEST_CASE$EXT 2>&1
     compare_output
+} 
+
+function my_test_in_dir {
+    mkdir -p $OUTPUT_DIR/$TEST_CASE
+    $PYTHON_EXE $RAML2DOC $* > $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT 2>&1
+    compare_file $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT $REF_DIR/$TEST_CASE/$TEST_CASE$EXT
 } 
 
 
@@ -116,17 +127,27 @@ function tests_swagger {
 
 # option -swagger
 TEST_CASE="test_swagger_1"
-my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_1/ -resource BinarySwitchResURI -raml ../test/in/test_1/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
-compare_to_reference_file $TEST_CASE.swagger.json
+mkdir -p $OUTPUT_DIR_DOCS/$TEST_CASE
+my_test_in_dir  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_1/ -resource BinarySwitchResURI -raml ../test/in/test_1/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.swagger.json
+compare_to_reference_file_in_dir $TEST_CASE.swagger.json $TEST_CASE
 
 # option -swagger
 TEST_CASE="test_swagger_2"
-my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_2_schema_dir/schemas -resource BinarySwitchResURI -raml ../test/in/test_2_schema_dir/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
-compare_to_reference_file $TEST_CASE.swagger.json
+mkdir -p $OUTPUT_DIR_DOCS/$TEST_CASE
+my_test_in_dir  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_2_schema_dir/schemas -resource BinarySwitchResURI -raml ../test/in/test_2_schema_dir/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.swagger.json
+compare_to_reference_file_in_dir $TEST_CASE.swagger.json $TEST_CASE
 
 # option -swagger
 TEST_CASE="test_swagger_3"
-my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_6_compound/ -resource AirFlowControlResURI -raml ../test/in/test_6_compound/airFlowControl.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
+mkdir -p $OUTPUT_DIR_DOCS/$TEST_CASE
+my_test_in_dir  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_6_compound/ -resource AirFlowControlResURI -raml ../test/in/test_6_compound/airFlowControl.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.swagger.json
+compare_to_reference_file_in_dir $TEST_CASE.swagger.json $TEST_CASE
+
+# option -swagger
+TEST_CASE="test_swagger_4"
+mkdir -p $OUTPUT_DIR_DOCS/$TEST_CASE
+my_test_in_dir  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_7_compound/ -resource AirFlowControlResURI -raml ../test/in/test_7_compound/airFlowControl.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.swagger.json
+compare_to_reference_file_in_dir $TEST_CASE.swagger.json $TEST_CASE
 
 }
 

@@ -1,0 +1,182 @@
+===================================
+version:  20171123
+===================================
+using raml file              : ../test/in/test_7_compound/airFlowControl.raml
+using docx file              : ../input/ResourceTemplate.docx
+using docx output file       : ../test/./out/test_swagger_4.docx
+using schema dir             : ../test/in/test_7_compound/
+using resource               : AirFlowControlResURI
+using header0                : None
+using annex                  : False
+using put for property table : False
+using composite              : False
+using sensor                 : False
+schema switch                : False
+schema (WT) switch           : False
+derived                      : None
+swagger                      : ../test/./out/test_swagger_4/test_swagger_4.swagger.json
+styles:
+ heading: Heading 1 or ANNEX-heading1
+ table style: TABLE-A
+ table header style: TABLEHEADER
+ color (code) style: CODE-AQUA
+                   : CODE-YELLOW
+                   : CODE-GREY
+                   : CODE-BLACK
+                   : CODE-BLUE
+                   : CODE-GREEN
+===================================
+HTTPPRoxy: serving at port 4321
+DisplayName: Air Flow Control
+Title Air Flow Control
+RT =  oic.r.airflowControl
+resolve schema reference: AirFlowControl oic.r.airflowControl.json
+xx=> validation schema (jsonschema)
+resolve schema reference: AirFlowControl oic.r.airflowControl.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.oic-link-schema.json  localfile: oic.oic-link-schema.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.oic-link-schema.json  localfile: ../test/in/test_7_compound/oic.oic-link-schema.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.oic-link-schema.json
+ProxyHandler: url: http://openconnectivityfoundation.org/core/schemas/oic.oic-link-schema.json  localfile: oic.oic-link-schema.json
+ProxyHandler: url: http://openconnectivityfoundation.org/core/schemas/oic.oic-link-schema.json  localfile: ../test/in/test_7_compound/oic.oic-link-schema.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.oic-link-schema.json
+xx=xx=> schema & json VALID
+xxx=> validation schema (jsonschema) done
+resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
+xx=> validation schema (jsonschema)
+resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.core.json  localfile: oic.core.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.core.json  localfile: ../test/in/test_7_compound/oic.core.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.core.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.baseResource.json  localfile: oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.baseResource.json  localfile: ../test/in/test_7_compound/oic.baseResource.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.switch.binary.json  localfile: oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.switch.binary.json  localfile: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.r.switch.binary  localfile: oic.r.switch.binary
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.r.switch.binary  localfile: ../test/in/test_7_compound/oic.r.switch.binary
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.r.switch.binary  localfile: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airflow.json  localfile: oic.r.airflow.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airflow.json  localfile: ../test/in/test_7_compound/oic.r.airflow.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.airflow.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airFlow.json  localfile: oic.r.airFlow.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airFlow.json  localfile: ../test/in/test_7_compound/oic.r.airFlow.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.airFlow.json
+xx=xx=> schema & json VALID
+xxx=> validation schema (jsonschema) done
+resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
+xx=> validation schema (jsonschema)
+resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.core.json  localfile: oic.core.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.core.json  localfile: ../test/in/test_7_compound/oic.core.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.core.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.baseResource.json  localfile: oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.baseResource.json  localfile: ../test/in/test_7_compound/oic.baseResource.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.switch.binary.json  localfile: oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.switch.binary.json  localfile: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.r.switch.binary  localfile: oic.r.switch.binary
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.r.switch.binary  localfile: ../test/in/test_7_compound/oic.r.switch.binary
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.r.switch.binary  localfile: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airflow.json  localfile: oic.r.airflow.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airflow.json  localfile: ../test/in/test_7_compound/oic.r.airflow.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.airflow.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airFlow.json  localfile: oic.r.airFlow.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airFlow.json  localfile: ../test/in/test_7_compound/oic.r.airFlow.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.airFlow.json
+xx=xx=> schema & json VALID
+xxx=> validation schema (jsonschema) done
+resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
+xx=> validation schema (jsonschema)
+resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.core.json  localfile: oic.core.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.core.json  localfile: ../test/in/test_7_compound/oic.core.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.core.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.baseResource.json  localfile: oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.baseResource.json  localfile: ../test/in/test_7_compound/oic.baseResource.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.baseResource.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.switch.binary.json  localfile: oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.switch.binary.json  localfile: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.r.switch.binary  localfile: oic.r.switch.binary
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.r.switch.binary  localfile: ../test/in/test_7_compound/oic.r.switch.binary
+ProxyHandler: url: http://openinterconnect.org/schemas/oic.r.switch.binary  localfile: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.switch.binary.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airflow.json  localfile: oic.r.airflow.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airflow.json  localfile: ../test/in/test_7_compound/oic.r.airflow.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.airflow.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airFlow.json  localfile: oic.r.airFlow.json
+ProxyHandler: url: http://openinterconnect.org/iotdatamodels/schemas/oic.r.airFlow.json  localfile: ../test/in/test_7_compound/oic.r.airFlow.json
+ProxyHandler: local file found: ../test/in/test_7_compound/oic.r.airFlow.json
+xx=xx=> schema & json VALID
+xxx=> validation schema (jsonschema) done
+resolve schema reference: AirFlowControl oic.r.airflowControl.json
+correct end of required detected
+parse_schema: required properties found: ['airFlowControl']
+parse_schema: property: airFlowControl
+document saved.. ../test/./out/test_swagger_4.docx
+swag_add_resource: resource_description This resource describes the attributes associated with control of air flow,
+for example as modelled by a Thermostat (fan), Room A/C or other device.
+The resource is a composite resource being made up as a collection of:
+  AirFlow Resource
+  BinarySwitch Resource
+
+swag_add_resource: object {'parentResource': None, 'is_': None, 'description': 'This resource describes the attributes associated with control of air flow,\nfor example as modelled by a Thermostat (fan), Room A/C or other device.\nThe resource is a composite resource being made up as a collection of:\n  AirFlow Resource\n  BinarySwitch Resource\n', 'uri': '/AirFlowControlResURI', 'displayName': 'Air Flow Control', 'type': None, 'resources': OrderedDict(), 'methods': OrderedDict([('get', {'body': None, 'responses': OrderedDict([(200, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "rt": ["oic.r.airflowControl"],\n  "id": "unique_example_id",\n  "airFlowControl": [\n    {\n      "href": "/BinarySwitchResURI",\n      "rel":  "contains",\n      "rt":   ["oic.r.switch.binary"],\n      "if":   ["oic.if.a"]\n    },\n    {\n      "href": "/AirFlowResURI",\n      "rel":  "contains",\n      "rt":   ["oic.r.airflow"],\n      "if":   ["oic.if.a"]\n    }\n  ]\n}\n', 'schema': 'AirFlowControl'})]), 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None})]), 'notNull': None, 'description': 'Retrieves the current air flow control values.\n', 'queryParameters': None}), ('post', {'body': {'body': None, 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': '{\n  "id":     "unique_example_id",\n  "airFlowControl": [\n    {\n      "id":    "unique_example_id",\n      "value": true\n    },\n    {\n      "id":         "unique_example_id",\n      "direction":  "right",\n      "speed":      3\n    }\n  ]\n}\n', 'schema': 'AirFlowControlBatch'}, 'responses': OrderedDict([(200, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "id":     "unique_example_id",\n  "airFlowControl": [\n    {\n      "id":    "unique_example_id",\n      "value": true\n    },\n    {\n      "id":        "unique_example_id",\n      "direction": "right",\n      "speed":     3\n    }\n  ]\n}\n', 'schema': 'AirFlowControlBatch'})]), 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None}), (403, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "id":     "unique_example_id",\n  "airFlowControl": [\n    {\n      "id":    "unique_example_id",\n      "value": true\n    },\n    {\n      "id":         "unique_example_id",\n      "direction":  "right",\n      "speed":      3\n    }\n  ]\n}\n', 'schema': 'AirFlowControlBatch'})]), 'is_': None, 'description': 'This response is generated by the OIC Server when the client sends:\n  An update with an invalid property value for direction.\n  An update with an out of range property value for speed.\nThe server responds with the current resource representation.\n', 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None})]), 'notNull': None, 'description': 'Sets the current air flow control values using the batch interface\n', 'queryParameters': None})])}
+tag: enum
+tag_value: ['oic.if.b']
+tag: enum
+tag_value: ['oic.if.ll', 'oic.if.b', 'oic.if.baseline']
+swag_add_definitions resource: /AirFlowControlResURI
+swag_add_definitions resource: /AirFlowControlResURI
+swag_add_definitions found schema definition: AirFlowControl
+swag_add_definitions adding schema definition: AirFlowControl
+resolve schema reference: AirFlowControl oic.r.airflowControl.json
+swag_add_definitions: name oic.r.airflowcontrol {u'type': u'object', u'properties': {u'airFlowControl': {u'minItems': 2, u'items': {u'$ref': u'oic.oic-link-schema.json#'}, u'type': u'array', u'maxItems': 2}}}
+adding required: [u'airFlowControl']
+swag_add_definitions resource: /AirFlowControlResURI
+swag_add_definitions found schema definition: AirFlowControlBatch
+swag_add_definitions adding schema definition: AirFlowControlBatch
+resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
+swag_add_definitions: name oic.r.airflowcontrol {u'type': u'object', u'properties': {u'rt': {u'minItems': 1, u'items': [{u'type': u'string', u'maxLength': 64}], u'readOnly': True, u'type': u'array', u'description': u'Resource Type'}, u'airFlowControl': {u'items': {u'anyOf': [{u'$ref': u'oic.r.switch.binary.json#'}, {u'$ref': u'oic.r.airflow.json#'}]}, u'type': u'array'}, u'value': {u'anyOf': [{u'type': u'array'}, {u'type': u'string'}, {u'type': u'boolean'}, {u'type': u'integer'}, {u'type': u'number'}, {u'type': u'object'}], u'description': u'The value sensed or actuated by this Resource'}, u'n': {u'readOnly': True, u'type': u'string', u'description': u'Friendly name of the resource'}, u'range': {u'minItems': 2, u'items': {u'anyOf': [{u'type': u'number'}, {u'type': u'integer'}]}, u'type': u'array', u'description': u'The valid range for the value Property', u'maxItems': 2}, u'id': {u'readOnly': True, u'type': u'string', u'description': u'Instance ID of this specific resource'}, u'if': {u'items': {u'enum': [u'oic.if.baseline', u'oic.if.ll', u'oic.if.b', u'oic.if.lb', u'oic.if.rw', u'oic.if.r', u'oic.if.a', u'oic.if.s'], u'type': u'string'}, u'readOnly': True, u'type': u'array', u'description': u'The interface set supported by this resource'}}}
+adding required: [u'airFlowControl']
+swag_add_definitions found schema definition: AirFlowControlBatch
+swag_add_definitions found schema definition: AirFlowControlBatch
+swagger document saved.. ../test/./out/test_swagger_4/test_swagger_4.swagger.json
+swag_verify
+oic.baseResource.json
+required_inobject None
+swag_add_definitions: name oic.r.baseresource {u'type': u'object', u'properties': {u'range': {u'minItems': 2, u'items': {u'anyOf': [{u'type': u'number'}, {u'type': u'integer'}]}, u'type': u'array', u'description': u'The valid range for the value Property', u'maxItems': 2}, u'value': {u'anyOf': [{u'type': u'array'}, {u'type': u'string'}, {u'type': u'boolean'}, {u'type': u'integer'}, {u'type': u'number'}, {u'type': u'object'}], u'description': u'The value sensed or actuated by this Resource'}}}
+../test/./out/test_swagger_4\oic.baseResource.json
+oic.core.json
+required_inobject None
+swag_add_definitions: name oic.core {u'type': u'object', u'properties': {u'rt': {u'minItems': 1, u'items': [{u'type': u'string', u'maxLength': 64}], u'readOnly': True, u'type': u'array', u'description': u'Resource Type'}, u'n': {u'readOnly': True, u'type': u'string', u'description': u'Friendly name of the resource'}, u'id': {u'readOnly': True, u'type': u'string', u'description': u'Instance ID of this specific resource'}, u'if': {u'items': {u'enum': [u'oic.if.baseline', u'oic.if.ll', u'oic.if.b', u'oic.if.lb', u'oic.if.rw', u'oic.if.r', u'oic.if.a', u'oic.if.s'], u'type': u'string'}, u'readOnly': True, u'type': u'array', u'description': u'The interface set supported by this resource'}}}
+../test/./out/test_swagger_4\oic.core.json
+oic.oic-link-schema.json
+required_inobject None
+swag_add_definitions: name oic.oic-link {u'type': u'object', u'properties': {u'rt': {u'minItems': 1, u'items': [{u'type': u'string', u'maxLength': 64}], u'readOnly': True, u'type': u'array', u'description': u'Resource Type'}, u'title': {u'type': u'string', u'description': u'A title for the link relation. Can be used by the UI to provide a context', u'maxLength': 64}, u'ins': {u'oneOf': [{u'type': u'integer', u'description': u'An ordinal number that is not repeated - must be unique in the collection context'}, {u'format': u'uri', u'type': u'string', u'description': u'Any unique string including a URI', u'maxLength': 256}, {u'type': u'string', u'description': u'Use UUID for universal uniqueness - used in /oic/res to identify the device', u'format': u'uuid'}], u'description': u'The instance identifier for this web link in an array of web links - used in collections'}, u'p': {u'readOnly': True, u'type': u'object', u'description': u'JSON object containing a Bitmap indicating observable and discoverable plus security and port', u'properties': {u'bm': {u'type': u'integer'}, u'sec': {u'type': u'boolean'}, u'port': {u'type': u'integer'}}}, u'href': {u'format': u'uri', u'type': u'string', u'description': u'RFC5988 style web-links serialized into JSON. This is the target URI', u'maxLength': 256}, u'rel': {u'default': u'advertises', u'type': u'string', u'description': u'The relation of the target URI referenced by the link to the context URI', u'maxLength': 64}, u'ttl': {u'type': u'integer', u'description': u'The time to live for this link in seconds - value is specified in a request only and is not returned on response. Max integer size to represent time is 4 octets'}, u'type': {u'default': u'application/json', u'type': u'string', u'description': u'A hint at the representation of the resource referenced by the target URI', u'maxLength': 64}, u'anchor': {u'format': u'uri', u'type': u'string', u'description': u'This is used to override the context URI e.g. override the URI of the containing collection', u'maxLength': 256}, u'if': {u'minItems': 1, u'items': [{u'enum': [u'oic.if.baseline', u'oic.if.ll', u'oic.if.b', u'oic.if.lb', u'oic.if.rw', u'oic.if.r', u'oic.if.a', u'oic.if.s'], u'type': u'string'}], u'readOnly': True, u'type': u'array', u'description': u'The interface set supported by this resource'}}}
+adding required: [u'href', u'rt', u'if']
+../test/./out/test_swagger_4\oic.oic-link-schema.json
+oic.r.airflow.json
+required_inobject None
+swag_add_definitions: name oic.r.airflow {u'type': u'object', u'properties': {u'direction': {u'type': u'string', u'description': u'Directionality of the air flow'}, u'speed': {u'type': u'integer', u'description': u'Current speed level'}, u'range': {u'items': {u'type': u'integer'}, u'readOnly': True, u'type': u'array', u'description': u'Min,max values for the speed level'}}}
+adding required: [u'speed']
+../test/./out/test_swagger_4\oic.r.airflow.json
+oic.r.airflowControl-Batch.json
+required_inobject None
+swag_add_definitions: name oic.r.airflowcontrol {u'type': u'object', u'properties': {u'airFlowControl': {u'items': {u'anyOf': [{u'$ref': u'oic.r.switch.binary.json#'}, {u'$ref': u'oic.r.airflow.json#'}]}, u'type': u'array'}}}
+adding required: [u'airFlowControl']
+../test/./out/test_swagger_4\oic.r.airflowControl-Batch.json
+oic.r.airflowControl.json
+required_inobject None
+swag_add_definitions: name oic.r.airflowcontrol {u'type': u'object', u'properties': {u'airFlowControl': {u'minItems': 2, u'items': {u'$ref': u'oic.oic-link-schema.json#'}, u'type': u'array', u'maxItems': 2}}}
+adding required: [u'airFlowControl']
+../test/./out/test_swagger_4\oic.r.airflowControl.json
+oic.r.switch.binary.json
+required_inobject None
+swag_add_definitions: name oic.r.switch.binary {u'type': u'object', u'properties': {u'value': {u'type': u'boolean', u'description': u'description value'}}}
+adding required: [u'value']
+../test/./out/test_swagger_4\oic.r.switch.binary.json
+resource : /AirFlowControlResURI

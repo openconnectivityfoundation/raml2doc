@@ -27,6 +27,8 @@ import os
 import sys
 import traceback
 import argparse
+from os import listdir
+from os.path import isfile, join
 #
 # docx imports
 #
@@ -496,7 +498,34 @@ except:
     f.close()
     from jsonschema import Draft4Validator
 
+    
+ 
+#
+# load the JSON schema file
+#    
+def loadJsonSchema(filename, dir):
+    full_path = os.path.join(dir,filename)
+    if os.path.isfile(full_path) is False:
+        print ("json file does not exist:", full_path)
+            
+    linestring = open(full_path, 'r').read()
+    json_dict =json.loads(linestring)
+    
+    return json_dict
 
+#
+# get all files (none recusive) in the specified dir
+#    
+def get_dir_list(dir, ext=None):
+    only_files = [f for f in listdir(dir) if isfile(join(dir, f))]
+    # remove .bak files
+    new_list = [x for x in only_files if not x.endswith(".bak")]
+    if ext is not None:
+        cur_list = new_list
+        new_list = [x for x in cur_list if  x.endswith(ext)]
+    return new_list
+    
+    
 def find_key(rec_dict, target, depth=0):
     try:
         #print (depth,target, rec_dict)
@@ -2121,6 +2150,43 @@ class CreateDoc(object):
         self.document.save(self.resource_out)
 
 
+    def swag_process_schemas(self):
+        if args['schemadir'] is None:
+            return
+        if args['swagger'] is None:
+            return
+        schema_list = get_dir_list(args['schemadir'],".json")
+        for schema_file in schema_list:
+            print schema_file
+            json_dict = loadJsonSchema(schema_file, args['schemadir'])
+            
+            required = find_key_link(json_dict, 'required')
+            definitions = find_key_link(json_dict, 'definitions')
+            required_inobject = find_key_link(definitions, 'required')
+            #full_definitions = self.swag_add_references_as_include(json_dict, definitions)
+            print "required_inobject", required_inobject
+            object_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
+            for name, object in definitions.items():
+                # looping over all schema names..
+                print "swag_add_definitions: name", name, object
+                if required is not None and required_inobject is None:
+                    # add the required string
+                    print "adding required:", required
+                    object["required"] = required
+                    required_inobject = 1
+                object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
+                
+            base = os.path.dirname(swagger)
+            full_path = os.path.join(base,schema_file)
+            
+            print full_path
+            fwrite = open(full_path, 'w')
+            fwrite.write(object_string)
+            fwrite.close()
+            
+                
+        
+        
 #
 # code for the proxy
 #
@@ -2375,6 +2441,7 @@ if __name__ == '__main__':
         
     if swagger is not None:
         processor.generate_swagger()
+        processor.swag_process_schemas()
 
     for resource, obj in processor.parsetree.resources.items():
         print "resource :", resource

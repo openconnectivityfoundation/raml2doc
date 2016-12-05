@@ -1,0 +1,12 @@
+{
+  "properties": {
+    "value": {
+      "description": "description value",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "value"
+  ],
+  "type": "object"
+}

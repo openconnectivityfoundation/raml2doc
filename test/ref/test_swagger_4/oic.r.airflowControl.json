@@ -1,0 +1,16 @@
+{
+  "properties": {
+    "airFlowControl": {
+      "items": {
+        "$ref": "oic.oic-link-schema.json#"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "type": "array"
+    }
+  },
+  "required": [
+    "airFlowControl"
+  ],
+  "type": "object"
+}

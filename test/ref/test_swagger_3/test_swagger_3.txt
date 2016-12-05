@@ -14,7 +14,7 @@ using sensor                 : False
 schema switch                : False
 schema (WT) switch           : False
 derived                      : None
-swagger                      : ../test/./out/test_swagger_3.swagger.json
+swagger                      : ../test/./out/test_swagger_3/test_swagger_3.swagger.json
 styles:
  heading: Heading 1 or ANNEX-heading1
  table style: TABLE-A
@@ -58,6 +58,11 @@ resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
 swag_add_definitions: name oic.r.airflowcontrol {u'type': u'object', u'properties': {u'airFlowControl': {u'items': {u'type': u'number'}, u'type': u'array'}}}
 adding required: [u'airFlowControl']
 swag_add_definitions found schema definition: AirFlowControlBatch
-swagger document saved.. ../test/./out/test_swagger_3.swagger.json
+swagger document saved.. ../test/./out/test_swagger_3/test_swagger_3.swagger.json
 swag_verify
+oic.r.airflowControl-Batch.json
+required_inobject None
+swag_add_definitions: name oic.r.airflowcontrol {u'type': u'object', u'properties': {u'airFlowControl': {u'items': {u'type': u'number'}, u'type': u'array'}}}
+adding required: [u'airFlowControl']
+../test/./out/test_swagger_3\oic.r.airflowControl-Batch.json
 resource : /AirFlowControlResURI

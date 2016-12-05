@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "airFlowControl": {
+      "items": {
+        "type": "number"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "airFlowControl"
+  ],
+  "type": "object"
+}

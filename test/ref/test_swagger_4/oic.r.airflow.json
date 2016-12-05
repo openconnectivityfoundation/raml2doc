@@ -1,0 +1,24 @@
+{
+  "properties": {
+    "direction": {
+      "description": "Directionality of the air flow",
+      "type": "string"
+    },
+    "range": {
+      "description": "Min,max values for the speed level",
+      "items": {
+        "type": "integer"
+      },
+      "readOnly": true,
+      "type": "array"
+    },
+    "speed": {
+      "description": "Current speed level",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "speed"
+  ],
+  "type": "object"
+}

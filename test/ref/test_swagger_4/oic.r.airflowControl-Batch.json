@@ -1,0 +1,21 @@
+{
+  "properties": {
+    "airFlowControl": {
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "oic.r.switch.binary.json#"
+          },
+          {
+            "$ref": "oic.r.airflow.json#"
+          }
+        ]
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "airFlowControl"
+  ],
+  "type": "object"
+}
