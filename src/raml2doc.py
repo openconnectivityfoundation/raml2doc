@@ -2000,45 +2000,63 @@ class CreateDoc(object):
         #print dict_to_add_to
         #print ""
         return dict_to_add_to
+        
+    def swag_process_definition_from_body(self, processed_schemas, body):
+        schema_name = str(body.schema)
+        print "swag_add_definitions found schema definition:", schema_name
+        if schema_name not in processed_schemas:
+            print "swag_add_definitions adding schema definition:", schema_name
+            if len(processed_schemas):
+                # write an comma for the syntax, there is a predecessor..
+                self.swag_write_stringln(',')
+            self.swag_write_stringln('"'+schema_name+'" : ')
+            self.swag_increase_indent()
+            processed_schemas.append(schema_name)
+            schema_string = self.get_schema_string_from_body(body)
+            json_dict = json.loads(schema_string)
+            required = find_key_link(json_dict, 'required')
+            definitions = find_key_link(json_dict, 'definitions')
+            required_inobject = find_key_link(definitions, 'required')
+            full_definitions = self.swag_add_references_as_include(json_dict, definitions)
+            #print "required_inobject", required_inobject
+            for name, object in full_definitions.items():
+                # looping over all schema names..
+                print "swag_add_definitions: name", name, object
+                if required is not None and required_inobject is None:
+                    # add the required string
+                    print "adding required:", required
+                    object["required"] = required
+                    required_inobject = 1
+                object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
+                adjusted_text = self.add_justification_smart(self.swag_indent, object_string)
+                self.swag_write_stringln(adjusted_text)
+            self.swag_decrease_indent()
     
     def swag_add_definitions(self, parse_tree ):
         self.swag_write_stringln('"definitions": {')
         self.swag_increase_indent() 
         processed_schemas = []
         
+        
         # write all the definitions 
         for resource, obj in parse_tree.resources.items():
+            print "swag_add_definitions resource:", resource
             if obj.methods is not None:
                 nr_methods = len(obj.methods.items())
                
                 for method, method_obj in obj.methods.items():
-                    # write schema block 
+                    print "swag_add_definitions resource:", resource
+                    # write schema block for the body
                     if method_obj.body is not None:
                         if method_obj.body.schema:
-                            schema_name = str(method_obj.body.schema)
-                            if schema_name not in processed_schemas:
-                                self.swag_write_stringln('"'+schema_name+'" : ')
-                                self.swag_increase_indent()
-                                processed_schemas.append(schema_name)
-                                schema_string = self.get_schema_string_from_body(method_obj.body)
-                                json_dict = json.loads(schema_string)
-                                required = find_key_link(json_dict, 'required')
-                                definitions = find_key_link(json_dict, 'definitions')
-                                required_inobject = find_key_link(definitions, 'required')
-                                full_definitions = self.swag_add_references_as_include(json_dict, definitions)
-                                #print "required_inobject", required_inobject
-                                for name, object in full_definitions.items():
-                                    # looping over all schema names..
-                                    print "swag_add_definitions: name", name, object
-                                    if required is not None and required_inobject is None:
-                                        # add the required string
-                                        print "adding required:", required
-                                        object["required"] = required
-                                        required_inobject = 1
-                                    object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
-                                    adjusted_text = self.add_justification_smart(self.swag_indent, object_string)
-                                    self.swag_write_stringln(adjusted_text)
-                                self.swag_decrease_indent()       
+                            self.swag_process_definition_from_body (processed_schemas, method_obj.body )
+                    if method_obj.responses is not None:
+                        for response_name, response in method_obj.responses.items():
+                            for sName, body in response.body.items():
+                                if sName == "application/json":
+                                    self.swag_process_definition_from_body (processed_schemas, body )
+                   
+                    
         # close definitions
         self.swag_decrease_indent()
         self.swag_write_stringln('}')
