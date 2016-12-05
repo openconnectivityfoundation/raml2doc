@@ -10,7 +10,14 @@ EXT=.txt
 
 function compare_output {
     diff -w $OUTPUT_DIR/$TEST_CASE$EXT $REF_DIR/$TEST_CASE$EXT
-    echo "$TEST_CASE $?"
+    echo "testcase difference: $TEST_CASE $?"
+    #echo "blah"
+}
+
+
+function compare_to_reference_file {
+    diff -w $OUTPUT_DIR/$1 $REF_DIR/$1
+    echo "output $1 difference: $TEST_CASE $?"
     #echo "blah"
 }
 
@@ -97,6 +104,11 @@ function tests_derived {
 TEST_CASE="test_derived_1"
 my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_5_derived_data_modeling/ -resource AudioVolumeResURI -raml ../test/in/test_5_derived_data_modeling/AudioVolume.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -derived ASA
 
+# option -derived
+TEST_CASE="test_derived_2"
+my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_5b_derived_no_example/ -resource CurrentAirQualityResURI -raml ../test/in/test_5b_derived_no_example/AirQuality.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -derived ASA
+
+
 }
 
 
@@ -105,15 +117,16 @@ function tests_swagger {
 # option -swagger
 TEST_CASE="test_swagger_1"
 my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_1/ -resource BinarySwitchResURI -raml ../test/in/test_1/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
+compare_to_reference_file $TEST_CASE.swagger.json
 
 # option -swagger
 TEST_CASE="test_swagger_2"
-my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_2_schema_dir/ -resource BinarySwitchResURI -raml ../test/in/test_2_schema_dir/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
-
+my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_2_schema_dir/schemas -resource BinarySwitchResURI -raml ../test/in/test_2_schema_dir/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
+compare_to_reference_file $TEST_CASE.swagger.json
 
 # option -swagger
-#TEST_CASE="test_swagger_3"
-#my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_6_compound/ -resource AirFlowControlResURI -raml ../test/in/test_6_compound/airFlowControl.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
+TEST_CASE="test_swagger_3"
+my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_6_compound/ -resource AirFlowControlResURI -raml ../test/in/test_6_compound/airFlowControl.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx -swagger $OUTPUT_DIR_DOCS/$TEST_CASE.swagger.json
 
 }
 
