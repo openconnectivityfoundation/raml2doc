@@ -1,7 +1,7 @@
 # raml2doc
 RAML to doc conversion tool
 
-Tool to generate document section in word files from an Raml file.
+Tool to generate document section in word files from an RAMK file.
 
 ## Dependencies
 python code uses: 
@@ -35,25 +35,18 @@ note that it might that you have to install an missing dependency package "funct
 this can be installed with: 
 pip install functools32
 
-
-## raml-cop
-
-external tool to check RAML files.
-this tool is called from the python code on the supplied RAML file.
-raml-cop is an stand alone tool based on node.js.
-hence node.js needs to be installed on your machine.
-if the tool is not installed then the check will not take place.
-info about raml-cop can be found at:
-https://www.npmjs.com/package/raml-cop
-
-
  
 # commandline
 
 C:\Python27\python.exe  raml2doc.py <<raml.file>>
 
 
-# Usage
+note that the resource should NOT have leading slash
+example: /airqualityURI
+input: airqualityURI
+
+
+## Usage
 
 usage: raml2doc.py [-h] 
 (see current version for all options)
@@ -120,10 +113,7 @@ generating documentation:
 	(can use existing styles of opened word file)
 - saves word file as <<>>.docx
 
-# syntax checking
-##raml-cop:
-- external tool called from python.
-  validates the RAML structure
+## syntax checking
 example (json) checking:
 - example in the RAML are validated against the supplied schema.
 - the examples and schemas are extracted from the raml parse tree.
@@ -157,5 +147,9 @@ in the local directory.
 
 # TODO list
  - replace proxy with direct calls
- - add derived modeling
  - add mechanism to compare word output
+ 
+ 
+# Fixes
+- add derived modeling
+- swagger2.0 generation
