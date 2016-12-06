@@ -498,25 +498,31 @@ except:
     f.close()
     from jsonschema import Draft4Validator
 
-    
- 
-#
-# load the JSON schema file
-#    
-def loadJsonSchema(filename, dir):
+
+def load_json_schema(filename, dir):
+    """
+    load the JSON schema file
+    :param filename: filename (with extension)
+    :param dir: path to the file
+    :return: json dict
+    """
     full_path = os.path.join(dir,filename)
     if os.path.isfile(full_path) is False:
         print ("json file does not exist:", full_path)
             
     linestring = open(full_path, 'r').read()
     json_dict =json.loads(linestring)
-    
+
     return json_dict
 
-#
-# get all files (none recusive) in the specified dir
-#    
+
 def get_dir_list(dir, ext=None):
+    """
+    get all files (none recursive) in the specified dir
+    :param dir: path to the directory
+    :param ext: filter on extension
+    :return: list of files (only base_name)
+    """
     only_files = [f for f in listdir(dir) if isfile(join(dir, f))]
     # remove .bak files
     new_list = [x for x in only_files if not x.endswith(".bak")]
@@ -527,6 +533,13 @@ def get_dir_list(dir, ext=None):
     
     
 def find_key(rec_dict, target, depth=0):
+    """
+    find key "target" in recursive dict
+    :param rec_dict: dict to search in, json schema dict, so it is combination of dict and arrays
+    :param target: target key to search for
+    :param depth: depth of the search (recursion)
+    :return:
+    """
     try:
         #print (depth,target, rec_dict)
         if isinstance(rec_dict, dict):
@@ -542,11 +555,16 @@ def find_key(rec_dict, target, depth=0):
     except:
         traceback.print_exc()
 
-# find an key recursively
-# also traverse lists (arrays, oneOf,..) but only returns the first occurance
-#
-#
+
 def find_key_link(rec_dict, target, depth=0):
+    """
+    find the first key recursively
+    also traverse lists (arrays, oneOf,..) but only returns the first occurance
+    :param rec_dict: dict to search in, json schema dict, so it is combination of dict and arrays
+    :param target: target key to search for
+    :param depth: depth of the search (recursion)
+    :return:
+    """
     if isinstance(rec_dict, dict):
         # direct key
         for key,value in rec_dict.items():
@@ -565,14 +583,10 @@ def find_key_link(rec_dict, target, depth=0):
                         r = find_key_link(val, target, depth+1)
                         if r is not None:
                             found = True
-                            #print ("found:", r)
                             # TODO: this should return an array, now it only returns the last found item
                             rvalues = r
-                            #rvalues.extend(list(r.items()))
         if found:
-            #print (rvalues)
             return rvalues
-
         # key is an dict
         for key,value in rec_dict.items():
             r = find_key_link(value, target, depth+1)
@@ -1731,9 +1745,7 @@ class CreateDoc(object):
 
         # make it a member..
         self.parsetree = parsetree
-
         self.list_x_resources(parsetree)
-
         # print parsetree
         # output = dump(parsetree, Dumper=Dumper,default_flow_style=False)
         # output = dump(parsetree, Dumper=SafeDumper)
@@ -1747,32 +1759,59 @@ class CreateDoc(object):
             return
 
         self.generate_sections(parsetree, self.resource_name)
-
         self.document.save(self.resource_out)
         print "document saved..", self.resource_out
     
     def swag_sanitize_description(self, description):
+        """
+        removes line breaks, quotes  etc
+        :param description: input string
+        :return: text string
+        """
         text = description.replace("\n","@cr").replace("'","<COMMA>").replace('"',"<COMMA>")
         return text
         
     def swag_increase_indent(self):
+        """
+        increase indentiation for output
+        """
         self.swag_indent += self.tab
         
     def swag_decrease_indent(self):
+        """
+        decrease indentiation for output
+        """
         length = len(self.tab)
         total_lenght = len(self.swag_indent)
         self.swag_indent = self.swag_indent[:total_lenght-length]
         
     def swag_write_stringln(self, string):
+        """
+        write the string to file with end of line
+        :param string: string to be written to file with end of line
+        """
         self.f.write(self.swag_indent + string + "\n")
         
     def swag_write_string_raw(self, string):
+        """
+        write the string to file, no changes to string
+        :param string: string to be written to file
+        """
         self.f.write(string)
         
     def swag_write_string(self, string):
+        """
+        write the string to file, with indentation
+        :param string: string to be written to file, with indentation
+        """
         self.f.write(self.swag_indent + string)
     
     def swag_openfile(self, version, title ):
+        """
+        open file as swagger file
+        :param version: version of the API (e.g. not the swagger version
+        :param title: title of the API
+        """
         self.f = open(self.swagger, "w")
         self.swag_indent = ""
         
@@ -1791,6 +1830,10 @@ class CreateDoc(object):
         self.swag_write_stringln('"produces": ["application/json"],')
     
     def swag_license(self):
+        """
+        add the licence info
+        under tag "info"
+        """
         self.swag_write_stringln('"license": {')
         self.swag_increase_indent() 
         self.swag_write_stringln('"name": "'+str(OCF_license_name)+'",')
@@ -1802,6 +1845,13 @@ class CreateDoc(object):
         self.swag_write_stringln('}')
     
     def swag_write_query_reference_parameter_block(self, method_obj, query=None, body=None):
+        """
+        write the query reference as swagger parameter block as refeerence
+        query and body are needed to determine if an additional comma is needed.
+        :param method_obj: raml method_obj
+        :param query: raml query obj
+        :param body:  raml body obj
+        """
         add_comma = False
         if body is not None:
             add_comma = True
@@ -1815,6 +1865,12 @@ class CreateDoc(object):
                 self.swag_write_stringln(text)
                     
     def swag_write_query_parameter_block(self, query_parameters, body=None):
+        """
+        write the query param block
+        body is needed to determine if an additional comma is needed.
+        :param query_parameters: raml query object
+        :param body: raml body object
+        """
         if query_parameters is not None:
             for query_name, query_object in query_parameters.items():
                 self.swag_write_stringln('{')
@@ -1836,6 +1892,10 @@ class CreateDoc(object):
                     self.swag_write_stringln('},')
                 
     def swag_write_body_parameter_block(self, body):
+        """
+        write the body param block
+        :param body: raml body object
+        """
         if body is not None:
             if body.schema:
                 self.swag_write_stringln('{')
@@ -1854,6 +1914,10 @@ class CreateDoc(object):
                 self.swag_write_stringln('}')
     
     def swag_write_reponses(self, responses):
+        """
+        write the responses in an path
+        :param responses: raml responses object
+        """
         nr_responses = len(responses.items())
         for response_name, response in responses.items():
             #print response_name
@@ -1892,6 +1956,10 @@ class CreateDoc(object):
             self.swag_decrease_indent()            
     
     def swag_add_resource(self, parse_tree ):
+        """
+        write all resources ( e.g. an swagger path object)
+        :param parse_tree: raml parse tree
+        """
         self.swag_write_stringln('"paths": {')
         self.swag_increase_indent() 
         nr_resources = len(parse_tree.resources.items()) 
@@ -1956,6 +2024,10 @@ class CreateDoc(object):
         self.swag_write_stringln('},')
     
     def swag_add_generic_parameters(self, parse_tree ):
+        """
+        write the generic query params as referenced parameters block
+        :param parse_tree: raml parse tree
+        """
         self.swag_write_stringln('"parameters": {')
         self.swag_increase_indent() 
         processed_query_params = []
@@ -2001,6 +2073,12 @@ class CreateDoc(object):
         self.swag_write_stringln('},')
     
     def swag_add_references_as_include(self, full_source, dict_to_add_to ):
+        """
+        write the generic query params as referenced parameters block
+        :param full_source: dict of an json schema object
+        :param dict_to_add_to: dict of the properties block of an json object to add the missing properties too
+        :return: adjusted dict
+        """
         # find the first level of allOf... most of the time this is the definition part..
         allOf = find_key_link(full_source, 'allOf')
         #get the pointer to the properties dict, there is where we have to add all the referenced properties
@@ -2021,16 +2099,17 @@ class CreateDoc(object):
                         json_dict = json.loads(schema_string)
                         properties = find_key_link(json_dict, 'properties')
                         for name, object in properties.items():
-                            #print "name, object",name, object
                             if name not in tag_add:
                                 to_property_list[name] = object
                                 tag_add.append(name)
-        #print ""
-        #print dict_to_add_to
-        #print ""
         return dict_to_add_to
         
     def swag_process_definition_from_body(self, processed_schemas, body):
+        """
+        processes the definitions referenced from an body.
+        :param processed_schemas: list of schemas that are already processed
+        :param body: body to process
+        """
         schema_name = str(body.schema)
         print "swag_add_definitions found schema definition:", schema_name
         if schema_name not in processed_schemas:
@@ -2047,7 +2126,6 @@ class CreateDoc(object):
             definitions = find_key_link(json_dict, 'definitions')
             required_inobject = find_key_link(definitions, 'required')
             full_definitions = self.swag_add_references_as_include(json_dict, definitions)
-            #print "required_inobject", required_inobject
             for name, object in full_definitions.items():
                 # looping over all schema names..
                 print "swag_add_definitions: name", name, object
@@ -2062,11 +2140,13 @@ class CreateDoc(object):
             self.swag_decrease_indent()
     
     def swag_add_definitions(self, parse_tree ):
+        """
+        add the definition section (e.g. the swagger "schema definitions")
+        :param parse_tree: raml parse tree
+        """
         self.swag_write_stringln('"definitions": {')
         self.swag_increase_indent() 
         processed_schemas = []
-        
-        
         # write all the definitions 
         for resource, obj in parse_tree.resources.items():
             print "swag_add_definitions resource:", resource
@@ -2084,19 +2164,23 @@ class CreateDoc(object):
                             for sName, body in response.body.items():
                                 if sName == "application/json":
                                     self.swag_process_definition_from_body (processed_schemas, body )
-                   
-                    
         # close definitions
         self.swag_decrease_indent()
         self.swag_write_stringln('}')
     
-    def swag_closefile(self):   
-        #self.swag_decrease_indent() 
+    def swag_closefile(self):
+        """
+        close the file
+        e.g. end the json object with an closing }
+        """
         self.swag_write_string_raw("}\n")
         self.f.close();
-    
-    
-    def swag_verify(self):   
+
+    def swag_verify(self):
+        """
+        verify the generated swagger file.
+        easy verification: only check is that it is an valid json file
+        """
         print "swag_verify"
         input_string_schema = open(self.swagger, 'r').read()
         json_dict =json.loads(input_string_schema)
@@ -2158,7 +2242,7 @@ class CreateDoc(object):
         schema_list = get_dir_list(args['schemadir'],".json")
         for schema_file in schema_list:
             print schema_file
-            json_dict = loadJsonSchema(schema_file, args['schemadir'])
+            json_dict = load_json_schema(schema_file, args['schemadir'])
             
             required = find_key_link(json_dict, 'required')
             definitions = find_key_link(json_dict, 'definitions')
@@ -2183,10 +2267,7 @@ class CreateDoc(object):
             fwrite = open(full_path, 'w')
             fwrite.write(object_string)
             fwrite.close()
-            
-                
-        
-        
+
 #
 # code for the proxy
 #
@@ -2202,10 +2283,7 @@ class ProxyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         """
         serve up an file
         """
-
         schema_dir = args['schemadir']
-        #raml_file = args['ramlName']
-
         # filename without any path
         filename = self.path.split('/')[-1]
         base_name = os.path.basename(filename)
@@ -2223,7 +2301,6 @@ class ProxyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.copyfile(open(full_path), self.wfile)
             return
 
-            
         # filename(.json) with path of schemas
         full_path = os.path.join(schema_dir, base_name + ".json")
         print "ProxyHandler: url:", self.path, " localfile:", full_path
@@ -2231,8 +2308,7 @@ class ProxyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             print "ProxyHandler: local file found:", full_path
             self.copyfile(open(full_path), self.wfile)
             return
-            
-            
+
         filenamejson = base_name + ".json"
         print "ProxyHandler: local file NOT found:", base_name, " trying: ", filenamejson
         if os.path.exists(filenamejson):
@@ -2275,7 +2351,6 @@ if __name__ == '__main__':
     else:
         my_dir = os.path.dirname(sys.argv[0])
 
-
     # version information
     my_version = ""
     try:
@@ -2287,8 +2362,6 @@ if __name__ == '__main__':
 
     print "==================================="
     print "version: ", my_version
-
-    # annex_switch = False
 
     # argument parsing
     parser = argparse.ArgumentParser(description='Process RAML files.')
@@ -2327,8 +2400,6 @@ if __name__ == '__main__':
     schemaWT_file = args['schemaWT']
     derived_name = args['derived']
     swagger = args['swagger']
-
-    # annex_switch = True
 
     if annex_switch is None:
         annex_switch = False

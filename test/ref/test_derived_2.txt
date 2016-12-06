@@ -128,19 +128,5 @@ parse_schema: property: maxvalue
 parse_schema: property: precision
 parse_schema: property: minvalue
 parse_schema: property: contaminanttype
-Traceback (most recent call last):
-  File "../src/raml2doc.py", line 2440, in <module>
-    processor.convert()
-  File "../src/raml2doc.py", line 1751, in convert
-    self.document.save(self.resource_out)
-  File "c:\python27\lib\site-packages\docx\api.py", line 145, in save
-    self._package.save(path_or_stream)
-  File "c:\python27\lib\site-packages\docx\opc\package.py", line 152, in save
-    PackageWriter.write(pkg_file, self.rels, self.parts)
-  File "c:\python27\lib\site-packages\docx\opc\pkgwriter.py", line 32, in write
-    phys_writer = PhysPkgWriter(pkg_file)
-  File "c:\python27\lib\site-packages\docx\opc\phys_pkg.py", line 141, in __init__
-    self._zipf = ZipFile(pkg_file, 'w', compression=ZIP_DEFLATED)
-  File "c:\python27\lib\zipfile.py", line 756, in __init__
-    self.fp = open(file, modeDict[mode])
-IOError: [Errno 13] Permission denied: '../test/./out/test_derived_2.docx'
+document saved.. ../test/./out/test_derived_2.docx
+resource : /CurrentAirQualityResURI
