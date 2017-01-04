@@ -58,11 +58,14 @@ parse_schema: property: BLAHF3
 parse_schema: property: BLAHF2
 parse_schema: required properties found: []
 parse_schema: property: rt
+('array/object found:', u'rt')
 parse_schema: property: n
 parse_schema: property: id
 parse_schema: property: if
+('array/object found:', u'if')
 parse_schema: required properties found: []
 parse_schema: property: range
+('array/object found:', u'range')
 parse_schema: property: value
 document saved.. ../test/./out/testcase_14.docx
 resource : /BinarySwitchResURI

@@ -107,6 +107,11 @@ my_test -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_1/ -reso
 TEST_CASE="testcase_14"
 my_test -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_1/ -resource BinarySwitchResURI -raml ../test/in/test_1/binarySwitch.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx --schemaWT ../test/in/test_1/oic.core.json ../test/in/test_1/oic.baseResource.json
 
+
+# array in schema
+TEST_CASE="testcase_15"
+my_test -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_9_array/ -resource ArrayResURI -raml ../test/in/test_9_array/array-resource.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx 
+
 }
 
 function tests_derived {

@@ -117,6 +117,7 @@ resolve schema reference: AirFlowControl oic.r.airflowControl.json
 correct end of required detected
 parse_schema: required properties found: ['airFlowControl']
 parse_schema: property: airFlowControl
+('array/object found:', u'airFlowControl')
 document saved.. ../test/./out/test_swagger_4.docx
 swag_add_resource: resource_description This resource describes the attributes associated with control of air flow,
 for example as modelled by a Thermostat (fan), Room A/C or other device.

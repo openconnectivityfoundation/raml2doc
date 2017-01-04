@@ -1,0 +1,147 @@
+===================================
+version:  20171123
+===================================
+using raml file              : ../test/in/test_9_array/array-resource.raml
+using docx file              : ../input/ResourceTemplate.docx
+using docx output file       : ../test/./out/testcase_15.docx
+using schema dir             : ../test/in/test_9_array/
+using resource               : ArrayResURI
+using header0                : None
+using annex                  : False
+using put for property table : False
+using composite              : False
+using sensor                 : False
+schema switch                : False
+schema (WT) switch           : False
+derived                      : None
+swagger                      : None
+styles:
+ heading: Heading 1 or ANNEX-heading1
+ table style: TABLE-A
+ table header style: TABLEHEADER
+ color (code) style: CODE-AQUA
+                   : CODE-YELLOW
+                   : CODE-GREY
+                   : CODE-BLACK
+                   : CODE-BLUE
+                   : CODE-GREEN
+===================================
+HTTPPRoxy: serving at port 4321
+DisplayName: Introspection Resource
+Title Introspection Resource
+RT =  array
+resolve schema reference: array-resource array-resource.json
+xx=> validation schema (jsonschema)
+resolve schema reference: array-resource array-resource.json
+u'my_array' is a required property
+u'my_array' is a required property
+
+Failed validating u'required' in schema[u'allOf'][0]:
+    {u'properties': {u'my_array': {u'description': u'The valid range for the value Property',
+                                   u'items': {u'properties': {u'p1': {u'description': u'description bla',
+                                                                      u'type': u'string'},
+                                                              u'p2': {u'description': u'description bla bla',
+                                                                      u'enum': [u'bla bla'],
+                                                                      u'type': u'string'},
+                                                              u'p3': {u'default': u'bla bla bla',
+                                                                      u'description': u'description bla bla bla',
+                                                                      u'enum': [u'bla bla bla'],
+                                                                      u'type': u'string'},
+                                                              u'version': {u'default': 1,
+                                                                           u'description': u'version number',
+                                                                           u'enum': [1],
+                                                                           u'type': u'integer'}},
+                                              u'required': [u'p1',
+                                                            u'p3'],
+                                              u'type': u'object'},
+                                   u'minItems': 1,
+                                   u'readOnly': True,
+                                   u'type': u'array'}},
+     u'required': [u'my_array'],
+     u'type': u'object'}
+
+On instance:
+    {u'array': [{u'p1': u'bla',
+                 u'p2l': u'bla bla',
+                 u'p3': u'bla bla bla'}],
+     u'rt': [u'array']}
+validation failed, input information:
+body (json):
+{
+  "rt" : ["array"],
+  "array" : [
+    {
+      "p1" : "bla",
+      "p2l" : "bla bla",
+       "p3" : "bla bla bla"
+    }
+  ]
+}
+
+
+schema (json):
+{
+  "id": "array-resource.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description" : "Copyright (c) 2016 Open Interconnect Consortium, Inc. All rights reserved.",
+  "title": "array resource",
+  "definitions": {
+    "oic.array": {
+        "type": "object",
+        "properties": {
+            "my_array": {
+                "type": "array",
+                "description": "The valid range for the value Property",
+                "readOnly": true,
+                "minItems": 1,
+                "items": {
+                    "type" : "object",
+                    "properties": {
+                        "p1": {
+                          "type": "string",
+                          "description" : "description bla"
+                        },
+                        "p2": {
+                          "type": "string",
+                          "enum": [ "bla bla" ],
+                          "description" : "description bla bla"
+                        },
+                        "p3": {
+                          "type": "string",
+                          "enum": [ "bla bla bla"],
+                          "default" : "bla bla bla",
+                          "description" : "description bla bla bla"
+                       },
+                       "version": {
+                         "type": "integer",
+                         "enum": [ 1 ],
+                         "default" : 1,
+                         "description" : "version number"
+                       }
+                    },
+                    "required" : [ "p1","p3"]
+                }
+            }
+        },
+        "required" : ["my_array"]
+    }
+  },
+  "type": "object",
+  "allOf": [
+    {"$ref": "#/definitions/oic.array"}
+  ]
+}
+
+xxx=> validation schema (jsonschema) done
+resolve schema reference: array-resource array-resource.json
+correct end of required detected
+correct end of required detected
+parse_schema: required properties found: ['p1', 'p3', 'my_array']
+parse_schema: property: my_array
+('array/object found:', u'my_array')
+parse_schema: property: p2
+parse_schema: property: p3
+parse_schema: property: p1
+parse_schema: property: version
+document saved.. ../test/./out/testcase_15.docx
+resource : /ArrayResURI
