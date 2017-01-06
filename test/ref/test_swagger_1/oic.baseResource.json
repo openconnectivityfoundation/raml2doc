@@ -39,6 +39,5 @@
       ],
       "description": "The value sensed or actuated by this Resource"
     }
-  },
-  "type": "object"
+  }
 }

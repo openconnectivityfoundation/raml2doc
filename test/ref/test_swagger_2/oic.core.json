@@ -31,6 +31,5 @@
       "description": "ReadOnly, Resource Type",
       "type": "string"
     }
-  },
-  "type": "object"
+  }
 }

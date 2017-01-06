@@ -56,11 +56,7 @@ parse_schema: property: BLAHF1
 parse_schema: property: BLAHF3
 parse_schema: property: BLAHF2
 document saved.. ../test/./out/test_swagger_1.docx
-swag_add_resource: resource_description This resource describes a binary switch (on/off).
-The value is a boolean.
-A value of 'true' means that the switch is on.
-A value of 'false' means that the switch is off.
-
+swag_add_resource: resource_description "This resource describes a binary switch (on/off).\nThe value is a boolean.\nA value of 'true' means that the switch is on.\nA value of 'false' means that the switch is off.\n"
 swag_add_resource: object {'parentResource': None, 'is_': ['interface'], 'description': "This resource describes a binary switch (on/off).\nThe value is a boolean.\nA value of 'true' means that the switch is on.\nA value of 'false' means that the switch is off.\n", 'uri': '/BinarySwitchResURI', 'displayName': 'Binary Switch', 'type': None, 'resources': OrderedDict(), 'methods': OrderedDict([('get', {'body': None, 'responses': OrderedDict([(200, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "rt":     "oic.r.switch.binary",\n  "id":     "unique_example_id",\n  "value":  false\n}\n', 'schema': 'BinarySwitch'})]), 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None})]), 'notNull': None, 'description': None, 'queryParameters': None}), ('post', {'body': {'body': None, 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': '{\n  "id":    "unique_example_id",\n  "value": true\n}\n', 'schema': 'BinarySwitch'}, 'responses': OrderedDict([(200, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "id":    "unique_example_id",\n  "value": true\n}\n', 'schema': 'BinarySwitch'})]), 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None})]), 'notNull': None, 'description': None, 'queryParameters': None})])}
 tag: enum
 tag_value: ['oic.if.a']
@@ -69,6 +65,8 @@ swag_add_definitions resource: /BinarySwitchResURI
 swag_add_definitions found schema definition: BinarySwitch
 swag_add_definitions adding schema definition: BinarySwitch
 resolve schema reference: BinarySwitch oic.r.switch.binary.json
+fix_references_dict: fixing references
+('fix_references_dict: $ref value:', u'#/definitions/oic.r.switch.binary')
 swag_add_definitions: name oic.r.switch.binary {u'type': u'object', u'properties': {u'BLAH2': {u'readOnly': True, u'type': u'boolean', u'description': u'BLAH2 description'}, u'BLAH3': {u'readOnly': True, u'type': u'boolean', u'description': u'BLAH3 description'}, u'BLAH1': {u'readOnly': True, u'type': u'boolean', u'description': u'BLAH1 description'}, u'value': {u'type': u'boolean', u'description': u'description value'}, u'value2': {u'type': u'boolean', u'description': u'description value2'}, u'BLAHF1': {u'readOnly': False, u'type': u'string', u'description': u'Status of the switch'}, u'BLAHF3': {u'readOnly': False, u'type': u'integer', u'description': u'Status of the switch'}, u'BLAHF2': {u'readOnly': False, u'type': u'number', u'description': u'Status of the switch'}}}
 adding required: [u'value']
 swag_add_definitions resource: /BinarySwitchResURI
@@ -78,15 +76,26 @@ swagger document saved.. ../test/./out/test_swagger_1/test_swagger_1.swagger.jso
 swag_verify
 oic.baseResource.json
 required_inobject None
+fix_references_dict: fixing references
+('fix_references_dict: $ref value:', u'oic.core.json#/definitions/oic.core')
+('fix_references_dict: fixing $ref new value:', u'oic.core.json')
+('fix_references_dict: $ref value:', u'#/definitions/oic.r.baseresource')
 swag_add_definitions: name oic.r.baseresource {u'type': u'object', u'properties': {u'range': {u'minItems': 2, u'items': {u'anyOf': [{u'type': u'number'}, {u'type': u'integer'}]}, u'type': u'array', u'description': u'The valid range for the value Property', u'maxItems': 2}, u'value': {u'anyOf': [{u'type': u'array'}, {u'type': u'string'}, {u'type': u'boolean'}, {u'type': u'integer'}, {u'type': u'number'}, {u'type': u'object'}], u'description': u'The value sensed or actuated by this Resource'}}}
+swag_add_definitions (fixed): name oic.r.baseresource {u'type': u'object', u'properties': {u'range': {u'minItems': 2, u'items': {u'anyOf': [{u'type': u'number'}, {u'type': u'integer'}]}, u'type': u'array', u'description': u'The valid range for the value Property', u'maxItems': 2}, u'value': {u'anyOf': [{u'type': u'array'}, {u'type': u'string'}, {u'type': u'boolean'}, {u'type': u'integer'}, {u'type': u'number'}, {u'type': u'object'}], u'description': u'The value sensed or actuated by this Resource'}}}
 ../test/./out/test_swagger_1\oic.baseResource.json
 oic.core.json
 required_inobject None
+fix_references_dict: fixing references
+('fix_references_dict: $ref value:', u'#/definitions/oic.core')
 swag_add_definitions: name oic.core {u'type': u'object', u'properties': {u'rt': {u'minItems': 1, u'items': [{u'type': u'string', u'maxLength': 64}], u'readOnly': True, u'type': u'array', u'description': u'Resource Type'}, u'n': {u'readOnly': True, u'type': u'string', u'description': u'Friendly name of the resource'}, u'id': {u'readOnly': True, u'type': u'string', u'description': u'Instance ID of this specific resource'}, u'if': {u'items': {u'enum': [u'oic.if.baseline', u'oic.if.ll', u'oic.if.b', u'oic.if.lb', u'oic.if.rw', u'oic.if.r', u'oic.if.a', u'oic.if.s'], u'type': u'string'}, u'readOnly': True, u'type': u'array', u'description': u'The interface set supported by this resource'}}}
+swag_add_definitions (fixed): name oic.core {u'type': u'object', u'properties': {u'rt': {u'minItems': 1, u'items': [{u'type': u'string', u'maxLength': 64}], u'readOnly': True, u'type': u'array', u'description': u'Resource Type'}, u'n': {u'readOnly': True, u'type': u'string', u'description': u'Friendly name of the resource'}, u'id': {u'readOnly': True, u'type': u'string', u'description': u'Instance ID of this specific resource'}, u'if': {u'items': {u'enum': [u'oic.if.baseline', u'oic.if.ll', u'oic.if.b', u'oic.if.lb', u'oic.if.rw', u'oic.if.r', u'oic.if.a', u'oic.if.s'], u'type': u'string'}, u'readOnly': True, u'type': u'array', u'description': u'The interface set supported by this resource'}}}
 ../test/./out/test_swagger_1\oic.core.json
 oic.r.switch.binary.json
 required_inobject None
+fix_references_dict: fixing references
+('fix_references_dict: $ref value:', u'#/definitions/oic.r.switch.binary')
 swag_add_definitions: name oic.r.switch.binary {u'type': u'object', u'properties': {u'BLAH2': {u'readOnly': True, u'type': u'boolean', u'description': u'BLAH2 description'}, u'BLAH3': {u'readOnly': True, u'type': u'boolean', u'description': u'BLAH3 description'}, u'BLAH1': {u'readOnly': True, u'type': u'boolean', u'description': u'BLAH1 description'}, u'value': {u'type': u'boolean', u'description': u'description value'}, u'value2': {u'type': u'boolean', u'description': u'description value2'}, u'BLAHF1': {u'readOnly': False, u'type': u'string', u'description': u'Status of the switch'}, u'BLAHF3': {u'readOnly': False, u'type': u'integer', u'description': u'Status of the switch'}, u'BLAHF2': {u'readOnly': False, u'type': u'number', u'description': u'Status of the switch'}}}
 adding required: [u'value']
+swag_add_definitions (fixed): name oic.r.switch.binary {'required': [u'value'], u'type': u'object', u'properties': {u'BLAH2': {u'readOnly': True, u'type': u'boolean', u'description': u'BLAH2 description'}, u'BLAH3': {u'readOnly': True, u'type': u'boolean', u'description': u'BLAH3 description'}, u'BLAH1': {u'readOnly': True, u'type': u'boolean', u'description': u'BLAH1 description'}, u'value': {u'type': u'boolean', u'description': u'description value'}, u'value2': {u'type': u'boolean', u'description': u'description value2'}, u'BLAHF1': {u'readOnly': False, u'type': u'string', u'description': u'Status of the switch'}, u'BLAHF3': {u'readOnly': False, u'type': u'integer', u'description': u'Status of the switch'}, u'BLAHF2': {u'readOnly': False, u'type': u'number', u'description': u'Status of the switch'}}}
 ../test/./out/test_swagger_1\oic.r.switch.binary.json
 resource : /BinarySwitchResURI

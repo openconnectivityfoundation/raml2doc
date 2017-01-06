@@ -41,12 +41,7 @@ resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
 xx=xx=> schema & json VALID
 xxx=> validation schema (jsonschema) done
 document saved.. ../test/./out/test_swagger_3.docx
-swag_add_resource: resource_description This resource describes the attributes associated with control of air flow,
-for example as modelled by a Thermostat (fan), Room A/C or other device.
-The resource is a composite resource being made up as a collection of:
-  AirFlow Resource
-  BinarySwitch Resource
-
+swag_add_resource: resource_description 'This resource describes the attributes associated with control of air flow,\nfor example as modelled by a Thermostat (fan), Room A/C or other device.\nThe resource is a composite resource being made up as a collection of:\n  AirFlow Resource\n  BinarySwitch Resource\n'
 swag_add_resource: object {'parentResource': None, 'is_': None, 'description': 'This resource describes the attributes associated with control of air flow,\nfor example as modelled by a Thermostat (fan), Room A/C or other device.\nThe resource is a composite resource being made up as a collection of:\n  AirFlow Resource\n  BinarySwitch Resource\n', 'uri': '/AirFlowControlResURI', 'displayName': 'Air Flow Control', 'type': None, 'resources': OrderedDict(), 'methods': OrderedDict([('post', {'body': {'body': None, 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': '{\n  "rt": ["oic.r.airflowControl"],\n  "id":     "unique_example_id",\n  "airFlowControl": [\n      1, 2\n  ]\n}\n', 'schema': 'AirFlowControlBatch'}, 'responses': OrderedDict([(200, {'body': OrderedDict([('application/json', {'notNull': None, 'formParameters': None, 'example': '{\n  "rt": ["oic.r.airflowControl"],\n  "id":     "unique_example_id",\n  "airFlowControl": [\n      1, 2\n  ]\n}\n', 'schema': 'AirFlowControlBatch'})]), 'is_': None, 'description': None, 'formParameters': None, 'headers': None, 'notNull': None, 'example': None, 'schema': None})]), 'notNull': None, 'description': 'Sets the current air flow control values using the batch interface\n', 'queryParameters': None})])}
 tag: enum
 tag_value: ['oic.if.b']
@@ -55,6 +50,8 @@ swag_add_definitions resource: /AirFlowControlResURI
 swag_add_definitions found schema definition: AirFlowControlBatch
 swag_add_definitions adding schema definition: AirFlowControlBatch
 resolve schema reference: AirFlowControlBatch oic.r.airflowControl-Batch.json
+fix_references_dict: fixing references
+('fix_references_dict: $ref value:', u'#/definitions/oic.r.airflowcontrol')
 swag_add_definitions: name oic.r.airflowcontrol {u'type': u'object', u'properties': {u'airFlowControl': {u'items': {u'type': u'number'}, u'type': u'array'}}}
 adding required: [u'airFlowControl']
 swag_add_definitions found schema definition: AirFlowControlBatch
@@ -62,7 +59,10 @@ swagger document saved.. ../test/./out/test_swagger_3/test_swagger_3.swagger.jso
 swag_verify
 oic.r.airflowControl-Batch.json
 required_inobject None
+fix_references_dict: fixing references
+('fix_references_dict: $ref value:', u'#/definitions/oic.r.airflowcontrol')
 swag_add_definitions: name oic.r.airflowcontrol {u'type': u'object', u'properties': {u'airFlowControl': {u'items': {u'type': u'number'}, u'type': u'array'}}}
 adding required: [u'airFlowControl']
+swag_add_definitions (fixed): name oic.r.airflowcontrol {'required': [u'airFlowControl'], u'type': u'object', u'properties': {u'airFlowControl': {u'items': {u'type': u'number'}, u'type': u'array'}}}
 ../test/./out/test_swagger_3\oic.r.airflowControl-Batch.json
 resource : /AirFlowControlResURI

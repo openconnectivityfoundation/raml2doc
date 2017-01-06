@@ -40,6 +40,5 @@
       "readOnly": true,
       "type": "array"
     }
-  },
-  "type": "object"
+  }
 }

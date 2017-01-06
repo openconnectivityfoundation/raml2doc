@@ -9,6 +9,5 @@
   },
   "required": [
     "airFlowControl"
-  ],
-  "type": "object"
+  ]
 }

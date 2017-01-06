@@ -4,10 +4,10 @@
       "items": {
         "anyOf": [
           {
-            "$ref": "oic.r.switch.binary.json#"
+            "$ref": "oic.r.switch.binary.json"
           },
           {
-            "$ref": "oic.r.airflow.json#"
+            "$ref": "oic.r.airflow.json"
           }
         ]
       },
@@ -16,6 +16,5 @@
   },
   "required": [
     "airFlowControl"
-  ],
-  "type": "object"
+  ]
 }

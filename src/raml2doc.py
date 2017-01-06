@@ -498,6 +498,54 @@ except:
     f.close()
     from jsonschema import Draft4Validator
 
+def clean_dict(d):
+    for key, value in d.iteritems():
+        if isinstance(value, list):
+            clean_list(value)
+        elif isinstance(value, dict):
+            clean_dict(value)
+        elif isinstance(value, str):
+            newvalue = value.replace("\n","").replace("\r","")
+            d[key] = newvalue
+        else:
+            pass
+
+def clean_list(l):
+    for index, item in enumerate(l):
+        if isinstance(item, dict):
+            clean_dict(item)
+        elif isinstance(item, list):
+            clean_list(item)
+        elif isinstance(item, str):
+            l[index] = item.replace("\n","").replace("\r","")
+        else:
+            pass
+            
+
+def fix_references_dict(d, iteration=0):
+    if iteration == 0:
+        print "fix_references_dict: fixing references"
+    for key, value in d.items():
+        if isinstance(value, list):
+            fix_references_list(value)
+        elif isinstance(value, dict):
+            fix_references_dict(value, iteration=1)
+        else:
+            if str(key) in ["$ref"]:
+                print ("fix_references_dict: $ref value:", value)
+                if value[:1] not in ["#"]:
+                    newvalue = value.split('#', 1)[0]
+                    print ("fix_references_dict: fixing $ref new value:", newvalue)
+                    d[key] = newvalue
+
+def fix_references_list(l):
+    for index, item in enumerate(l):
+        if isinstance(item, dict):
+            fix_references_dict(item, iteration=1)
+        elif isinstance(item, list):
+            fix_references_list(item)
+        else:
+            pass
 
 def load_json_schema(filename, dir):
     """
@@ -512,7 +560,8 @@ def load_json_schema(filename, dir):
             
     linestring = open(full_path, 'r').read()
     json_dict =json.loads(linestring)
-
+    clean_dict(json_dict)
+    
     return json_dict
 
 
@@ -918,18 +967,18 @@ class CreateDoc(object):
         json_dict =json.loads(input_string_schema)
 
         properties = find_key_link(json_dict, 'properties')
-
-        for prop in properties:
-            # fill the table
-            self.fill_properties_table(properties, prop, required_props)
-            type = properties[prop].get('type')
-            if type in ["array", "object"]:
-                print ("array/object found:", prop)
-                array_properties = find_key_link(properties[prop], 'properties')
-                if array_properties is not None:
-                    postfix = "\n("+prop+")"
-                    for a_prop in array_properties:
-                        self.fill_properties_table(array_properties, a_prop, required_props, postfix =postfix)
+        if properties is not None:
+            for prop in properties:
+                # fill the table
+                self.fill_properties_table(properties, prop, required_props)
+                type = properties[prop].get('type')
+                if type in ["array", "object"]:
+                    print ("array/object found:", prop)
+                    array_properties = find_key_link(properties[prop], 'properties')
+                    if array_properties is not None:
+                        postfix = "\n("+prop+")"
+                        for a_prop in array_properties:
+                            self.fill_properties_table(array_properties, a_prop, required_props, postfix =postfix)
                 
     def parse_schema_derived(self, input_string_schema):
         """
@@ -939,6 +988,7 @@ class CreateDoc(object):
         required_props = self.parse_schema_requires(input_string_schema)
         print "parse_schema: required properties found:", required_props
         json_dict =json.loads(input_string_schema)
+        clean_dict(json_dict)
 
         properties = find_key_link(json_dict, 'properties')
 
@@ -1090,7 +1140,7 @@ class CreateDoc(object):
             ret_string = ret_string + line + " "
         return ret_string
 
-    def add_justification_smart(self, depth, input_string):
+    def add_justification_smart(self, depth, input_string, no_dot_split=False):
 
         """
         add the spaces for an correct indentation of the generated RAML code section
@@ -1102,11 +1152,15 @@ class CreateDoc(object):
         ret_string = ""
         all_lines = input_string.splitlines()
         for x_line in all_lines:
-            lines = x_line.split(". ")
-            for line in lines:
-                string1 = depth + line + "\n"
-                if len(line) > 0:
-                    ret_string = ret_string + string1
+            if no_dot_split is False:
+                lines = x_line.split(". ")
+                for line in lines:
+                    string1 = depth + line + "\n"
+                    if len(line) > 0:
+                        ret_string = ret_string + string1
+            else:
+                string1 = depth + x_line + "\n"
+                ret_string = ret_string + string1
         return ret_string
 
     def add_justification(self, depth, input_string):
@@ -1267,6 +1321,7 @@ class CreateDoc(object):
             try:
                 # this is a simple check if the json is correctly formatted.
                 json_data = json.loads(body.example)
+                clean_dict(json_data)
             except:
                 print "failure in (json):", body.example
 
@@ -1787,7 +1842,12 @@ class CreateDoc(object):
         :param description: input string
         :return: text string
         """
-        text = description.replace("\n","@cr").replace("'","<COMMA>").replace('"',"<COMMA>")
+        text = description
+        if text is not None:
+            # see for why these values relplaced:
+            # http://stackoverflow.com/questions/16906010/storing-xml-inside-json-object
+            # \" is from speechTTS 
+            text = description.replace("\n","@cr").replace('\"',"'").replace('"',"'")
         return text
         
     def swag_increase_indent(self):
@@ -1831,7 +1891,7 @@ class CreateDoc(object):
         :param version: version of the API (e.g. not the swagger version
         :param title: title of the API
         """
-        self.f = open(self.swagger, "w")
+        self.f = open(self.swagger, "wb")
         self.swag_indent = ""
         
         self.swag_write_stringln("{")
@@ -1877,11 +1937,18 @@ class CreateDoc(object):
         if query is not None:
             add_comma = True
         if method_obj.is_ is not None:
+            num_items = len(method_obj.is_) 
             for ref_value in method_obj.is_:
                 text = '{"$ref": "#/parameters/'+str(ref_value)+'"}'
-                if add_comma is True:
+                if num_items > 1:
                     text +=","
+                    
+                elif num_items == 1:
+                    if add_comma is True:
+                        text +=","
                 self.swag_write_stringln(text)
+                num_items = num_items - 1
+                
                     
     def swag_write_query_parameter_block(self, query_parameters, body=None):
         """
@@ -1894,16 +1961,25 @@ class CreateDoc(object):
             for query_name, query_object in query_parameters.items():
                 self.swag_write_stringln('{')
                 self.swag_increase_indent()
-                self.swag_write_stringln('"name": "'+str(query_name)+'",')
                 self.swag_write_stringln('"in": "query",')
-                query_description = query_object.description
-                if query_object.type is not None:
+                query_description = self.swag_sanitize_description(query_object.description)
+                if query_description is not None:
                     self.swag_write_stringln('"description": "'+str(query_description)+'",')
+                else:
+                    if query_object.displayName is not None:
+                        self.swag_write_stringln('"description": "'+str(query_object.displayName)+'",')
                 if query_object.type is not None:
                     self.swag_write_stringln('"type": "'+str(query_object.type)+'",')
+                else:
+                    # auto insert type
+                    self.swag_write_stringln('"type": "string",')
                 if query_object.required is not None:
                     if query_object.required == True:
                         self.swag_write_stringln('"required": true,')
+                if query_object.enum is not None:
+                    self.swag_write_stringln('"enum": '+ self.list_to_array(query_object.enum)+',')
+                # name as last, since it always needs to be there...
+                self.swag_write_stringln('"name": "'+str(query_name)+'"')
                 self.swag_decrease_indent()
                 if body is None:
                     self.swag_write_stringln('}')
@@ -1926,7 +2002,7 @@ class CreateDoc(object):
                 if body.example:
                     self.swag_write_stringln('"x-example":')
                     self.swag_increase_indent()
-                    adjusted_text = self.add_justification_smart(self.swag_indent, body.example)
+                    adjusted_text = self.add_justification_smart(self.swag_indent, body.example, no_dot_split=True)
                     self.swag_write_string_raw(adjusted_text)                    
                     self.swag_decrease_indent()
                 self.swag_decrease_indent()
@@ -1959,7 +2035,7 @@ class CreateDoc(object):
                         self.swag_increase_indent()
                         if body.schema is not None:
                             example += ","
-                        adjusted_text = self.add_justification_smart(self.swag_indent, example)
+                        adjusted_text = self.add_justification_smart(self.swag_indent, example, no_dot_split=True)
                         self.swag_write_string_raw(adjusted_text)                    
                         self.swag_decrease_indent() 
                     if body.schema:
@@ -1989,7 +2065,7 @@ class CreateDoc(object):
                 nr_methods = len(obj.methods.items())
                 self.swag_increase_indent()
                 resource_description = obj.description
-                print "swag_add_resource: resource_description", resource_description
+                print "swag_add_resource: resource_description", repr(resource_description)
                 print "swag_add_resource: object", obj
                 
                 for method, method_obj in obj.methods.items():
@@ -2101,26 +2177,29 @@ class CreateDoc(object):
         # find the first level of allOf... most of the time this is the definition part..
         allOf = find_key_link(full_source, 'allOf')
         #get the pointer to the properties dict, there is where we have to add all the referenced properties
-        to_property_list = find_key_link(dict_to_add_to,"properties")
+        to_property_list = find_key_link(dict_to_add_to, "properties")
         # make sure we skip duplicate ones, other wise we will overwrite
         tag_add = []
-        for name, object in to_property_list.items():
-            tag_add.append(name)
-        # loop over the array of the allOf properties, only 1 level...
-        for property_list in allOf:
-            for name, value in property_list.items():
-                #print name, value
-                if value[0] != "#":
-                    # get the filename, it is the first part..
-                    filename = value.split('#', 1)[0]
-                    schema_string = self.read_file(filename)
-                    if schema_string is not None:
-                        json_dict = json.loads(schema_string)
-                        properties = find_key_link(json_dict, 'properties')
-                        for name, object in properties.items():
-                            if name not in tag_add:
-                                to_property_list[name] = object
-                                tag_add.append(name)
+        if to_property_list is not None:
+            for name, object in to_property_list.items():
+                tag_add.append(name)
+            # loop over the array of the allOf properties, only 1 level...
+            if allOf is not None:
+                for property_list in allOf:
+                    for name, value in property_list.items():
+                        #print name, value
+                        if value[0] != "#":
+                            # get the filename, it is the first part..
+                            filename = value.split('#', 1)[0]
+                            schema_string = self.read_file(filename)
+                            if schema_string is not None:
+                                json_dict = json.loads(schema_string)
+                                clean_dict(json_dict)
+                                properties = find_key_link(json_dict, 'properties')
+                                for name, object in properties.items():
+                                    if name not in tag_add:
+                                        to_property_list[name] = object
+                                        tag_add.append(name)
         return dict_to_add_to
         
     def swag_process_definition_from_body(self, processed_schemas, body):
@@ -2136,26 +2215,31 @@ class CreateDoc(object):
             if len(processed_schemas):
                 # write an comma for the syntax, there is a predecessor..
                 self.swag_write_stringln(',')
+            # add the schema to the list of written schema names.    
+            processed_schemas.append(schema_name)
             self.swag_write_stringln('"'+schema_name+'" : ')
             self.swag_increase_indent()
-            processed_schemas.append(schema_name)
+            
             schema_string = self.get_schema_string_from_body(body)
             json_dict = json.loads(schema_string)
+            clean_dict(json_dict)
+            fix_references_dict(json_dict)
             required = find_key_link(json_dict, 'required')
             definitions = find_key_link(json_dict, 'definitions')
             required_inobject = find_key_link(definitions, 'required')
             full_definitions = self.swag_add_references_as_include(json_dict, definitions)
-            for name, object in full_definitions.items():
-                # looping over all schema names..
-                print "swag_add_definitions: name", name, object
-                if required is not None and required_inobject is None:
-                    # add the required string
-                    print "adding required:", required
-                    object["required"] = required
-                    required_inobject = 1
-                object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
-                adjusted_text = self.add_justification_smart(self.swag_indent, object_string)
-                self.swag_write_stringln(adjusted_text)
+            if full_definitions is not None:
+                for name, object in full_definitions.items():
+                    # looping over all schema names..
+                    print "swag_add_definitions: name", name, object
+                    if required is not None and required_inobject is None:
+                        # add the required string
+                        print "adding required:", required
+                        object["required"] = required
+                        required_inobject = 1
+                    object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
+                    adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
+                    self.swag_write_stringln(adjusted_text)
             self.swag_decrease_indent()
     
     def swag_add_definitions(self, parse_tree ):
@@ -2262,12 +2346,13 @@ class CreateDoc(object):
         for schema_file in schema_list:
             print schema_file
             json_dict = load_json_schema(schema_file, args['schemadir'])
-            
+            #fix_references_dict(json_dict)
             required = find_key_link(json_dict, 'required')
             definitions = find_key_link(json_dict, 'definitions')
             required_inobject = find_key_link(definitions, 'required')
             #full_definitions = self.swag_add_references_as_include(json_dict, definitions)
             print "required_inobject", required_inobject
+            fix_references_dict(json_dict)
             object_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
             for name, object in definitions.items():
                 # looping over all schema names..
@@ -2277,6 +2362,13 @@ class CreateDoc(object):
                     print "adding required:", required
                     object["required"] = required
                     required_inobject = 1
+                #fix_references_dict(object)
+                print "swag_add_definitions (fixed): name", name, object
+                # the snippet should not have type.
+                try:
+                    del object["type"]
+                except:
+                    pass
                 object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
                 
             base = os.path.dirname(swagger)
