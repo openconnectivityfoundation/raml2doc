@@ -4,7 +4,7 @@
 #    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 #    1.  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 #    2.  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-#         
+#
 #    THIS SOFTWARE IS PROVIDED BY THE OPEN INTERCONNECT CONSORTIUM, INC. "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 #    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE OR WARRANTIES OF NON-INFRINGEMENT,
 #    ARE DISCLAIMED. IN NO EVENT SHALL THE OPEN INTERCONNECT CONSORTIUM, INC. OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
@@ -44,15 +44,15 @@ try:
 except ImportError:
     from yaml import Loader, Dumper, SafeDumper
 
-    
-    
-OCF_license_name = '''copyright 2016 Open Connectivity Foundation, Inc. All rights reserved.'''
+
+
+OCF_license_name = '''copyright 2016-2017 Open Connectivity Foundation, Inc. All rights reserved.'''
 OCF_license = '''Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
         1.  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
         2.  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-        THIS SOFTWARE IS PROVIDED BY THE Open Connectivity Foundation, INC. "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE OR WARRANTIES OF NON-INFRINGEMENT, ARE DISCLAIMED. 
-        IN NO EVENT SHALL THE Open Connectivity Foundation, INC. OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+        THIS SOFTWARE IS PROVIDED BY THE Open Connectivity Foundation, INC. "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE OR WARRANTIES OF NON-INFRINGEMENT, ARE DISCLAIMED.
+        IN NO EVENT SHALL THE Open Connectivity Foundation, INC. OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
         HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
@@ -520,7 +520,7 @@ def clean_list(l):
             l[index] = item.replace("\n","").replace("\r","")
         else:
             pass
-            
+
 
 def fix_references_dict(d, iteration=0):
     if iteration == 0:
@@ -557,11 +557,11 @@ def load_json_schema(filename, dir):
     full_path = os.path.join(dir,filename)
     if os.path.isfile(full_path) is False:
         print ("json file does not exist:", full_path)
-            
+
     linestring = open(full_path, 'r').read()
     json_dict =json.loads(linestring)
     clean_dict(json_dict)
-    
+
     return json_dict
 
 
@@ -579,8 +579,8 @@ def get_dir_list(dir, ext=None):
         cur_list = new_list
         new_list = [x for x in cur_list if  x.endswith(ext)]
     return new_list
-    
-    
+
+
 def find_key(rec_dict, target, depth=0):
     """
     find key "target" in recursive dict
@@ -667,7 +667,7 @@ class CreateDoc(object):
         self.table = None
         self.title = None
         self.inputname = name
-        
+
         if docx_name is not None:
             if os.path.isfile(docx_name):
                 self.resourcedoc = docx_name
@@ -921,7 +921,7 @@ class CreateDoc(object):
                                 required_properties.append(token)
         return required_properties
 
-        
+
     def fill_properties_table(self, properties, prop, required_props, postfix=""):
         """
         fill the properties table with the prop from the properties dict
@@ -931,7 +931,7 @@ class CreateDoc(object):
         """
         try:
             if isinstance(properties, dict):
-                print "parse_schema: property:", prop
+                print "fill_properties_table: property:", prop
                 description_text = properties[prop].get('description', "")
                 read_only = properties[prop].get('readOnly', None)
                 type = properties[prop].get('type')
@@ -955,8 +955,8 @@ class CreateDoc(object):
         except:
             traceback.print_exc()
             pass
-    
-    
+
+
     def parse_schema(self, input_string_schema):
         """
 
@@ -979,14 +979,14 @@ class CreateDoc(object):
                         postfix = "\n("+prop+")"
                         for a_prop in array_properties:
                             self.fill_properties_table(array_properties, a_prop, required_props, postfix =postfix)
-                
+
     def parse_schema_derived(self, input_string_schema):
         """
 
         :param input_string_schema:
         """
         required_props = self.parse_schema_requires(input_string_schema)
-        print "parse_schema: required properties found:", required_props
+        print "parse_schema_derived: required properties found:", required_props
         json_dict =json.loads(input_string_schema)
         clean_dict(json_dict)
 
@@ -996,7 +996,7 @@ class CreateDoc(object):
             # fill the table
             try:
                 if isinstance(properties, dict):
-                    print "parse_schema: property:", prop
+                    print "parse_schema_derived: property:", prop
                     description_text = properties[prop].get('description', "")
                     ocf_resource = to_ocf = from_ocf = ""
                     my_dict =  properties[prop].get("ocf-conversion")
@@ -1004,7 +1004,7 @@ class CreateDoc(object):
                         ocf_resource = my_dict.get('ocf-alias', "")
                         to_ocf = my_dict.get('to-ocf',"")
                         from_ocf = my_dict.get('from-ocf',"")
-                    
+
                     row_cells = self.tableAttribute.add_row().cells
                     row_cells[0].text = str(prop)
                     row_cells[1].text = str(ocf_resource)
@@ -1015,8 +1015,8 @@ class CreateDoc(object):
             except:
                 traceback.print_exc()
                 pass
-                
-                
+
+
     def list_attribute(self, level, resource, obj, derived=False):
         """
         list all attributes of an indicated resource
@@ -1090,7 +1090,7 @@ class CreateDoc(object):
                 linestring = open(schema_file, 'r').read()
                 # add fields in table with contents..
                 self.parse_schema(linestring)
-                
+
     def list_attributes_derived(self, parse_tree, select_resource=None):
 
         """
@@ -1271,7 +1271,8 @@ class CreateDoc(object):
             else:
                 print "xx=xx=> schema & json VALID"
                 # validate (v_example, v_schema, cls=Draft4Validator)
-        except:
+        except Exception as e:
+            print 'schema error:', e
             print ""
             print "ERROR: failure in body (json):"
             print body.example
@@ -1306,7 +1307,7 @@ class CreateDoc(object):
                 write_depth = tttdepth
 
             p = self.document.add_paragraph(write_depth + "schema", style='CODE-GREY')
-            p.add_run(": |", style='CODE-GREY')
+            p.add_run(": |", style='CODE_GREY_C')
             # schema itself
             schema_text = self.get_schema_string_from_body(body)
             try:
@@ -1327,7 +1328,7 @@ class CreateDoc(object):
 
             try:
                 p = self.document.add_paragraph(write_depth + "example", style='CODE-GREY')
-                p.add_run(": |", style='CODE-GREY')
+                p.add_run(": |", style='CODE_GREY_C')
                 par = self.document.add_paragraph(self.add_justification(write_depth + self.tab, body.example),
                                                   style='CODE-BLACK')
                 par.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -1383,12 +1384,12 @@ class CreateDoc(object):
                 self.print_description(ttdepth, res.description)
             if res.schema is not None:
                 p = self.document.add_paragraph(ttdepth + "schema ", style='CODE-AQUA')
-                p.add_run(": |", style='CODE-YELLOW')
+                p.add_run(": |", style='CODE_YELLOW_C')
                 par = self.document.add_paragraph(self.add_justification(tttdepth, res.schema), style='CODE-BLACK')
                 par.alignment = WD_ALIGN_PARAGRAPH.LEFT
             if res.example is not None:
                 p = self.document.add_paragraph(ttdepth + "example", style='CODE-AQUA')
-                p.add_run(": |", style='CODE-YELLOW')
+                p.add_run(": |", style='CODE_YELLOW_C')
                 par = self.document.add_paragraph(self.add_justification(tttdepth, res.example), style='CODE-BLACK')
                 par.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
@@ -1835,7 +1836,7 @@ class CreateDoc(object):
         self.generate_sections(parsetree, self.resource_name)
         self.document.save(self.resource_out)
         print "document saved..", self.resource_out
-    
+
     def swag_sanitize_description(self, description):
         """
         removes line breaks, quotes  etc
@@ -1846,16 +1847,16 @@ class CreateDoc(object):
         if text is not None:
             # see for why these values relplaced:
             # http://stackoverflow.com/questions/16906010/storing-xml-inside-json-object
-            # \" is from speechTTS 
+            # \" is from speechTTS
             text = description.replace("\n","@cr").replace('\"',"'").replace('"',"'")
         return text
-        
+
     def swag_increase_indent(self):
         """
         increase indentiation for output
         """
         self.swag_indent += self.tab
-        
+
     def swag_decrease_indent(self):
         """
         decrease indentiation for output
@@ -1863,28 +1864,28 @@ class CreateDoc(object):
         length = len(self.tab)
         total_lenght = len(self.swag_indent)
         self.swag_indent = self.swag_indent[:total_lenght-length]
-        
+
     def swag_write_stringln(self, string):
         """
         write the string to file with end of line
         :param string: string to be written to file with end of line
         """
         self.f.write(self.swag_indent + string + "\n")
-        
+
     def swag_write_string_raw(self, string):
         """
         write the string to file, no changes to string
         :param string: string to be written to file
         """
         self.f.write(string)
-        
+
     def swag_write_string(self, string):
         """
         write the string to file, with indentation
         :param string: string to be written to file, with indentation
         """
         self.f.write(self.swag_indent + string)
-    
+
     def swag_openfile(self, version, title ):
         """
         open file as swagger file
@@ -1893,36 +1894,36 @@ class CreateDoc(object):
         """
         self.f = open(self.swagger, "wb")
         self.swag_indent = ""
-        
+
         self.swag_write_stringln("{")
         self.swag_increase_indent()
         self.swag_write_stringln('"swagger": "2.0",')
         self.swag_write_stringln('"info": {')
-        self.swag_increase_indent() 
+        self.swag_increase_indent()
         self.swag_write_stringln('"title": "'+str(title)+'",')
         self.swag_write_stringln('"version": "'+str(version)+'",')
         self.swag_license()
-        self.swag_decrease_indent() 
+        self.swag_decrease_indent()
         self.swag_write_stringln('},')
         self.swag_write_stringln('"schemes": ["http"],')
         self.swag_write_stringln('"consumes": ["application/json"],')
         self.swag_write_stringln('"produces": ["application/json"],')
-    
+
     def swag_license(self):
         """
         add the licence info
         under tag "info"
         """
         self.swag_write_stringln('"license": {')
-        self.swag_increase_indent() 
+        self.swag_increase_indent()
         self.swag_write_stringln('"name": "'+str(OCF_license_name)+'",')
-        
+
         text = self.swag_sanitize_description(OCF_license)
         self.swag_write_stringln('"x-description": "'+str(text)+'"')
-        
-        self.swag_decrease_indent() 
+
+        self.swag_decrease_indent()
         self.swag_write_stringln('}')
-    
+
     def swag_write_query_reference_parameter_block(self, method_obj, query=None, body=None):
         """
         write the query reference as swagger parameter block as refeerence
@@ -1937,19 +1938,19 @@ class CreateDoc(object):
         if query is not None:
             add_comma = True
         if method_obj.is_ is not None:
-            num_items = len(method_obj.is_) 
+            num_items = len(method_obj.is_)
             for ref_value in method_obj.is_:
                 text = '{"$ref": "#/parameters/'+str(ref_value)+'"}'
                 if num_items > 1:
                     text +=","
-                    
+
                 elif num_items == 1:
                     if add_comma is True:
                         text +=","
                 self.swag_write_stringln(text)
                 num_items = num_items - 1
-                
-                    
+
+
     def swag_write_query_parameter_block(self, query_parameters, body=None):
         """
         write the query param block
@@ -1985,7 +1986,7 @@ class CreateDoc(object):
                     self.swag_write_stringln('}')
                 else:
                     self.swag_write_stringln('},')
-                
+
     def swag_write_body_parameter_block(self, body):
         """
         write the body param block
@@ -2003,11 +2004,11 @@ class CreateDoc(object):
                     self.swag_write_stringln('"x-example":')
                     self.swag_increase_indent()
                     adjusted_text = self.add_justification_smart(self.swag_indent, body.example, no_dot_split=True)
-                    self.swag_write_string_raw(adjusted_text)                    
+                    self.swag_write_string_raw(adjusted_text)
                     self.swag_decrease_indent()
                 self.swag_decrease_indent()
                 self.swag_write_stringln('}')
-    
+
     def swag_write_reponses(self, responses):
         """
         write the responses in an path
@@ -2020,7 +2021,7 @@ class CreateDoc(object):
             self.swag_write_stringln('"'+str(response_name)+'": {')
             self.swag_increase_indent()
             response_description = response.description
-            
+
             for sName, body in response.body.items():
                 if sName == "application/json":
                     description = ""
@@ -2036,28 +2037,28 @@ class CreateDoc(object):
                         if body.schema is not None:
                             example += ","
                         adjusted_text = self.add_justification_smart(self.swag_indent, example, no_dot_split=True)
-                        self.swag_write_string_raw(adjusted_text)                    
-                        self.swag_decrease_indent() 
+                        self.swag_write_string_raw(adjusted_text)
+                        self.swag_decrease_indent()
                     if body.schema:
                         self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" }')
-                        
+
             # close response
             self.swag_decrease_indent()
             if nr_responses > 1:
                 self.swag_write_stringln('},')
             else:
-                self.swag_write_stringln('}')    
+                self.swag_write_stringln('}')
             nr_responses -= 1
-            self.swag_decrease_indent()            
-    
+            self.swag_decrease_indent()
+
     def swag_add_resource(self, parse_tree ):
         """
         write all resources ( e.g. an swagger path object)
         :param parse_tree: raml parse tree
         """
         self.swag_write_stringln('"paths": {')
-        self.swag_increase_indent() 
-        nr_resources = len(parse_tree.resources.items()) 
+        self.swag_increase_indent()
+        nr_resources = len(parse_tree.resources.items())
         # write all the resources
         for resource, obj in parse_tree.resources.items():
             self.swag_write_stringln('"'+str(resource)+'" : {')
@@ -2067,7 +2068,7 @@ class CreateDoc(object):
                 resource_description = obj.description
                 print "swag_add_resource: resource_description", repr(resource_description)
                 print "swag_add_resource: object", obj
-                
+
                 for method, method_obj in obj.methods.items():
                     # write the method
                     self.swag_write_stringln('"'+str(method)+'": {')
@@ -2078,9 +2079,9 @@ class CreateDoc(object):
                         text = str(resource_description)
                     if method_obj.description is not None:
                         text += str(method_obj.description)
-                    s_text = self.swag_sanitize_description(text)                        
+                    s_text = self.swag_sanitize_description(text)
                     self.swag_write_stringln('"description": "'+str(s_text)+ '",')
-                     
+
                     # write the parameters (query parametes and body)
                     self.swag_write_stringln('"parameters": [')
                     self.swag_increase_indent()
@@ -2088,7 +2089,7 @@ class CreateDoc(object):
                     self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
-                    self.swag_write_body_parameter_block(method_obj.body)    
+                    self.swag_write_body_parameter_block(method_obj.body)
                     # close parameters block
                     self.swag_decrease_indent()
                     self.swag_write_stringln('],')
@@ -2097,7 +2098,7 @@ class CreateDoc(object):
                     self.swag_increase_indent()
                     self.swag_write_stringln('"responses": {')
                     self.swag_increase_indent()
-                    self.swag_write_reponses(method_obj.responses)    
+                    self.swag_write_reponses(method_obj.responses)
                     # close response block
                     self.swag_decrease_indent()
                     self.swag_write_stringln('}')
@@ -2106,7 +2107,7 @@ class CreateDoc(object):
                     if nr_methods > 1:
                         self.swag_write_stringln('},')
                     else:
-                        self.swag_write_stringln('}')    
+                        self.swag_write_stringln('}')
                     nr_methods -= 1
                 self.swag_decrease_indent()
             # close paths
@@ -2114,36 +2115,36 @@ class CreateDoc(object):
                 self.swag_write_stringln('},')
             else:
                 self.swag_write_stringln('}')
-            nr_resources -= 1   
+            nr_resources -= 1
         self.swag_decrease_indent()
         self.swag_write_stringln('},')
-    
+
     def swag_add_generic_parameters(self, parse_tree ):
         """
         write the generic query params as referenced parameters block
         :param parse_tree: raml parse tree
         """
         self.swag_write_stringln('"parameters": {')
-        self.swag_increase_indent() 
+        self.swag_increase_indent()
         processed_query_params = []
         traits = parse_tree.traits
-        # write all the generic parameters 
+        # write all the generic parameters
         num_traits = len (traits.items())
         for query_name, query_obj in traits.items():
             self.swag_write_stringln('"'+query_name+'" : {')
-            self.swag_increase_indent() 
+            self.swag_increase_indent()
             self.swag_write_stringln('"in" : "query",')
             for name, q_obj in query_obj.queryParameters.items():
                 self.swag_write_stringln('"name" : "'+name+'",')
                 num_items = len (q_obj.items())
                 # add type = string if not available
                 is_type_available = False
-                for tag, tag_value in q_obj.items(): 
+                for tag, tag_value in q_obj.items():
                     if tag == "type":
                         is_type_available
                 if is_type_available is False:
                     self.swag_write_stringln('"type" : "string",')
-                for tag, tag_value in q_obj.items(): 
+                for tag, tag_value in q_obj.items():
                     print "tag:",tag
                     print "tag_value:", tag_value
                     text = ""
@@ -2154,19 +2155,19 @@ class CreateDoc(object):
                         text += '"'+self.list_to_string(q_obj)+'"'
                     if num_items > 1:
                         text += ","
-                    num_items -= 1 
-                    self.swag_write_stringln(text)                            
-            self.swag_decrease_indent()           
+                    num_items -= 1
+                    self.swag_write_stringln(text)
+            self.swag_decrease_indent()
             if num_traits > 1:
                 self.swag_write_stringln('},')
             else:
                 self.swag_write_stringln('}')
             num_traits -= 1
-  
+
         # close definitions
         self.swag_decrease_indent()
         self.swag_write_stringln('},')
-    
+
     def swag_add_references_as_include(self, full_source, dict_to_add_to ):
         """
         write the generic query params as referenced parameters block
@@ -2186,22 +2187,25 @@ class CreateDoc(object):
             # loop over the array of the allOf properties, only 1 level...
             if allOf is not None:
                 for property_list in allOf:
-                    for name, value in property_list.items():
-                        #print name, value
+                    for name2, value in property_list.items():
+                        print ("swag_add_references_as_include", name2, value)
                         if value[0] != "#":
                             # get the filename, it is the first part..
                             filename = value.split('#', 1)[0]
+                            print ("swag_add_references_as_include: filename", filename)
                             schema_string = self.read_file(filename)
                             if schema_string is not None:
                                 json_dict = json.loads(schema_string)
                                 clean_dict(json_dict)
                                 properties = find_key_link(json_dict, 'properties')
-                                for name, object in properties.items():
-                                    if name not in tag_add:
-                                        to_property_list[name] = object
-                                        tag_add.append(name)
+                                for name3, object in properties.items():
+                                    print ("  swag_add_references_as_include: property name found :", name3)
+                                    if name3 not in tag_add:
+                                        to_property_list[name3] = object
+                                        tag_add.append(name3)
+                                        print ("  swag_add_references_as_include: adding property name:", name3)
         return dict_to_add_to
-        
+
     def swag_process_definition_from_body(self, processed_schemas, body):
         """
         processes the definitions referenced from an body.
@@ -2209,20 +2213,20 @@ class CreateDoc(object):
         :param body: body to process
         """
         schema_name = str(body.schema)
-        print "swag_add_definitions found schema definition:", schema_name
+        print "swag_process_definition_from_body found schema definition:", schema_name
         if schema_name not in processed_schemas:
-            print "swag_add_definitions adding schema definition:", schema_name
+            print "swag_process_definition_from_body adding schema definition:", schema_name
             if len(processed_schemas):
                 # write an comma for the syntax, there is a predecessor..
                 self.swag_write_stringln(',')
-            # add the schema to the list of written schema names.    
+            # add the schema to the list of written schema names.
             processed_schemas.append(schema_name)
             self.swag_write_stringln('"'+schema_name+'" : ')
             self.swag_increase_indent()
-            
+
             schema_string = self.get_schema_string_from_body(body)
             json_dict = json.loads(schema_string)
-            clean_dict(json_dict)
+            #clean_dict(json_dict)
             fix_references_dict(json_dict)
             required = find_key_link(json_dict, 'required')
             definitions = find_key_link(json_dict, 'definitions')
@@ -2234,28 +2238,29 @@ class CreateDoc(object):
                     print "swag_add_definitions: name", name, object
                     if required is not None and required_inobject is None:
                         # add the required string
-                        print "adding required:", required
+                        print "swag_process_definition_from_body; adding required:", required
                         object["required"] = required
                         required_inobject = 1
                     object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
+                    print ("swag_process_definition_from_body: adding :", object_string)
                     adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
                     self.swag_write_stringln(adjusted_text)
             self.swag_decrease_indent()
-    
+
     def swag_add_definitions(self, parse_tree ):
         """
         add the definition section (e.g. the swagger "schema definitions")
         :param parse_tree: raml parse tree
         """
         self.swag_write_stringln('"definitions": {')
-        self.swag_increase_indent() 
+        self.swag_increase_indent()
         processed_schemas = []
-        # write all the definitions 
+        # write all the definitions
         for resource, obj in parse_tree.resources.items():
             print "swag_add_definitions resource:", resource
             if obj.methods is not None:
                 nr_methods = len(obj.methods.items())
-               
+
                 for method, method_obj in obj.methods.items():
                     print "swag_add_definitions resource:", resource
                     # write schema block for the body
@@ -2270,7 +2275,7 @@ class CreateDoc(object):
         # close definitions
         self.swag_decrease_indent()
         self.swag_write_stringln('}')
-    
+
     def swag_closefile(self):
         """
         close the file
@@ -2287,7 +2292,7 @@ class CreateDoc(object):
         print "swag_verify"
         input_string_schema = open(self.swagger, 'r').read()
         json_dict =json.loads(input_string_schema)
-    
+
     def generate_swagger(self):
         """
         conversion of the raml info into swagger
@@ -2310,7 +2315,7 @@ class CreateDoc(object):
         self.swag_closefile()
         print "swagger document saved..", self.swagger
         self.swag_verify()
-        
+
     def add_header(self, level_nr, header_title):
         """
         add an header to the document.
@@ -2352,7 +2357,7 @@ class CreateDoc(object):
             required_inobject = find_key_link(definitions, 'required')
             #full_definitions = self.swag_add_references_as_include(json_dict, definitions)
             print "required_inobject", required_inobject
-            fix_references_dict(json_dict)
+            #fix_references_dict(json_dict)
             object_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
             for name, object in definitions.items():
                 # looping over all schema names..
@@ -2370,10 +2375,10 @@ class CreateDoc(object):
                 except:
                     pass
                 object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
-                
+
             base = os.path.dirname(swagger)
             full_path = os.path.join(base,schema_file)
-            
+
             print full_path
             fwrite = open(full_path, 'w')
             fwrite.write(object_string)
@@ -2579,6 +2584,8 @@ if __name__ == '__main__':
     print "                   : CODE-BLACK"
     print "                   : CODE-BLUE"
     print "                   : CODE-GREEN"
+    print "character style    : CODE_GREY_C"
+    print "                   : CODE_YELLOW_C"
     print "==================================="
 
     temp = sys.stdout
@@ -2620,7 +2627,7 @@ if __name__ == '__main__':
 
     if processor is not None:
         processor.convert()
-        
+
     if swagger is not None:
         processor.generate_swagger()
         processor.swag_process_schemas()
