@@ -1999,8 +1999,10 @@ class CreateDoc(object):
                 self.swag_write_stringln('"name": "body",')
                 self.swag_write_stringln('"in": "body",')
                 self.swag_write_stringln('"required": true,')
-                self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" },')
+                if body.example is None:
+                    self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" }')
                 if body.example:
+                    self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" },')
                     self.swag_write_stringln('"x-example":')
                     self.swag_increase_indent()
                     adjusted_text = self.add_justification_smart(self.swag_indent, body.example, no_dot_split=True)
