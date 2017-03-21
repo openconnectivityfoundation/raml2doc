@@ -2232,6 +2232,8 @@ class CreateDoc(object):
             fix_references_dict(json_dict)
             required = find_key_link(json_dict, 'required')
             definitions = find_key_link(json_dict, 'definitions')
+            if definitions is None:
+                print ("swag_process_definition_from_body: no definitions found for schema:", schema_name)
             required_inobject = find_key_link(definitions, 'required')
             full_definitions = self.swag_add_references_as_include(json_dict, definitions)
             if full_definitions is not None:
@@ -2492,7 +2494,7 @@ if __name__ == '__main__':
     parser.add_argument('-resource', '--resource', help='resource to be processed')
 
     parser.add_argument('-annex', '--annex', help='uses a annex heading instead of normal heading (--annex true)')
-    parser.add_argument('-derived', '--derived', help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table')
+    parser.add_argument('-derived', '--derived', nargs='*', help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table')
     parser.add_argument('-swagger', '--swagger', help='generate swagger output file (--swagger <outputfile>) ')
     parser.add_argument('-put', '--put', help='uses put command as property table input instead of get (--put true)')
     parser.add_argument('-composite', '--composite',
