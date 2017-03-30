@@ -6,9 +6,9 @@
 # the directories should be relative path with respect to this file
 # the execution should take place from the test directory (all references are relative to this directory)
 #
-# output: 
+# output:
 #    each raml file will have its own output directory. e.g. raml filename without extension.
-#    
+#
 
 #
 # pre requisites:
@@ -23,7 +23,7 @@ RAML2DOC=../src/raml2doc.py
 # swagger2doc, uses python 3
 # https://github.com/openconnectivityfoundation/swagger2doc
 # same level in directory structure as raml2doc
-PYTHON3_EXE=python3
+PYTHON3_EXE=C:\\python35\\python.exe
 SWAG2DOC=../../swagger2doc/src/swagger2doc.py
 
 
@@ -36,7 +36,7 @@ echo "extra arguments: $4"
 
 SCHEMA_DIR=""
 if [ -d $IN_DIR/schemas ]
-then 
+then
 echo "schema dir exist"
 SCHEMA_DIR="/schemas"
 fi
@@ -76,36 +76,36 @@ function compare_file {
 function my_test {
     $PYTHON_EXE $RAML2DOC $* > $OUTPUT_DIR/$TEST_CASE$EXT 2>&1
     compare_output
-} 
+}
 
 function my_test_in_dir {
     mkdir -p $OUTPUT_DIR/$TEST_CASE
     $PYTHON_EXE $RAML2DOC $* > $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT 2>&1
     #compare_file $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT $REF_DIR/$TEST_CASE/$TEST_CASE$EXT
-} 
+}
 
 
 function add_to_doc {
     #mkdir -p $OUTPUT_DIR/$TEST_CASE
-    $PYTHON3_EXE $SWAG2DOC $* 
+    $PYTHON3_EXE $SWAG2DOC $*
     #compare_file $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT $REF_DIR/$TEST_CASE/$TEST_CASE$EXT
-} 
+}
 
 
 crop_string_ends() {
-    STR="$1" 
-    NEWSTR="" 
-    COUNT=0 
-    while read -n 1 CHAR 
+    STR="$1"
+    NEWSTR=""
+    COUNT=0
+    while read -n 1 CHAR
     do
-        COUNT=$(($COUNT+1)) 
-        if [ $COUNT -eq 1 ] || [ $COUNT -eq ${#STR} ] 
+        COUNT=$(($COUNT+1))
+        if [ $COUNT -eq 1 ] || [ $COUNT -eq ${#STR} ]
         then
-            continue 
-        fi 
-        NEWSTR="$NEWSTR"$CHAR 
-    done <<<"$STR" 
-    echo $NEWSTR 
+            continue
+        fi
+        NEWSTR="$NEWSTR"$CHAR
+    done <<<"$STR"
+    echo $NEWSTR
 }
 
 
@@ -114,7 +114,7 @@ outfile="outfile.txt"
 
 echo "" > $outfile
 cp ../input/ResourceTemplate.docx $outfile.docx
- 
+
 #for file in $IN_DIR/media*.raml
 #for file in $IN_DIR/*.raml
 for file in $IN_DIR/*.raml
@@ -139,12 +139,12 @@ do
             #URI=`echo $string | tail -c +2 | head -c -1`
             echo "processing $URI ($URI_VAR) from $file"
             my_test_in_dir  -docx ../input/ResourceTemplate.docx -schemadir $IN_DIR$SCHEMA_DIR -resource $URI -raml $file -outdocx $OUTPUT_DIR/$TEST_CASE_$VAR_URI.docx -swagger $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json
-            echo $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json >> $outfile 
+            echo $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json >> $outfile
             mydir=`pwd`
             pushd `pwd`
             cd $OUTPUT_DIR/$TEST_CASE
             echo "running swagger valiator at $OUTPUT_DIR/$TEST_CASE on $TEST_CASE_$URI.swagger.json"
-            wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json >> $mydir/$outfile 2>&1 
+            wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json >> $mydir/$outfile 2>&1
             popd
             echo "running swagger2doc on $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$URI.swagger.json "
             add_to_doc -docx $outfile.docx -swagger $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json -resource $URI -word_out $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.docx $3 $4
@@ -155,4 +155,3 @@ do
 
     fi
 done
- 
