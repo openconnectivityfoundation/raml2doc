@@ -25,7 +25,13 @@ RAML2DOC=../src/raml2doc.py
 # same level in directory structure as raml2doc
 PYTHON3_EXE=C:\\python35\\python.exe
 SWAG2DOC=../../swagger2doc/src/swagger2doc.py
-
+if [ -f $PYTHON3_EXE ]
+then
+	echo "$file found."
+else
+	#echo "$file not found."
+    PYTHON3_EXE=python3
+fi
 
 #SCHEMA_DIR="/schemas"
 IN_DIR=$1
