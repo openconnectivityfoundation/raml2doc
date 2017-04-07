@@ -23,6 +23,7 @@ except ImportError:
 #
 # generic imports
 #
+import re
 import os
 import sys
 import traceback
@@ -1839,16 +1840,22 @@ class CreateDoc(object):
 
     def swag_sanitize_description(self, description):
         """
-        removes line breaks, quotes  etc
+        escapes line breaks, quotes  etc
+        \n ==> new line in string.. to literal "\n"
+        "  ==> end string, escape.. to \", 
+           note that if \" exist this should not be done, e.g. use of regex to find those only
         :param description: input string
         :return: text string
         """
         text = description
         if text is not None:
-            # see for why these values relplaced:
-            # http://stackoverflow.com/questions/16906010/storing-xml-inside-json-object
-            # \" is from speechTTS
-            text = description.replace("\n","@cr").replace('\"',"'").replace('"',"'")
+            text = description.replace("\n","\\n")
+            regex = r"[^\\]\""
+            
+            matches = re.findall(regex, text)
+            for match in matches:
+                new_text = text.replace(match, match[0]+"\\\"")
+                text = new_text
         return text
 
     def swag_increase_indent(self):
