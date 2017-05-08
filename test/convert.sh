@@ -135,7 +135,7 @@ do
         string_all=`grep ResURI: $file`
         string_2=`grep InterfaceURI: $file`
         string_3=`grep ^/oic/ $file`
-        #string_all="$string_all $string_2 $string_3"
+        string_all="$string_all $string_2 $string_3"
         echo "url to be processed: $string_all"
         for string in $string_all
         do
