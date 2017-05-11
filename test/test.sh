@@ -127,6 +127,16 @@ my_test  -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_5b_deri
 
 }
 
+function test_resolve_reference {
+# option -swagger
+TEST_CASE="test_schema_1"
+mkdir -p $OUTPUT_DIR_DOCS/$TEST_CASE
+
+node node-resolver.js ./in/test_1/oic.r.switch.binary.json    > $OUTPUT_DIR_DOCS/$TEST_CASE/generated-schema.json
+
+node node-resolver.js ./in/test_7_compound/oic.r.airflowControl-Batch.json  > $OUTPUT_DIR_DOCS/$TEST_CASE/generated-oic.r.airflowControl-Batch.json
+}
+
 
 function tests_swagger {
 
@@ -159,3 +169,4 @@ compare_to_reference_file_in_dir $TEST_CASE.swagger.json $TEST_CASE
 tests  
 tests_derived
 tests_swagger
+test_resolve_reference
