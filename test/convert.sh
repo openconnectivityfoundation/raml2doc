@@ -48,7 +48,7 @@ SCHEMA_DIR="/schemas"
 fi
 
 
-OUTPUT_DIR_DOCS=../test/$OUTPUT_DIR
+OUTPUT_DIR_DOCS=../test/$OUTPUT_DIR/.
 REF_DIR=./ref
 EXT=.txt
 
@@ -120,6 +120,21 @@ outfile="outfile.txt"
 
 echo "" > $outfile
 cp ../input/ResourceTemplate.docx $outfile.docx
+
+mkdir  $OUTPUT_DIR/copy-resolved
+cp $IN_DIR/* $OUTPUT_DIR/copy-resolved/.
+mkdir  $OUTPUT_DIR/copy-resolved/examples
+mkdir  $OUTPUT_DIR/copy-resolved/schemas
+cp $IN_DIR/examples/* $OUTPUT_DIR/copy-resolved/examples/.
+cp $IN_DIR/schemas/* $OUTPUT_DIR/copy-resolved/schemas/.
+
+for file in $IN_DIR/schemas/*.json
+do
+    echo "converting $file to $OUTPUT_DIR/copy-resolved/schemas/$(basename $file)"
+    node node-resolver.js $file    >  $OUTPUT_DIR/copy-resolved/schemas/$(basename $file)
+done
+
+IN_DIR=$OUTPUT_DIR/copy-resolved
 
 #for file in $IN_DIR/media*.raml
 #for file in $IN_DIR/*.raml

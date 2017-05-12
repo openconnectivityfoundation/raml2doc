@@ -2030,26 +2030,26 @@ class CreateDoc(object):
             self.swag_write_stringln('"'+str(response_name)+'": {')
             self.swag_increase_indent()
             response_description = response.description
-
-            for sName, body in response.body.items():
-                if sName == "application/json":
-                    description = ""
-                    if response_description is not None:
-                        description = str(response_description)
-                    text = self.swag_sanitize_description(description)
-                    example = body.example
-                    # without the description field swagger won't validate
-                    self.swag_write_stringln('"description" : "'+text+'",')
-                    if example:
-                        self.swag_write_stringln('"x-example":')
-                        self.swag_increase_indent()
-                        if body.schema is not None:
-                            example += ","
-                        adjusted_text = self.add_justification_smart(self.swag_indent, example, no_dot_split=True)
-                        self.swag_write_string_raw(adjusted_text)
-                        self.swag_decrease_indent()
-                    if body.schema:
-                        self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" }')
+            if response is not None and response.body is not None:
+                for sName, body in response.body.items():
+                    if sName == "application/json":
+                        description = ""
+                        if response_description is not None:
+                            description = str(response_description)
+                        text = self.swag_sanitize_description(description)
+                        example = body.example
+                        # without the description field swagger won't validate
+                        self.swag_write_stringln('"description" : "'+text+'",')
+                        if example:
+                            self.swag_write_stringln('"x-example":')
+                            self.swag_increase_indent()
+                            if body.schema is not None:
+                                example += ","
+                            adjusted_text = self.add_justification_smart(self.swag_indent, example, no_dot_split=True)
+                            self.swag_write_string_raw(adjusted_text)
+                            self.swag_decrease_indent()
+                        if body.schema:
+                            self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" }')
 
             # close response
             self.swag_decrease_indent()
@@ -2189,7 +2189,7 @@ class CreateDoc(object):
         #get the pointer to the properties dict, there is where we have to add all the referenced properties
         to_property_list = find_key_link(dict_to_add_to, "properties")
         # make sure we skip duplicate ones, other wise we will overwrite
-        tag_add = []
+        tag_add = ["None"]
         if to_property_list is not None:
             for name, object in to_property_list.items():
                 tag_add.append(name)
@@ -2198,7 +2198,7 @@ class CreateDoc(object):
                 for property_list in allOf:
                     for name2, value in property_list.items():
                         print ("swag_add_references_as_include", name2, value)
-                        if value[0] != "#":
+                        if str(value)[0] != "#" and str(name2) == "$ref":
                             # get the filename, it is the first part..
                             filename = value.split('#', 1)[0]
                             print ("swag_add_references_as_include: filename", filename)
@@ -2208,11 +2208,23 @@ class CreateDoc(object):
                                 clean_dict(json_dict)
                                 properties = find_key_link(json_dict, 'properties')
                                 for name3, object in properties.items():
-                                    print ("  swag_add_references_as_include: property name found :", name3)
+                                    print ("  swag_add_references_as_include: property name found (from reference):", name3)
                                     if name3 not in tag_add:
                                         to_property_list[name3] = object
                                         tag_add.append(name3)
                                         print ("  swag_add_references_as_include: adding property name:", name3)
+                        else:
+                            # find the properties tag and add them..
+                            print ("swag_add_references_as_include: name-value:", name2, value)
+                            if str(name2) == "properties" :
+                            #properties = find_key_link(value, 'properties')
+                            #if properties is not None:
+                                for name3, object in value.items():
+                                        if name3 not in tag_add:
+                                            to_property_list[name3] = object
+                                            tag_add.append(name3)
+                                            print ("  swag_add_references_as_include: adding property name (direct list):", name3)
+                            
         return dict_to_add_to
 
     def swag_process_definition_from_body(self, processed_schemas, body):
@@ -2223,40 +2235,52 @@ class CreateDoc(object):
         """
         schema_name = str(body.schema)
         print "swag_process_definition_from_body found schema definition:", schema_name
+        print "swag_process_definition_from_body processed schemas sofar:", processed_schemas
         if schema_name not in processed_schemas:
-            print "swag_process_definition_from_body adding schema definition:", schema_name
-            if len(processed_schemas):
-                # write an comma for the syntax, there is a predecessor..
-                self.swag_write_stringln(',')
-            # add the schema to the list of written schema names.
-            processed_schemas.append(schema_name)
-            self.swag_write_stringln('"'+schema_name+'" : ')
-            self.swag_increase_indent()
+           if schema_name != "None":
+                print "swag_process_definition_from_body adding schema definition:", schema_name
+                if len(processed_schemas):
+                    # write an comma for the syntax, there is a predecessor..
+                    self.swag_write_stringln(',')
+                # add the schema to the list of written schema names.
+                processed_schemas.append(schema_name)
+                self.swag_write_stringln('"'+schema_name+'" : ')
+                self.swag_increase_indent()
+                print ("writing schema:", schema_name)
 
-            schema_string = self.get_schema_string_from_body(body)
-            json_dict = json.loads(schema_string)
-            #clean_dict(json_dict)
-            fix_references_dict(json_dict)
-            required = find_key_link(json_dict, 'required')
-            definitions = find_key_link(json_dict, 'definitions')
-            if definitions is None:
-                print ("swag_process_definition_from_body: no definitions found for schema:", schema_name)
-            required_inobject = find_key_link(definitions, 'required')
-            full_definitions = self.swag_add_references_as_include(json_dict, definitions)
-            if full_definitions is not None:
-                for name, object in full_definitions.items():
-                    # looping over all schema names..
-                    print "swag_add_definitions: name", name, object
-                    if required is not None and required_inobject is None:
-                        # add the required string
-                        print "swag_process_definition_from_body; adding required:", required
-                        object["required"] = required
-                        required_inobject = 1
-                    object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
-                    print ("swag_process_definition_from_body: adding :", object_string)
-                    adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
-                    self.swag_write_stringln(adjusted_text)
-            self.swag_decrease_indent()
+                schema_string = self.get_schema_string_from_body(body)
+                if schema_string is not None:
+                    json_dict = json.loads(schema_string)
+                    if json_dict is not None:
+                        #clean_dict(json_dict)
+                        fix_references_dict(json_dict)
+                        required = find_key_link(json_dict, 'required')
+                        definitions = find_key_link(json_dict, 'definitions')
+                        if definitions is None:
+                            print ("swag_process_definition_from_body: no definitions found for schema:", schema_name)
+                        required_inobject = find_key_link(definitions, 'required')
+                        full_definitions = self.swag_add_references_as_include(json_dict, definitions)
+                        if full_definitions is not None:
+                            first = True
+                            for name, object in full_definitions.items():
+                                
+                                # looping over all schema names..
+                                print "swag_process_definition_from_body: name", name, object
+                                if required is not None and required_inobject is None:
+                                    # add the required string
+                                    print "swag_process_definition_from_body; adding required:", required
+                                    object["required"] = required
+                                    required_inobject = 1
+                                if name != "None":                                   
+                                    object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
+                                    print ("swag_process_definition_from_body: name :", name)
+                                    print ("swag_process_definition_from_body: adding :", object_string)
+                                    adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
+                                    if first  is True:
+                                        first = False
+                                        self.swag_write_stringln(adjusted_text)
+                                        #self.swag_write_stringln("----------")
+                self.swag_decrease_indent()
 
     def swag_add_definitions(self, parse_tree ):
         """
@@ -2277,12 +2301,16 @@ class CreateDoc(object):
                     # write schema block for the body
                     if method_obj.body is not None:
                         if method_obj.body.schema:
+                            print "swag_add_definitions: request"
                             self.swag_process_definition_from_body (processed_schemas, method_obj.body )
                     if method_obj.responses is not None:
                         for response_name, response in method_obj.responses.items():
-                            for sName, body in response.body.items():
-                                if sName == "application/json":
-                                    self.swag_process_definition_from_body (processed_schemas, body )
+                            if response is not None and response.body is not None:
+                                for sName, body in response.body.items():
+                                    if sName == "application/json":
+                                    
+                                        print "swag_add_definitions: response"
+                                        self.swag_process_definition_from_body (processed_schemas, body )
         # close definitions
         self.swag_decrease_indent()
         self.swag_write_stringln('}')
@@ -2370,22 +2398,23 @@ class CreateDoc(object):
             print "required_inobject", required_inobject
             #fix_references_dict(json_dict)
             object_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
-            for name, object in definitions.items():
-                # looping over all schema names..
-                print "swag_add_definitions: name", name, object
-                if required is not None and required_inobject is None:
-                    # add the required string
-                    print "adding required:", required
-                    object["required"] = required
-                    required_inobject = 1
-                #fix_references_dict(object)
-                print "swag_add_definitions (fixed): name", name, object
-                # the snippet should not have type.
-                try:
-                    del object["type"]
-                except:
-                    pass
-                object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
+            if definitions is not None:
+                for name, object in definitions.items():
+                    # looping over all schema names..
+                    print "swag_add_definitions: name", name, object
+                    if required is not None and required_inobject is None:
+                        # add the required string
+                        print "adding required:", required
+                        object["required"] = required
+                        required_inobject = 1
+                    #fix_references_dict(object)
+                    print "swag_add_definitions (fixed): name", name, object
+                    # the snippet should not have type.
+                    try:
+                        del object["type"]
+                    except:
+                        pass
+                    object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
 
             base = os.path.dirname(swagger)
             full_path = os.path.join(base,schema_file)
