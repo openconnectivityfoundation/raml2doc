@@ -662,6 +662,8 @@ class CreateDoc(object):
         self.schemaWT_files = None
         self.schema_files = None
         self.derived_name = None
+        self.rt_provided_name = None
+        self.fixed_uri = None
         self.swagger = None
         self.resourcedoc = "ResourceTemplate.docx"
         # internal variables
@@ -699,7 +701,11 @@ class CreateDoc(object):
 
         row_cells = self.table.add_row().cells
         # row_cells[0].text = resource
-        row_cells[0].text = lt_resource
+        if self.fixed_uri is None:
+            row_cells[0].text = lt_resource
+        else:
+            row_cells[0].text = self.fixed_uri
+
         if lt_obj.methods is not None:
             for method, mobj in lt_obj.methods.items():
                 # print "Method:",method
@@ -1088,7 +1094,9 @@ class CreateDoc(object):
         if self.schema_switch is True:
             # add values from external schema.
             for schema_file in self.schema_files:
-                linestring = open(schema_file, 'r').read()
+                schema_dir = args['schemadir']
+                full_path = os.path.join(schema_dir, schema_file)
+                linestring = open(full_path, 'r').read()
                 # add fields in table with contents..
                 self.parse_schema(linestring)
 
@@ -1608,7 +1616,10 @@ class CreateDoc(object):
         print "Title", title_name
         self.title = title_name
 
-        print "RT = ", self.get_resource_type_by_resources(parse_tree, section_name)
+        if self.rt_provided_name is None:
+            print "RT = ", self.get_resource_type_by_resources(parse_tree, section_name)
+        else:
+            print "RT = ", self.rt_provided_name
 
         # section Resource name
         par = self.document.add_heading(title_name, level=2)
@@ -1621,19 +1632,30 @@ class CreateDoc(object):
         self.list_descriptions(parse_tree, select_resource=section_name)
 
         # section URI
-        if self.annex_switch is False:
+        if self.fixed_uri is None:
             par = self.document.add_heading('Example URI', level=3)
         else:
             par = self.document.add_heading('Wellknown URI', level=3)
+
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
-        self.list_URIs(parse_tree, select_resource=section_name)
+
+        if self.fixed_uri is None:
+            self.list_URIs(parse_tree, select_resource=section_name)
+        else:
+            text = fixed_uri
+            self.document.add_paragraph(text)
 
         # section RT
         par = self.document.add_heading('Resource Type', level=3)
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
-        rt_name = self.get_resource_type_by_resources(parse_tree, section_name)
+
+        if self.rt_provided_name is not None:
+            rt_name = self.rt_provided_name
+        else:
+            rt_name = self.get_resource_type_by_resources(parse_tree, section_name)
+
         if rt_name is not None:
             text = "The resource type (rt) is defined as: " + rt_name + "."
             self.document.add_paragraph(text)
@@ -1690,7 +1712,9 @@ class CreateDoc(object):
                 par = self.document.add_heading(my_schema_file, level=4)
                 if self.annex_switch is True:
                     par.style = 'ANNEX-heading2'
-                schema_text = open(my_schema_file, 'r').read()
+                schema_dir = args['schemadir']
+                full_path = os.path.join(schema_dir, my_schema_file)
+                schema_text = open(full_path, 'r').read()
                 try:
                     par = self.document.add_paragraph(self.add_justification("", schema_text), style='CODE-BLACK')
                     par.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -1842,7 +1866,7 @@ class CreateDoc(object):
         """
         escapes line breaks, quotes  etc
         \n ==> new line in string.. to literal "\n"
-        "  ==> end string, escape.. to \", 
+        "  ==> end string, escape.. to \",
            note that if \" exist this should not be done, e.g. use of regex to find those only
         :param description: input string
         :return: text string
@@ -1851,7 +1875,7 @@ class CreateDoc(object):
         if text is not None:
             text = description.replace("\n","\\n")
             regex = r"[^\\]\""
-            
+
             matches = re.findall(regex, text)
             for match in matches:
                 new_text = text.replace(match, match[0]+"\\\"")
@@ -2224,7 +2248,7 @@ class CreateDoc(object):
                                             to_property_list[name3] = object
                                             tag_add.append(name3)
                                             print ("  swag_add_references_as_include: adding property name (direct list):", name3)
-                            
+
         return dict_to_add_to
 
     def swag_process_definition_from_body(self, processed_schemas, body):
@@ -2263,7 +2287,7 @@ class CreateDoc(object):
                         if full_definitions is not None:
                             first = True
                             for name, object in full_definitions.items():
-                                
+
                                 # looping over all schema names..
                                 print "swag_process_definition_from_body: name", name, object
                                 if required is not None and required_inobject is None:
@@ -2271,7 +2295,7 @@ class CreateDoc(object):
                                     print "swag_process_definition_from_body; adding required:", required
                                     object["required"] = required
                                     required_inobject = 1
-                                if name != "None":                                   
+                                if name != "None":
                                     object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
                                     print ("swag_process_definition_from_body: name :", name)
                                     print ("swag_process_definition_from_body: adding :", object_string)
@@ -2308,7 +2332,7 @@ class CreateDoc(object):
                             if response is not None and response.body is not None:
                                 for sName, body in response.body.items():
                                     if sName == "application/json":
-                                    
+
                                         print "swag_add_definitions: response"
                                         self.swag_process_definition_from_body (processed_schemas, body )
         # close definitions
@@ -2528,10 +2552,11 @@ if __name__ == '__main__':
     parser.add_argument('-heading1', '--heading1', help='creates an heading 1 to the document (and exit)')
     # parser.add_option('-showResources','--showResources', help='shows the resources in an RAML file')
     parser.add_argument('-resource', '--resource', help='resource to be processed')
-
+    parser.add_argument('-rtname', '--rtname', help='rt name to be used (--rtname XXX) e.g. -rtname oic.wk.res')
     parser.add_argument('-annex', '--annex', help='uses a annex heading instead of normal heading (--annex true)')
     parser.add_argument('-derived', '--derived', nargs='*', help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table')
     parser.add_argument('-swagger', '--swagger', help='generate swagger output file (--swagger <outputfile>) ')
+    parser.add_argument('-fixed', '--fixed', help='generate wellknown URI heading (--fixed XXX) e.g. -fixed /oic/res ')
     parser.add_argument('-put', '--put', help='uses put command as property table input instead of get (--put true)')
     parser.add_argument('-composite', '--composite',
          help='treats the resource as an composite resource, e.g. no property definition table (--composite true)')
@@ -2556,6 +2581,8 @@ if __name__ == '__main__':
     schemaWT_file = args['schemaWT']
     derived_name = args['derived']
     swagger = args['swagger']
+    fixed_uri = args['fixed']
+    rt_provided_name = args['rtname']
 
     if annex_switch is None:
         annex_switch = False
@@ -2600,8 +2627,10 @@ if __name__ == '__main__':
     print "using docx output file       :", args['outdocx']
     print "using schema dir             :", args['schemadir']
     print "using resource               :", resourceName
+    print "using provided rt            :", rt_provided_name
     print "using header0                :", header0
     print "using annex                  :", annex_switch
+    print "using fixed uri              :", fixed_uri
     print "using put for property table :", put_switch
     print "using composite              :", composite_switch
     print "using sensor                 :", sensor_switch
@@ -2653,7 +2682,9 @@ if __name__ == '__main__':
         processor.schema_switch = schema_switch
         processor.schemaWT_switch = schemaWT_switch
         processor.derived_name = derived_name
+        processor.rt_provided_name = rt_provided_name
         processor.swagger = swagger
+        processor.fixed_uri = fixed_uri
         processor.dir = args['schemadir']
         if args['outdocx'] is not None:
             processor.resource_out = args['outdocx']
