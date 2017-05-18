@@ -133,7 +133,8 @@ cp $IN_DIR/schemas/* $OUTPUT_DIR/copy-resolved/schemas/.
 for file in $IN_DIR$SCHEMA_DIR/*.json
 do
     echo "converting $file to $OUTPUT_DIR/copy-resolved/schemas/$(basename $file)"
-    node node-resolver.js $file    >  $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+    node node-resolver.js $file
+		cp temp.json $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
 done
 
 IN_DIR=$OUTPUT_DIR/copy-resolved
@@ -178,3 +179,5 @@ do
 
     fi
 done
+
+read -p "Press any key to continue"
