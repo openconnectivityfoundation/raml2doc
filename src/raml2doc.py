@@ -2356,6 +2356,15 @@ class CreateDoc(object):
         input_string_schema = open(self.swagger, 'r').read()
         json_dict =json.loads(input_string_schema)
 
+    def get_first_display_name(self, parse_tree):
+        """
+        retrieve the first display name found
+        :param parsetree:
+        :return:
+        """
+        for resource, obj in parse_tree.resources.items():
+            return obj.displayName
+
     def generate_swagger(self):
         """
         conversion of the raml info into swagger
@@ -2369,7 +2378,8 @@ class CreateDoc(object):
             print "could not load file: error loading file"
             traceback.print_exc()
             return
-        title = parse_tree.title
+
+        title = self.get_first_display_name(parse_tree)
         version = parse_tree.version
         self.swag_openfile(version, title)
         self.swag_add_resource(parse_tree)
