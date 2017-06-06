@@ -1006,11 +1006,11 @@ class CreateDoc(object):
                     print "parse_schema_derived: property:", prop
                     description_text = properties[prop].get('description', "")
                     ocf_resource = to_ocf = from_ocf = ""
-                    my_dict =  properties[prop].get("ocf-conversion")
+                    my_dict =  properties[prop].get("x-ocf-conversion")
                     if my_dict is not None:
-                        ocf_resource = my_dict.get('ocf-alias', "")
-                        to_ocf = my_dict.get('to-ocf',"")
-                        from_ocf = my_dict.get('from-ocf',"")
+                        ocf_resource = my_dict.get('x-ocf-alias', "")
+                        to_ocf = my_dict.get('x-to-ocf',"")
+                        from_ocf = my_dict.get('x-from-ocf',"")
 
                     row_cells = self.tableAttribute.add_row().cells
                     row_cells[0].text = str(prop)
