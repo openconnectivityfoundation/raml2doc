@@ -466,7 +466,6 @@ def _calculate_new_relative_path(base, uri):
 
 def _load_local_file(full_path):
     # include locates at local file system
-    #full_path  = os.path.abspath(full_path)
     full_path = Path(full_path).absolute()
     if not os.path.exists(full_path):
         raise RamlNotFoundException("No such file {} found".format(full_path))
