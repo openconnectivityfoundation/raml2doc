@@ -558,6 +558,7 @@ def load_json_schema(filename, dir):
     full_path = os.path.join(dir,filename)
     if os.path.isfile(full_path) is False:
         print ("json file does not exist:", full_path)
+
     linestring = open(full_path, 'r').read()
     json_dict =json.loads(linestring)
     clean_dict(json_dict)
@@ -890,21 +891,17 @@ class CreateDoc(object):
         :return: resource type of the resource name
         """
         for resource, obj in parse_tree.resources.items():
-            print 'resource,obj', resource, obj
             if resource[1:] == resource_name:
-                print 'in here'
                 for method, mobj in obj.methods.items():
-                    print 'method,mobj *****', method, mobj
                     if mobj.responses is not None:
                         for resName, res in mobj.responses.items():
-                            if res.body is not None:
-                                for sName, _body in res.body.items():
-                                    if sName == "application/json":
-                                        value = self.get_resource_type_line(_body.example)
-                                        if value is not None:
-                                            return value
-                                        else:
-                                            print "get_resource_type_by_resources ERROR: no RT found in:", _body.example
+                            for sName, _body in res.body.items():
+                                if sName == "application/json":
+                                    value = self.get_resource_type_line(_body.example)
+                                    if value is not None:
+                                        return value
+                                    else:
+                                        print "get_resource_type_by_resources ERROR: no RT found in:", _body.example
         return None
 
     def parse_schema_requires(self, input_string_schema):
@@ -1009,11 +1006,11 @@ class CreateDoc(object):
                     print "parse_schema_derived: property:", prop
                     description_text = properties[prop].get('description', "")
                     ocf_resource = to_ocf = from_ocf = ""
-                    my_dict =  properties[prop].get("ocf-conversion")
+                    my_dict =  properties[prop].get("x-ocf-conversion")
                     if my_dict is not None:
-                        ocf_resource = my_dict.get('ocf-alias', "")
-                        to_ocf = my_dict.get('to-ocf',"")
-                        from_ocf = my_dict.get('from-ocf',"")
+                        ocf_resource = my_dict.get('x-ocf-alias', "")
+                        to_ocf = my_dict.get('x-to-ocf',"")
+                        from_ocf = my_dict.get('x-from-ocf',"")
 
                     row_cells = self.tableAttribute.add_row().cells
                     row_cells[0].text = str(prop)
@@ -1633,7 +1630,6 @@ class CreateDoc(object):
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
         self.list_descriptions(parse_tree, select_resource=section_name)
-        self.list_descriptions(parse_tree, select_resource=section_name)
 
         # section URI
         if self.fixed_uri is None:
@@ -1825,8 +1821,6 @@ class CreateDoc(object):
         try:
             base = os.path.basename(filename)
             full_path = os.path.join(self.dir, base)
-            print 'full_path', full_path
-            print 'file name', filename
             linestring = open(full_path, 'r').read()
             # create the table with contents..
             return linestring
@@ -1864,7 +1858,7 @@ class CreateDoc(object):
             print "make sure that docx file exist.."
             return
 
-        self.generate_sections(parsetree, self.resource_name)      
+        self.generate_sections(parsetree, self.resource_name)
         self.document.save(self.resource_out)
         print "document saved..", self.resource_out
 
@@ -1978,9 +1972,9 @@ class CreateDoc(object):
             num_items = len(method_obj.is_)
             for ref_value in method_obj.is_:
                 text = '{"$ref": "#/parameters/'+str(ref_value)+'"}'
-                print 'text', text
                 if num_items > 1:
                     text +=","
+
                 elif num_items == 1:
                     if add_comma is True:
                         text +=","
@@ -2055,12 +2049,11 @@ class CreateDoc(object):
         """
         nr_responses = len(responses.items())
         for response_name, response in responses.items():
-            print response_name,'#####################################################'
+            #print response_name
             self.swag_increase_indent()
             self.swag_write_stringln('"'+str(response_name)+'": {')
             self.swag_increase_indent()
             response_description = response.description
-            print "response description",response_description
             if response is not None and response.body is not None:
                 for sName, body in response.body.items():
                     if sName == "application/json":
@@ -2081,16 +2074,7 @@ class CreateDoc(object):
                             self.swag_decrease_indent()
                         if body.schema:
                             self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" }')
-                    else:
-                        if response_description is not None:
-                            text = self.swag_sanitize_description(str(response_description))
-                            self.swag_write_stringln('"description" : "'+text)
-            else:
-                if response_description is not None:
-                    text = self.swag_sanitize_description(str(response_description))
-                    self.swag_write_stringln('"description" : "'+text+'"')
-				
-				
+
             # close response
             self.swag_decrease_indent()
             if nr_responses > 1:
@@ -2136,8 +2120,6 @@ class CreateDoc(object):
                     self.swag_increase_indent()
                     # query parameters from the path variable..
                     self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
-                    if method_obj.is_ is not None:
-                        self.swag_write_stringln(',')
                     self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_body_parameter_block(method_obj.body)
@@ -2185,7 +2167,6 @@ class CreateDoc(object):
             self.swag_write_stringln('"'+query_name+'" : {')
             self.swag_increase_indent()
             self.swag_write_stringln('"in" : "query",')
-            temp_len = len(query_obj.queryParameters)
             for name, q_obj in query_obj.queryParameters.items():
                 self.swag_write_stringln('"name" : "'+name+'",')
                 num_items = len (q_obj.items())
@@ -2209,9 +2190,6 @@ class CreateDoc(object):
                         text += ","
                     num_items -= 1
                     self.swag_write_stringln(text)
-                if temp_len > 1:
-                    self.swag_write_stringln(',')
-                temp_len-=1
             self.swag_decrease_indent()
             if num_traits > 1:
                 self.swag_write_stringln('},')
@@ -2378,6 +2356,15 @@ class CreateDoc(object):
         input_string_schema = open(self.swagger, 'r').read()
         json_dict =json.loads(input_string_schema)
 
+    def get_first_display_name(self, parse_tree):
+        """
+        retrieve the first display name found
+        :param parsetree:
+        :return:
+        """
+        for resource, obj in parse_tree.resources.items():
+            return obj.displayName
+
     def generate_swagger(self):
         """
         conversion of the raml info into swagger
@@ -2391,7 +2378,8 @@ class CreateDoc(object):
             print "could not load file: error loading file"
             traceback.print_exc()
             return
-        title = parse_tree.title
+
+        title = self.get_first_display_name(parse_tree)
         version = parse_tree.version
         self.swag_openfile(version, title)
         self.swag_add_resource(parse_tree)
@@ -2464,6 +2452,8 @@ class CreateDoc(object):
 
             base = os.path.dirname(swagger)
             full_path = os.path.join(base,schema_file)
+
+            print full_path
             fwrite = open(full_path, 'w')
             fwrite.write(object_string)
             fwrite.close()
