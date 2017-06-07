@@ -2131,7 +2131,7 @@ class CreateDoc(object):
                     self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
                     if method_obj.is_ is not None:
                         self.swag_write_stringln(',')
-					self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body)
+                    self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_body_parameter_block(method_obj.body)
                     # close parameters block
@@ -2178,6 +2178,7 @@ class CreateDoc(object):
             self.swag_write_stringln('"'+query_name+'" : {')
             self.swag_increase_indent()
             self.swag_write_stringln('"in" : "query",')
+            query_param_len = len(query_obj.queryParameters)
             for name, q_obj in query_obj.queryParameters.items():
                 self.swag_write_stringln('"name" : "'+name+'",')
                 num_items = len (q_obj.items())
@@ -2201,6 +2202,9 @@ class CreateDoc(object):
                         text += ","
                     num_items -= 1
                     self.swag_write_stringln(text)
+                if query_param_len > 1:
+                    self.swag_write_stringln(',')
+                query_param_len-=1
             self.swag_decrease_indent()
             if num_traits > 1:
                 self.swag_write_stringln('},')
