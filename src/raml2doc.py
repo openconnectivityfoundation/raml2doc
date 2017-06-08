@@ -895,13 +895,14 @@ class CreateDoc(object):
                 for method, mobj in obj.methods.items():
                     if mobj.responses is not None:
                         for resName, res in mobj.responses.items():
-                            for sName, _body in res.body.items():
-                                if sName == "application/json":
-                                    value = self.get_resource_type_line(_body.example)
-                                    if value is not None:
-                                        return value
-                                    else:
-                                        print "get_resource_type_by_resources ERROR: no RT found in:", _body.example
+                            if res.body is not None:
+                                for sName, _body in res.body.items():
+                                    if sName == "application/json":
+                                        value = self.get_resource_type_line(_body.example)
+                                        if value is not None:
+                                            return value
+                                        else:
+                                             print "get_resource_type_by_resources ERROR: no RT found in:", _body.example
         return None
 
     def parse_schema_requires(self, input_string_schema):
@@ -2074,6 +2075,14 @@ class CreateDoc(object):
                             self.swag_decrease_indent()
                         if body.schema:
                             self.swag_write_stringln('"schema": { "$ref": "#/definitions/'+str(body.schema)+'" }')
+                    else:
+                        if response_description is not None:
+                            text = self.swag_sanitize_description(str(response_description))
+                            self.swag_write_stringln('"description" : "'+text)
+            else:
+                if response_description is not None:
+                    text = self.swag_sanitize_description(str(response_description))
+                    self.swag_write_stringln('"description" : "'+text+'"')
 
             # close response
             self.swag_decrease_indent()
@@ -2120,6 +2129,8 @@ class CreateDoc(object):
                     self.swag_increase_indent()
                     # query parameters from the path variable..
                     self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
+                    if method_obj.is_ is not None:
+                        self.swag_write_stringln(',')
                     self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_body_parameter_block(method_obj.body)
@@ -2167,6 +2178,7 @@ class CreateDoc(object):
             self.swag_write_stringln('"'+query_name+'" : {')
             self.swag_increase_indent()
             self.swag_write_stringln('"in" : "query",')
+            query_param_len = len(query_obj.queryParameters)
             for name, q_obj in query_obj.queryParameters.items():
                 self.swag_write_stringln('"name" : "'+name+'",')
                 num_items = len (q_obj.items())
@@ -2190,6 +2202,9 @@ class CreateDoc(object):
                         text += ","
                     num_items -= 1
                     self.swag_write_stringln(text)
+                if query_param_len > 1:
+                    self.swag_write_stringln(',')
+                query_param_len-=1
             self.swag_decrease_indent()
             if num_traits > 1:
                 self.swag_write_stringln('},')
