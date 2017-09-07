@@ -14,12 +14,12 @@
 #
 #############################
 
-try:
-    import pyramloic.parser as ramlparser
-except ImportError:
-    import pyraml.parser as ramlparser
+#try:
+from pyramloic import parser as ramlparser
+#except ImportError:
+    #import pyraml.parser as ramlparser
+#    pass
 
-    pass
 #
 # generic imports
 #
