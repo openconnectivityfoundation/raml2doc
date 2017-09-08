@@ -135,6 +135,12 @@ do
     if [[ $file != *".swagger.json" ]]; then
         echo "converting $file to $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)"
         node node-resolver.js $file    >  $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+        if [[ -s $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file) ]]; then
+            echo "generated."
+        else
+            echo "empty file, deleting."
+            rm -f $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+        fi
     fi
 done
 
@@ -145,6 +151,8 @@ IN_DIR=$OUTPUT_DIR/copy-resolved
 for file in $IN_DIR/*.raml
 do
     if [[ -f $file ]]; then
+        echo ""
+        echo "======================"
         echo "processing file: $file"
         filename="${file##*/}"
         basename="${filename%.*}"
@@ -155,23 +163,23 @@ do
         string_2=`grep InterfaceURI: $file`
         string_3=`grep ^/oic/ $file`
         string_all="$string_all $string_2 $string_3"
-        echo "url to be processed: $string_all"
+        echo " url to be processed: $string_all"
         for string in $string_all
         do
             URI=`crop_string_ends $string`
             #VAR_URI=$(URI/\/ /_)
             VAR_URI=$(echo $URI | sed 's#/#_#g')
             #URI=`echo $string | tail -c +2 | head -c -1`
-            echo "processing $URI ($URI_VAR) from $file"
+            echo " processing $URI ($URI_VAR) from $file"
             my_test_in_dir  -docx ../input/ResourceTemplate.docx -schemadir $IN_DIR$SCHEMA_DIR -resource $URI -raml $file -outdocx $OUTPUT_DIR/$TEST_CASE_$VAR_URI.docx -swagger $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json
             echo $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json >> $outfile
             mydir=`pwd`
             pushd `pwd`
             cd $OUTPUT_DIR/$TEST_CASE
-            echo "running swagger valiator at $OUTPUT_DIR/$TEST_CASE on $TEST_CASE_$URI.swagger.json"
+            echo " running swagger valiator at $OUTPUT_DIR/$TEST_CASE on $TEST_CASE_$URI.swagger.json"
             wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json >> $mydir/$outfile 2>&1
             popd
-            echo "running swagger2doc on $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$URI.swagger.json "
+            echo " running swagger2doc on $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$URI.swagger.json "
             add_to_doc -docx $outfile.docx -swagger $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json -resource $URI -word_out $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.docx $3 $4
             cp $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.docx $outfile.docx
             #-docx ../input/ResourceTemplate.docx -resource BinarySwitchResURI -swagger ../test/in/test_swagger_1/test_swagger_1.swagger.json -word_out $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.docx
