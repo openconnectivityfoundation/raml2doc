@@ -881,6 +881,7 @@ class CreateDoc(object):
             if len(tokens) >= 4:
                 if tokens[1] == "rt":
                     return tokens[3]
+                    
         return None
 
     def get_resource_type_by_resources(self, parse_tree, resource_name):
@@ -2129,8 +2130,9 @@ class CreateDoc(object):
                     self.swag_increase_indent()
                     # query parameters from the path variable..
                     self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
-                    if method_obj.is_ is not None:
-                        self.swag_write_stringln(',')
+                    # TODO:
+                    #if method_obj.is_ is not None:
+                    #    self.swag_write_stringln(',')
                     self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_body_parameter_block(method_obj.body)
