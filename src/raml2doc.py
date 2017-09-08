@@ -2436,42 +2436,45 @@ class CreateDoc(object):
         if args['swagger'] is None:
             return
         schema_list = get_dir_list(args['schemadir'],".json")
+        
         for schema_file in schema_list:
-            print schema_file
-            json_dict = load_json_schema(schema_file, args['schemadir'])
-            #fix_references_dict(json_dict)
-            required = find_key_link(json_dict, 'required')
-            definitions = find_key_link(json_dict, 'definitions')
-            required_inobject = find_key_link(definitions, 'required')
-            #full_definitions = self.swag_add_references_as_include(json_dict, definitions)
-            print "required_inobject", required_inobject
-            #fix_references_dict(json_dict)
-            object_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
-            if definitions is not None:
-                for name, object in definitions.items():
-                    # looping over all schema names..
-                    print "swag_add_definitions: name", name, object
-                    if required is not None and required_inobject is None:
-                        # add the required string
-                        print "adding required:", required
-                        object["required"] = required
-                        required_inobject = 1
-                    #fix_references_dict(object)
-                    print "swag_add_definitions (fixed): name", name, object
-                    # the snippet should not have type.
-                    try:
-                        del object["type"]
-                    except:
-                        pass
-                    object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
+            # process only .json files, not swagger files
+            if ".swagger.json" not in schema_file:
+                print schema_file
+                json_dict = load_json_schema(schema_file, args['schemadir'])
+                #fix_references_dict(json_dict)
+                required = find_key_link(json_dict, 'required')
+                definitions = find_key_link(json_dict, 'definitions')
+                required_inobject = find_key_link(definitions, 'required')
+                #full_definitions = self.swag_add_references_as_include(json_dict, definitions)
+                print "required_inobject", required_inobject
+                #fix_references_dict(json_dict)
+                object_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
+                if definitions is not None:
+                    for name, object in definitions.items():
+                        # looping over all schema names..
+                        print "swag_add_definitions: name", name, object
+                        if required is not None and required_inobject is None:
+                            # add the required string
+                            print "adding required:", required
+                            object["required"] = required
+                            required_inobject = 1
+                        #fix_references_dict(object)
+                        print "swag_add_definitions (fixed): name", name, object
+                        # the snippet should not have type.
+                        try:
+                            del object["type"]
+                        except:
+                            pass
+                        object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
 
-            base = os.path.dirname(swagger)
-            full_path = os.path.join(base,schema_file)
+                base = os.path.dirname(swagger)
+                full_path = os.path.join(base,schema_file)
 
-            print full_path
-            fwrite = open(full_path, 'w')
-            fwrite.write(object_string)
-            fwrite.close()
+                print full_path
+                fwrite = open(full_path, 'w')
+                fwrite.write(object_string)
+                fwrite.close()
 
 #
 # code for the proxy
