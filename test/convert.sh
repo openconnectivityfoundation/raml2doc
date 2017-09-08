@@ -17,6 +17,13 @@
 # raml2doc, uses python2.7
 # e.g. retrieved from https://github.com/openconnectivityfoundation/raml2doc
 #
+# swagger2doc uses python 3
+# should be installed on the same folder level as raml2doc
+#
+# run the install_node_packages.sh once
+# this installs the node packages that are needed to run node-resolver
+#
+
 PYTHON_EXE=C:\\python27\\python.exe
 RAML2DOC=../src/raml2doc.py
 #
