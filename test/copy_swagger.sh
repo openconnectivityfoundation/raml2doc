@@ -4,8 +4,6 @@
 #
 
 
-OUTPUT_DIR=../../out-oneIOTa-2/
-
 copy_from=$1
 #copy_from=$OUTPUT_DIR
 
