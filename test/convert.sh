@@ -153,6 +153,7 @@ done
 
 IN_DIR=$OUTPUT_DIR/copy-resolved
 
+#for file in $IN_DIR/AirQu*.raml
 #for file in $IN_DIR/media*.raml
 #for file in $IN_DIR/*.raml
 for file in $IN_DIR/*.raml
@@ -167,15 +168,16 @@ do
         TEST_CASE=$basename
         mkdir -p $OUTPUT_DIR/$TEST_CASE
         string_all=`grep ResURI: $file`
+        string_1=`grep ResURI? $file`
         string_2=`grep InterfaceURI: $file`
         string_3=`grep ^/oic/ $file`
-        string_all="$string_all $string_2 $string_3"
+        string_all="$string_all $string_1 $string_2 $string_3"
         echo " url to be processed: $string_all"
         for string in $string_all
         do
             URI=`crop_string_ends $string`
             #VAR_URI=$(URI/\/ /_)
-            VAR_URI=$(echo $URI | sed 's#/#_#g')
+            VAR_URI=$(echo $URI | sed 's#/#_#g' | sed 's#?#_#g')
             #URI=`echo $string | tail -c +2 | head -c -1`
             echo " processing $URI ($URI_VAR) from $file"
             my_test_in_dir  -docx ../input/ResourceTemplate.docx -schemadir $IN_DIR$SCHEMA_DIR -resource $URI -raml $file -outdocx $OUTPUT_DIR/$TEST_CASE_$VAR_URI.docx -swagger $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json
