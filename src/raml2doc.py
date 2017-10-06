@@ -702,9 +702,10 @@ class CreateDoc(object):
         row_cells = self.table.add_row().cells
         # row_cells[0].text = resource
         if self.fixed_uri is None:
-            row_cells[0].text = lt_resource
+            my_resource_no_query = str(lt_resource).split("?")[0]
         else:
-            row_cells[0].text = self.fixed_uri
+            my_resource_no_query = str(self.fixed_uri).split("?")[0]
+        row_cells[0].text = my_resource_no_query
 
         if lt_obj.methods is not None:
             for method, mobj in lt_obj.methods.items():
@@ -748,6 +749,7 @@ class CreateDoc(object):
         if select_resource is None:
             # all resources
             for my_resource, my_obj in parse_tree.resources.items():
+                #my_resource_no_query = my_resource
                 self.list_resource(level, my_resource, my_obj)
         else:
             for my_resource, my_obj in parse_tree.resources.items():
@@ -1701,7 +1703,7 @@ class CreateDoc(object):
                 self.list_attributes(parse_tree, select_resource=section_name)
 
         # section CRUDN definition
-        par = self.document.add_heading('CRUDN behavior', level=3)
+        par = self.document.add_heading('CRUDN behaviour', level=3)
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
         self.list_resources_crudn(parse_tree, select_resource=section_name)
