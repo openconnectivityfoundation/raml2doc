@@ -800,13 +800,14 @@ class CreateDoc(object):
     def list_uri(self, level, resource, obj):
 
         """
-
-        :param level:
-        :param resource:
+        writes the resource url to the word document
+        :param level: not used
+        :param resource: the url to be written
         :param obj:
         """
         if resource is not None:
-            self.document.add_paragraph(resource)
+            resource_no_query = resource.split("?")[0]
+            self.document.add_paragraph(resource_no_query)
 
         try:
             for nResName, nObj in obj.resources.items():
@@ -1646,7 +1647,8 @@ class CreateDoc(object):
             self.list_URIs(parse_tree, select_resource=section_name)
         else:
             text = fixed_uri
-            self.document.add_paragraph(text)
+            url_without_query= str(text).split('?')[0]
+            self.document.add_paragraph(url_without_query)
 
         # section RT
         par = self.document.add_heading('Resource Type', level=3)

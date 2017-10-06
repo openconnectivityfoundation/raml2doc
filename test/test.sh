@@ -109,8 +109,14 @@ my_test -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_1/ -reso
 
 
 # array in schema
-TEST_CASE="testcase_15"
-my_test -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_9_array/ -resource ArrayResURI -raml ../test/in/test_9_array/array-resource.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx 
+#TEST_CASE="testcase_15"
+#my_test -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_9_array/ -resource ArrayResURI -raml ../test/in/test_9_array/array-resource.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx 
+
+
+# ? in url
+TEST_CASE="testcase_16"
+my_test -docx ../input/ResourceTemplate.docx -schemadir ../test/in/test_7_queryparaminuri/ -resource AirFlowControlResURI?if=oic.if.ll -raml ../test/in/test_7_queryparaminuri/airflowControl.raml -outdocx $OUTPUT_DIR_DOCS/$TEST_CASE.docx 
+
 
 }
 
