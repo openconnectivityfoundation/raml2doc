@@ -525,7 +525,7 @@ def clean_list(l):
 
 def fix_references_dict(d, iteration=0):
     if iteration == 0:
-        print "fix_references_dict: fixing references"
+        print ("fix_references_dict: fixing references")
     for key, value in d.items():
         if isinstance(value, list):
             fix_references_list(value)
@@ -675,8 +675,8 @@ class CreateDoc(object):
             if os.path.isfile(docx_name):
                 self.resourcedoc = docx_name
             else:
-                print "WARNING: could not find file:", docx_name
-                print "using:", self.resourcedoc
+                print ("WARNING: could not find file:", docx_name)
+                print ("using:", self.resourcedoc)
         self.resource_out = name + ".docx"
         self.tab = "  "
         self.resource_name = resource_name
@@ -906,7 +906,7 @@ class CreateDoc(object):
                                         if value is not None:
                                             return value
                                         else:
-                                             print "get_resource_type_by_resources ERROR: no RT found in:", _body.example
+                                             print ("get_resource_type_by_resources ERROR: no RT found in:", _body.example)
         return None
 
     def parse_schema_requires(self, input_string_schema):
@@ -927,7 +927,7 @@ class CreateDoc(object):
                 if tokens[1] == 'required':
                     for token in tokens:
                         if token == "]":
-                            print "correct end of required detected"
+                            print ("correct end of required detected")
                         if token not in ignore_list:
                             if " " not in token:
                                 required_properties.append(token)
@@ -943,7 +943,7 @@ class CreateDoc(object):
         """
         try:
             if isinstance(properties, dict):
-                print "fill_properties_table: property:", prop
+                print ("fill_properties_table: property:", prop)
                 description_text = properties[prop].get('description', "")
                 read_only = properties[prop].get('readOnly', None)
                 type = properties[prop].get('type')
@@ -975,7 +975,7 @@ class CreateDoc(object):
         :param input_string_schema:
         """
         required_props = self.parse_schema_requires(input_string_schema)
-        print "parse_schema: required properties found:", required_props
+        print ("parse_schema: required properties found:", required_props)
         json_dict =json.loads(input_string_schema)
 
         properties = find_key_link(json_dict, 'properties')
@@ -998,7 +998,7 @@ class CreateDoc(object):
         :param input_string_schema:
         """
         required_props = self.parse_schema_requires(input_string_schema)
-        print "parse_schema_derived: required properties found:", required_props
+        print ("parse_schema_derived: required properties found:", required_props)
         json_dict =json.loads(input_string_schema)
         clean_dict(json_dict)
 
@@ -1008,7 +1008,7 @@ class CreateDoc(object):
             # fill the table
             try:
                 if isinstance(properties, dict):
-                    print "parse_schema_derived: property:", prop
+                    print ("parse_schema_derived: property:", prop)
                     description_text = properties[prop].get('description', "")
                     ocf_resource = to_ocf = from_ocf = ""
                     my_dict =  properties[prop].get("x-ocf-conversion")
@@ -1039,7 +1039,7 @@ class CreateDoc(object):
         :return:
         """
         if obj is None:
-            print "EMPTY EMPTY"
+            print ("list_attribute: EMPTY EMPTY")
             return
 
         if level != 0:
@@ -1224,22 +1224,23 @@ class CreateDoc(object):
         :param json_string:
         """
         return
-        print "validating ", json_file, " with ", schema_filename
-        print "==>validate_with_json_lint: validation start:"
+        print ("validating ", json_file, " with ", schema_filename)
+        print ("==>validate_with_json_lint: validation start:")
         my_cmd = "jsonlint " + json_file + " -V " + schema_filename
         try:
             os.system(my_cmd)
-        except OSError, e:
-            print >> sys.stderr, "Execution failed:", e
+        except (OSError, e):
+            print ("Execution failed:", e)
+            #print >> sys.stderr, "Execution failed:", e
 
-        print "==> validate_with_json_lint: validation complete"
+        print ("==> validate_with_json_lint: validation complete")
 
     def validate_body(self, body):
         schema_string = ""
         try:
             # validation by using package:
             # https://pypi.python.org/pypi/jsonschema
-            print "xx=> validation schema (jsonschema)"
+            print ("xx=> validation schema (jsonschema)")
             schema_string = self.get_schema_string_from_body(body)
 
             v_schema = None
@@ -1247,13 +1248,13 @@ class CreateDoc(object):
             try:
                 v_schema = json.loads(schema_string)
             except ValueError as ex:
-                print "error with loading schema:"
-                print ex
+                print ("error with loading schema:")
+                print (ex)
             try:
                 v_example = json.loads(body.example)
             except ValueError as ex:
-                print "error with loading example:"
-                print ex
+                print ("error with loading example:")
+                print (ex)
 
             # Lazily report all errors in the instance
             validation_error = False
@@ -1267,7 +1268,7 @@ class CreateDoc(object):
 
             except ValidationError as e:
                 validation_error = True
-                print "validation failed:"
+                print ("validation failed:")
                 print (e.message)
 
                 for error in sorted(v.iter_errors(v_example), key=str):
@@ -1276,26 +1277,26 @@ class CreateDoc(object):
                     print(error)
 
             if validation_error is True:
-                print "validation failed, input information:"
-                print "body (json):"
-                print body.example
-                print ""
-                print "schema (json):"
-                print schema_string
+                print ("validation failed, input information:")
+                print ("body (json):")
+                print (body.example)
+                print ("")
+                print ("schema (json):")
+                print (schema_string)
             else:
-                print "xx=xx=> schema & json VALID"
+                print ("xx=xx=> schema & json VALID")
                 # validate (v_example, v_schema, cls=Draft4Validator)
         except Exception as e:
-            print 'schema error:', e
-            print ""
-            print "ERROR: failure in body (json):"
-            print body.example
-            print ""
-            print "schema (json):"
-            print schema_string
-            print ""
+            print ('schema error:', e)
+            print ("")
+            print ("ERROR: failure in body (json):")
+            print (body.example)
+            print ("")
+            print ("schema (json):")
+            print (schema_string)
+            print ("")
 
-        print "xxx=> validation schema (jsonschema) done"
+        print ("xxx=> validation schema (jsonschema) done")
 
     def print_body(self, depth, body_name, body):
         """
@@ -1330,7 +1331,7 @@ class CreateDoc(object):
                                                   style='CODE-BLACK')
                 par.alignment = WD_ALIGN_PARAGRAPH.LEFT
             except:
-                print "failure in (schema):", schema_text
+                print ("failure in (schema):", schema_text)
 
         if body.example is not None:
             try:
@@ -1338,7 +1339,7 @@ class CreateDoc(object):
                 json_data = json.loads(body.example)
                 clean_dict(json_data)
             except:
-                print "failure in (json):", body.example
+                print ("failure in (json):", body.example)
 
             try:
                 p = self.document.add_paragraph(write_depth + "example", style='CODE-GREY')
@@ -1347,7 +1348,7 @@ class CreateDoc(object):
                                                   style='CODE-BLACK')
                 par.alignment = WD_ALIGN_PARAGRAPH.LEFT
             except:
-                print "failure in (body example):", body.example
+                print ("failure in (body example):", body.example)
 
             try:
                 # check based on https://www.npmjs.com/package/jsonlint
@@ -1355,7 +1356,7 @@ class CreateDoc(object):
                 f.write(body.example)
                 f.close()
             except:
-                print "failure in validating (not executed)(body example):", body.example
+                print ("failure in validating (not executed)(body example):", body.example)
             #
             # do the validation
             #
@@ -1371,8 +1372,8 @@ class CreateDoc(object):
         """
         try:
             for header_name, header in headers.item():
-                print depth, "headername:", header_name
-                print depth, "headertype:", header.type
+                print (depth, "headername:", header_name)
+                print (depth, "headertype:", header.type)
         except:
             pass
 
@@ -1598,7 +1599,7 @@ class CreateDoc(object):
             for trait_name, obj in traits.items():
                 self.print_trait(self.tab, trait_name, obj)
         except:
-            print "no traits found!!"
+            print ("no traits found!!")
             pass
 
     def generate_sections(self, parse_tree, section_name=None):
@@ -1615,16 +1616,16 @@ class CreateDoc(object):
             title_name = section_name
             display_name = self.get_display_name_resources(parse_tree, section_name)
             self.displayName = display_name
-            print "DisplayName:", display_name
+            print ("DisplayName:", display_name)
             if display_name is not None:
                 title_name = display_name
-        print "Title", title_name
+        print ("Title", title_name)
         self.title = title_name
 
         if self.rt_provided_name is None:
-            print "RT = ", self.get_resource_type_by_resources(parse_tree, section_name)
+            print ("RT = ", self.get_resource_type_by_resources(parse_tree, section_name))
         else:
-            print "RT = ", self.rt_provided_name
+            print ("RT = ", self.rt_provided_name)
 
         # section Resource name
         par = self.document.add_heading(title_name, level=2)
@@ -1666,7 +1667,7 @@ class CreateDoc(object):
             text = "The resource type (rt) is defined as: " + rt_name + "."
             self.document.add_paragraph(text)
         else:
-            print "RT not found!"
+            print ("RT not found!")
 
         # section RAML definition
         par = self.document.add_heading('RAML Definition', level=3)
@@ -1794,13 +1795,13 @@ class CreateDoc(object):
                 # we think this is a reference.
                 # find it and include it.
                 filename = self.schemaRef2Filename(schema_string)
-                print "resolve schema reference:", schema_string, filename
+                print ("resolve schema reference:", schema_string, filename)
                 # read the file as a string
                 try:
                     schema_string = self.read_file(filename)
                 except:
-                    print "could not open file:", filename
-        #print "get_schema_string_from_body", schema_string
+                    print ("could not open file:", filename)
+        #print ("get_schema_string_from_body", schema_string)
         return schema_string
 
     def read_file(self, filename):
@@ -1833,7 +1834,7 @@ class CreateDoc(object):
         except:
             pass
 
-        print "read_file: could not open file:", filename, full_path
+        print ("read_file: could not open file:", filename, full_path)
 
     def convert(self):
         """
@@ -1844,8 +1845,8 @@ class CreateDoc(object):
         try:
             parsetree = ramlparser.load(self.inputname)
         except ValidationError as e:
-            print 'validation error:', e.errors
-            print "could not load file: error loading file"
+            print ('validation error:', e.errors)
+            print ("could not load file: error loading file")
             traceback.print_exc()
             return
 
@@ -1860,13 +1861,13 @@ class CreateDoc(object):
         try:
             self.document = Document(docx=self.resourcedoc)
         except:
-            print "could not load file: ", self.resourcedoc
-            print "make sure that docx file exist.."
+            print ("could not load file: ", self.resourcedoc)
+            print ("make sure that docx file exist..")
             return
 
         self.generate_sections(parsetree, self.resource_name)
         self.document.save(self.resource_out)
-        print "document saved..", self.resource_out
+        print ("document saved..", self.resource_out)
 
     def swag_sanitize_description(self, description):
         """
@@ -2113,8 +2114,8 @@ class CreateDoc(object):
                 nr_methods = len(obj.methods.items())
                 self.swag_increase_indent()
                 resource_description = obj.description
-                print "swag_add_resource: resource_description", repr(resource_description)
-                print "swag_add_resource: object", obj
+                print ("swag_add_resource: resource_description", repr(resource_description))
+                print ("swag_add_resource: object", obj)
 
                 for method, method_obj in obj.methods.items():
                     # write the method
@@ -2196,8 +2197,8 @@ class CreateDoc(object):
                 if is_type_available is False:
                     self.swag_write_stringln('"type" : "string",')
                 for tag, tag_value in q_obj.items():
-                    print "tag:",tag
-                    print "tag_value:", tag_value
+                    print ("tag:",tag)
+                    print ("tag_value:", tag_value)
                     text = ""
                     text = '"'+tag+'" : '
                     if tag == "enum":
@@ -2279,11 +2280,11 @@ class CreateDoc(object):
         :param body: body to process
         """
         schema_name = str(body.schema)
-        print "swag_process_definition_from_body found schema definition:", schema_name
-        print "swag_process_definition_from_body processed schemas sofar:", processed_schemas
+        print ("swag_process_definition_from_body found schema definition:", schema_name)
+        print ("swag_process_definition_from_body processed schemas sofar:", processed_schemas)
         if schema_name not in processed_schemas:
            if schema_name != "None":
-                print "swag_process_definition_from_body adding schema definition:", schema_name
+                print ("swag_process_definition_from_body adding schema definition:", schema_name)
                 if len(processed_schemas):
                     # write an comma for the syntax, there is a predecessor..
                     self.swag_write_stringln(',')
@@ -2310,10 +2311,10 @@ class CreateDoc(object):
                             for name, object in full_definitions.items():
 
                                 # looping over all schema names..
-                                print "swag_process_definition_from_body: name", name, object
+                                print ("swag_process_definition_from_body: name", name, object)
                                 if required is not None and required_inobject is None:
                                     # add the required string
-                                    print "swag_process_definition_from_body; adding required:", required
+                                    print ("swag_process_definition_from_body; adding required:", required)
                                     object["required"] = required
                                     required_inobject = 1
                                 if name != "None":
@@ -2337,16 +2338,16 @@ class CreateDoc(object):
         processed_schemas = []
         # write all the definitions
         for resource, obj in parse_tree.resources.items():
-            print "swag_add_definitions resource:", resource
+            print ("swag_add_definitions resource:", resource)
             if obj.methods is not None:
                 nr_methods = len(obj.methods.items())
 
                 for method, method_obj in obj.methods.items():
-                    print "swag_add_definitions resource:", resource
+                    print ("swag_add_definitions resource:", resource)
                     # write schema block for the body
                     if method_obj.body is not None:
                         if method_obj.body.schema:
-                            print "swag_add_definitions: request"
+                            print ("swag_add_definitions: request")
                             self.swag_process_definition_from_body (processed_schemas, method_obj.body )
                     if method_obj.responses is not None:
                         for response_name, response in method_obj.responses.items():
@@ -2354,7 +2355,7 @@ class CreateDoc(object):
                                 for sName, body in response.body.items():
                                     if sName == "application/json":
 
-                                        print "swag_add_definitions: response"
+                                        print ("swag_add_definitions: response")
                                         self.swag_process_definition_from_body (processed_schemas, body )
         # close definitions
         self.swag_decrease_indent()
@@ -2373,7 +2374,7 @@ class CreateDoc(object):
         verify the generated swagger file.
         easy verification: only check is that it is an valid json file
         """
-        print "swag_verify"
+        print ("swag_verify")
         input_string_schema = open(self.swagger, 'r').read()
         json_dict =json.loads(input_string_schema)
 
@@ -2395,8 +2396,8 @@ class CreateDoc(object):
         try:
             parse_tree = ramlparser.load(self.inputname)
         except ValidationError as e:
-            print 'validation error:', e.errors
-            print "could not load file: error loading file"
+            print ('validation error:', e.errors)
+            print ("could not load file: error loading file")
             traceback.print_exc()
             return
 
@@ -2407,7 +2408,7 @@ class CreateDoc(object):
         self.swag_add_generic_parameters(parse_tree)
         self.swag_add_definitions(parse_tree)
         self.swag_closefile()
-        print "swagger document saved..", self.swagger
+        print ("swagger document saved..", self.swagger)
         self.swag_verify()
 
     def add_header(self, level_nr, header_title):
@@ -2422,15 +2423,15 @@ class CreateDoc(object):
         try:
             self.document = Document(docx=self.resourcedoc)
         except:
-            print "could not load file: ", self.resourcedoc
-            print "make sure that docx file exist.."
+            print ("could not load file: ", self.resourcedoc)
+            print ("make sure that docx file exist..")
             return
 
         header = str(header_title).replace("_", " ")
-        print "add_header: title:", header
+        print ("add_header: title:", header)
         paragraph = self.document.add_heading(header, level=1)
         if self.annex_switch is True:
-            print "   as annex"
+            print ("   as annex")
             paragraph.style = 'ANNEX_title'
 
         self.document.save(self.resource_out)
@@ -2446,27 +2447,27 @@ class CreateDoc(object):
         for schema_file in schema_list:
             # process only .json files, not swagger files
             if ".swagger.json" not in schema_file:
-                print schema_file
+                print (schema_file)
                 json_dict = load_json_schema(schema_file, args['schemadir'])
                 #fix_references_dict(json_dict)
                 required = find_key_link(json_dict, 'required')
                 definitions = find_key_link(json_dict, 'definitions')
                 required_inobject = find_key_link(definitions, 'required')
                 #full_definitions = self.swag_add_references_as_include(json_dict, definitions)
-                print "required_inobject", required_inobject
+                print ("required_inobject", required_inobject)
                 #fix_references_dict(json_dict)
                 object_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
                 if definitions is not None:
                     for name, object in definitions.items():
                         # looping over all schema names..
-                        print "swag_add_definitions: name", name, object
+                        print ("swag_add_definitions: name", name, object)
                         if required is not None and required_inobject is None:
                             # add the required string
-                            print "adding required:", required
+                            print ("adding required:", required)
                             object["required"] = required
                             required_inobject = 1
                         #fix_references_dict(object)
-                        print "swag_add_definitions (fixed): name", name, object
+                        print ("swag_add_definitions (fixed): name", name, object)
                         # the snippet should not have type.
                         try:
                             del object["type"]
@@ -2477,7 +2478,7 @@ class CreateDoc(object):
                 base = os.path.dirname(swagger)
                 full_path = os.path.join(base,schema_file)
 
-                print full_path
+                print (full_path)
                 fwrite = open(full_path, 'w')
                 fwrite.write(object_string)
                 fwrite.close()
@@ -2501,43 +2502,43 @@ class ProxyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         # filename without any path
         filename = self.path.split('/')[-1]
         base_name = os.path.basename(filename)
-        print "ProxyHandler: url:", self.path, " localfile:", base_name
+        print ("ProxyHandler: url:", self.path, " localfile:", base_name)
         if os.path.exists(base_name):
-            print "ProxyHandler: local file found:", base_name
+            print ("ProxyHandler: local file found:", base_name)
             self.copyfile(open(base_name), self.wfile)
             return
 
         # filename with path of schemas
         full_path = os.path.join(schema_dir, base_name)
-        print "ProxyHandler: url:", self.path, " localfile:", full_path
+        print ("ProxyHandler: url:", self.path, " localfile:", full_path)
         if os.path.exists(full_path):
-            print "ProxyHandler: local file found:", full_path
+            print ("ProxyHandler: local file found:", full_path)
             self.copyfile(open(full_path), self.wfile)
             return
 
         # filename(.json) with path of schemas
         full_path = os.path.join(schema_dir, base_name + ".json")
-        print "ProxyHandler: url:", self.path, " localfile:", full_path
+        print ("ProxyHandler: url:", self.path, " localfile:", full_path)
         if os.path.exists(full_path):
-            print "ProxyHandler: local file found:", full_path
+            print ("ProxyHandler: local file found:", full_path)
             self.copyfile(open(full_path), self.wfile)
             return
 
         filenamejson = base_name + ".json"
-        print "ProxyHandler: local file NOT found:", base_name, " trying: ", filenamejson
+        print ("ProxyHandler: local file NOT found:", base_name, " trying: ", filenamejson)
         if os.path.exists(filenamejson):
-            print "ProxyHandler: local file found:", filenamejson
+            print ("ProxyHandler: local file found:", filenamejson)
             self.copyfile(open(filenamejson), self.wfile)
         else:
 
-            print "ProxyHandler: trying url:", self.path
+            print ("ProxyHandler: trying url:", self.path)
             proxy_handler = urllib2.ProxyHandler({})
             opener = urllib2.build_opener(proxy_handler)
             try:
                 req = urllib2.Request(self.path)
                 self.copyfile(opener.open(req), self.wfile)
             except:
-                print "ProxyHandler: file not found:", self.path
+                print ("ProxyHandler: file not found:", self.path)
 
 
 def proxy():
@@ -2548,7 +2549,7 @@ def proxy():
     """
     PORT = 4321
     httpd = SocketServer.TCPServer(("", PORT), ProxyHandler)
-    print "HTTPPRoxy: serving at port", PORT
+    print ("HTTPPRoxy: serving at port", PORT)
     proxythread = threading.Thread(target=httpd.serve_forever)
     proxythread.setDaemon(True)
     proxythread.start()
@@ -2574,8 +2575,8 @@ if __name__ == '__main__':
     except:
         pass
 
-    print "==================================="
-    print "version: ", my_version
+    print ("===================================")
+    print ("version: ", my_version)
 
     # argument parsing
     parser = argparse.ArgumentParser(description='Process RAML files.')
@@ -2655,41 +2656,41 @@ if __name__ == '__main__':
     if docxName is None:
         docxName = resourcedoc
 
-    print "==================================="
-    print "using raml file              :", ramlName
-    print "using docx file              :", docxName
-    print "using docx output file       :", args['outdocx']
-    print "using schema dir             :", args['schemadir']
-    print "using resource               :", resourceName
-    print "using provided rt            :", rt_provided_name
-    print "using header0                :", header0
-    print "using annex                  :", annex_switch
-    print "using fixed uri              :", fixed_uri
-    print "using put for property table :", put_switch
-    print "using composite              :", composite_switch
-    print "using sensor                 :", sensor_switch
-    print "schema switch                :", schema_switch
-    print "schema (WT) switch           :", schemaWT_switch
-    print "derived                      :", derived_name
-    print "swagger                      :", swagger
+    print ("===================================")
+    print ("using raml file              :", ramlName)
+    print ("using docx file              :", docxName)
+    print ("using docx output file       :", args['outdocx'])
+    print ("using schema dir             :", args['schemadir'])
+    print ("using resource               :", resourceName)
+    print ("using provided rt            :", rt_provided_name)
+    print ("using header0                :", header0)
+    print ("using annex                  :", annex_switch)
+    print ("using fixed uri              :", fixed_uri)
+    print ("using put for property table :", put_switch)
+    print ("using composite              :", composite_switch)
+    print ("using sensor                 :", sensor_switch)
+    print ("schema switch                :", schema_switch)
+    print ("schema (WT) switch           :", schemaWT_switch)
+    print ("derived                      :", derived_name)
+    print ("swagger                      :", swagger)
     if schema_switch == True:
-        print "schema file                  :", schema_file
+        print ("schema file                  :", schema_file)
     if schemaWT_switch == True:
-        print "schema (WT) file             :", schemaWT_file
+        print ("schema (WT) file             :", schemaWT_file)
 
-    print "styles:"
-    print " heading: Heading 1 or ANNEX-heading1"
-    print " table style: TABLE-A"
-    print " table header style: TABLEHEADER"
-    print " color (code) style: CODE-AQUA"
-    print "                   : CODE-YELLOW"
-    print "                   : CODE-GREY"
-    print "                   : CODE-BLACK"
-    print "                   : CODE-BLUE"
-    print "                   : CODE-GREEN"
-    print "character style    : CODE_GREY_C"
-    print "                   : CODE_YELLOW_C"
-    print "==================================="
+    print ("styles:")
+    print (" heading: Heading 1 or ANNEX-heading1")
+    print (" table style: TABLE-A")
+    print (" table header style: TABLEHEADER")
+    print (" color (code) style: CODE-AQUA")
+    print ("                   : CODE-YELLOW")
+    print ("                   : CODE-GREY")
+    print ("                   : CODE-BLACK")
+    print ("                   : CODE-BLUE")
+    print ("                   : CODE-GREEN")
+    print ("character style    : CODE_GREY_C")
+    print ("                   : CODE_YELLOW_C")
+    print ("===================================")
 
     temp = sys.stdout
     # sys.stdout = sys.stderr
@@ -2738,4 +2739,4 @@ if __name__ == '__main__':
         processor.swag_process_schemas()
 
     for resource, obj in processor.parsetree.resources.items():
-        print "resource :", resource
+        print ("resource :", resource)

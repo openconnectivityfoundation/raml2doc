@@ -7,6 +7,10 @@ Tool to generate document section in word files from an RAMK file.
 python code uses: 
 - python2.7 (default instalation on C:)
 
+run ```src\install.py``` to install the dependencies.
+
+
+python code uses: 
 - docx - 0.76 (https://python-docx.readthedocs.org/en/latest/)
   For installing python-docx use the command “pip install python-docx” or “easy_install ….”. 
   If you are using “python setup.py install” then “lxml” needs to be installed manually.
@@ -24,8 +28,9 @@ pyraml-parser-385f952ed352fcaa9bb810de72d541767d433b09.zip
  the file entities.py needs to be replaced with the supplied version.
  the file parser.py needs to be replaced with the supplied version.
 
- note that the pyramloic directory contains these changes.
- 
+note that the pyramloic directory contains these changes.
+- this needs unipath installed though, which is included in install.py
+
  
 - jsonschema
 pip install jsonschema
@@ -103,7 +108,7 @@ C:\Python27\python.exe  raml2doc.py <args>
 
 
 
-# how it works
+# how it works - word document generation
 generating documentation:
 -------------------------
 - opens default word file (ResourceTemplate.docx)
@@ -134,6 +139,21 @@ http://openinterconnect.org/schemas/oic.rd.publish.json
 will be resolved to
 oic.rd.publish.json 
 in the local directory.
+
+# how it works - swagger generation
+generating swagger:
+-------------------
+
+The swagger file is generated from the RAML + json schemas.
+The swagger file is 1 file, that includes all the schema definitions.
+to make this work correctly the schemas have to be 
+- resolved (e.g. no external dependencies)
+- no (or at least as minimal as possible) oneOff/allOf constructs
+These functions are implemented in node.js with the ```test\node-resolver.js``` tool.
+
+# node-resolver.js
+The external dependencies for this tool can be installed by running:
+- ```install_node_packages.sh```
 
 
 # Issues:

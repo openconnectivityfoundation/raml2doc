@@ -1,10 +1,21 @@
 __author__ = 'ad'
 
 import contextlib
-import urllib2
+
+import sys
+try:
+    import urllib2
+except ImportError:
+    import urllib.request
+try:
+    import urlparse
+except ImportError:
+    from urllib.parse import urlparse
+    
+    
 import mimetypes
 import os.path
-import urlparse
+#import urlparse
 import yaml
 from collections import OrderedDict
 from unipath import Path
@@ -96,7 +107,7 @@ def yaml_include(loader, node):
         with file(file_name) as inputfile:
             return yaml.load(inputfile)
     except:
-        print "ERROR could not open file:", file_name
+        print ("ERROR could not open file:", file_name)
         pass
             
 def load(uri):
