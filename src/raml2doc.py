@@ -1414,7 +1414,7 @@ class CreateDoc(object):
     def print_description(self, depth, description_txt):
         """
         prints the (raml) description
-        :param depth: depth in chars to print the descriptoin
+        :param depth: depth in chars to print the description
         :param description_txt: text to be put in the word document
         """
         if description_txt is not None:
@@ -1430,11 +1430,12 @@ class CreateDoc(object):
         :return: string as raml string representation. example = "[ 'blah', 'blah2' ]"
         """
         my_string = "["
-        for x in input_list:
-            comma = ", "
-            my_string = my_string + '"' + x + '"' + comma
-        # remove last comman (e.g. last 2 chars)
-        my_string = my_string[:-2]
+        if input_list is not None:
+            for x in input_list:
+                comma = ", "
+                my_string = my_string + '"' + x + '"' + comma
+            # remove last comma (e.g. last 2 chars)
+            my_string = my_string[:-2]
         my_string += "]"
         return my_string
 
@@ -1868,7 +1869,8 @@ class CreateDoc(object):
         self.generate_sections(parsetree, self.resource_name)
         self.document.save(self.resource_out)
         print ("document saved..", self.resource_out)
-
+        
+        
     def swag_sanitize_description(self, description):
         """
         escapes line breaks, quotes  etc
@@ -1891,13 +1893,13 @@ class CreateDoc(object):
 
     def swag_increase_indent(self):
         """
-        increase indentiation for output
+        increase indentation for output
         """
         self.swag_indent += self.tab
 
     def swag_decrease_indent(self):
         """
-        decrease indentiation for output
+        decrease indentation for output
         """
         length = len(self.tab)
         total_lenght = len(self.swag_indent)
@@ -1949,7 +1951,7 @@ class CreateDoc(object):
 
     def swag_license(self):
         """
-        add the licence info
+        add the license info
         under tag "info"
         """
         self.swag_write_stringln('"license": {')
@@ -1964,7 +1966,7 @@ class CreateDoc(object):
 
     def swag_write_query_reference_parameter_block(self, method_obj, query=None, body=None):
         """
-        write the query reference as swagger parameter block as refeerence
+        write the query reference as swagger parameter block as reference
         query and body are needed to determine if an additional comma is needed.
         :param method_obj: raml method_obj
         :param query: raml query obj
@@ -1997,7 +1999,10 @@ class CreateDoc(object):
         :param body: raml body object
         """
         if query_parameters is not None:
+            totalquery = len(query_parameters)
+            counter = 0
             for query_name, query_object in query_parameters.items():
+                counter += 1
                 self.swag_write_stringln('{')
                 self.swag_increase_indent()
                 self.swag_write_stringln('"in": "query",')
@@ -2020,9 +2025,14 @@ class CreateDoc(object):
                 # name as last, since it always needs to be there...
                 self.swag_write_stringln('"name": "'+str(query_name)+'"')
                 self.swag_decrease_indent()
-                if body is None:
-                    self.swag_write_stringln('}')
+                if counter == totalquery:
+                    # last entry
+                    if body is None:
+                        self.swag_write_stringln('}')
+                    else:
+                        self.swag_write_stringln('},')
                 else:
+                    # not the last item in the array
                     self.swag_write_stringln('},')
 
     def swag_write_body_parameter_block(self, body):
@@ -2130,7 +2140,7 @@ class CreateDoc(object):
                     s_text = self.swag_sanitize_description(text)
                     self.swag_write_stringln('"description": "'+str(s_text)+ '",')
 
-                    # write the parameters (query parametes and body)
+                    # write the parameters (query parameters and body)
                     self.swag_write_stringln('"parameters": [')
                     self.swag_increase_indent()
                     # query parameters from the path variable..
@@ -2172,7 +2182,7 @@ class CreateDoc(object):
 
     def swag_add_generic_parameters(self, parse_tree ):
         """
-        write the generic query params as referenced parameters block
+        write the generic query parameters as referenced parameters block
         :param parse_tree: raml parse tree
         """
         self.swag_write_stringln('"parameters": {')
@@ -2225,7 +2235,7 @@ class CreateDoc(object):
 
     def swag_add_references_as_include(self, full_source, dict_to_add_to ):
         """
-        write the generic query params as referenced parameters block
+        write the generic query parameters as referenced parameters block
         :param full_source: dict of an json schema object
         :param dict_to_add_to: dict of the properties block of an json object to add the missing properties too
         :return: adjusted dict
@@ -2272,6 +2282,9 @@ class CreateDoc(object):
                                             print ("  swag_add_references_as_include: adding property name (direct list):", name3)
 
         return dict_to_add_to
+        
+    def remove_prefix(self, text, prefix):
+        return text[text.startswith(prefix) and len(prefix):]
 
     def swag_process_definition_from_body(self, processed_schemas, body):
         """
@@ -2283,14 +2296,14 @@ class CreateDoc(object):
         print ("swag_process_definition_from_body found schema definition:", schema_name)
         print ("swag_process_definition_from_body processed schemas sofar:", processed_schemas)
         if schema_name not in processed_schemas:
-           if schema_name != "None":
+            if schema_name != "None":
                 print ("swag_process_definition_from_body adding schema definition:", schema_name)
                 if len(processed_schemas):
                     # write an comma for the syntax, there is a predecessor..
                     self.swag_write_stringln(',')
                 # add the schema to the list of written schema names.
                 processed_schemas.append(schema_name)
-                self.swag_write_stringln('"'+schema_name+'" : ')
+                self.swag_write_stringln('"'+schema_name+'" : {')
                 self.swag_increase_indent()
                 print ("writing schema:", schema_name)
 
@@ -2301,32 +2314,113 @@ class CreateDoc(object):
                         #clean_dict(json_dict)
                         fix_references_dict(json_dict)
                         required = find_key_link(json_dict, 'required')
+                        # getting all definitions
                         definitions = find_key_link(json_dict, 'definitions')
                         if definitions is None:
                             print ("swag_process_definition_from_body: no definitions found for schema:", schema_name)
+                        #print definitions
+                        # getting all properties    
+                        
+                        
+                        #properties = find_key_link(json_dict, 'properties')
+                        properties = json_dict.get('properties')
+                        if properties is None:
+                            print ("swag_process_definition_from_body: no properties found for schema:", schema_name)
+                            properties = {}
+                        #else:
+                        #    print ("properties:", properties)
+                        
+                        allOf = json_dict.get("allOf")                        
+                        if allOf is None:
+                            print ("swag_process_definition_from_body: no allOf found for schema:", schema_name)
+                        else:
+                            #print ("allOf:", allOf)
+                            for item in allOf:
+                                #print "=====>",item
+                                for ref, refobject in item.items():
+                                    #print refobject
+                                    referencetag = self.remove_prefix(refobject,"#/definitions/")
+                                    #print referencetag
+                                    data = find_key_link(json_dict, referencetag)
+                                    print data
+                                    if data.get("allOf"):
+                                        for subItem in data.get("allOf"):
+                                            print "====>", subItem
+                                            for subsubname, subsubobject in subItem.items():
+                                                if subsubname.startswith("$ref"):
+                                                    #print "TODO handle ref"
+                                                    subrefname = self.remove_prefix(subsubobject,"#/definitions/")
+                                                    refdata = find_key_link(json_dict, subrefname)
+                                                    print "=====xxxx=====>", subrefname, refdata
+                                                    props = find_key_link(refdata, 'properties')
+                                                    if props is not None:
+                                                        for dataname, dataobject in props.items():
+                                                            properties[dataname] = dataobject
+                                                    else:
+                                                        if isinstance(refdata, dict):
+                                                            for dataname, dataobject in refdata.items():
+                                                                properties[dataname] = dataobject
+                                                else:
+                                                    props = find_key_link(subsubobject, 'properties')
+                                                    if props is not None:
+                                                        for dataname, dataobject in props.items():
+                                                            properties[dataname] = dataobject
+                                                    else:
+                                                        if isinstance(subsubobject, dict):
+                                                            for dataname, dataobject in subsubobject.items():
+                                                                properties[dataname] = dataobject
+                                                        
+                                                    
+                                    else:
+                                        props = find_key_link(data, 'properties')
+                                        if props is not None:
+                                            for dataname, dataobject in props.items():
+                                                properties[dataname] = dataobject
+                                        else:
+                                            if isinstance(subsubobject, dict):
+                                                for dataname, dataobject in subsubobject.items():
+                                                    properties[dataname] = dataobject
+                                        
+                            
                         required_inobject = find_key_link(definitions, 'required')
-                        full_definitions = self.swag_add_references_as_include(json_dict, definitions)
+                        #full_definitions = self.swag_add_references_as_include(json_dict, definitions)
+                        full_definitions = properties
+                        
+                        self.swag_write_stringln('"properties": {')
+                        self.swag_increase_indent()
+                        
+                        # writer loop... processing is above to make the correct list
                         if full_definitions is not None:
-                            first = True
+                            counter = 0
+                            num_items = len (full_definitions)
                             for name, object in full_definitions.items():
-
+                                counter +=1
                                 # looping over all schema names..
                                 print ("swag_process_definition_from_body: name", name, object)
-                                if required is not None and required_inobject is None:
-                                    # add the required string
-                                    print ("swag_process_definition_from_body; adding required:", required)
-                                    object["required"] = required
-                                    required_inobject = 1
+
                                 if name != "None":
                                     object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
                                     print ("swag_process_definition_from_body: name :", name)
                                     print ("swag_process_definition_from_body: adding :", object_string)
+                                    if counter < num_items:
+                                        object_string += ","
                                     adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
-                                    if first  is True:
-                                        first = False
-                                        self.swag_write_stringln(adjusted_text)
-                                        #self.swag_write_stringln("----------")
+                                    self.swag_write_stringln('"'+name + '" :')
+                                    self.swag_write_stringln(adjusted_text)
+                    
+                    if required is None:
+                        self.swag_write_stringln('}')
+                    else:
+                        self.swag_write_stringln('},')
+                        
+                    self.swag_decrease_indent()
+                    # add required statement 
+                    if required is not None:
+                        print ("required properties", required)
+                        self.swag_write_stringln('"required": '+self.list_to_array(required)+"")
+                                                            
                 self.swag_decrease_indent()
+                self.swag_write_stringln('}')
 
     def swag_add_definitions(self, parse_tree ):
         """
@@ -2381,7 +2475,7 @@ class CreateDoc(object):
     def get_first_display_name(self, parse_tree):
         """
         retrieve the first display name found
-        :param parsetree:
+        :param parse_tree:
         :return:
         """
         for resource, obj in parse_tree.resources.items():
@@ -2576,6 +2670,7 @@ if __name__ == '__main__':
         pass
 
     print ("===================================")
+    print ("Raml2doc")
     print ("version: ", my_version)
 
     # argument parsing
@@ -2736,7 +2831,7 @@ if __name__ == '__main__':
 
     if swagger is not None:
         processor.generate_swagger()
-        processor.swag_process_schemas()
+        #processor.swag_process_schemas()
 
     for resource, obj in processor.parsetree.resources.items():
         print ("resource :", resource)

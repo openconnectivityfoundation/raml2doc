@@ -26,6 +26,7 @@
 
 PYTHON_EXE=C:\\python27\\python.exe
 RAML2DOC=../src/raml2doc.py
+RESOLVER=../src/resolve_json_schema.py
 #
 # swagger2doc, uses python 3
 # https://github.com/openconnectivityfoundation/swagger2doc
@@ -93,7 +94,7 @@ function my_test {
 
 function my_test_in_dir {
     mkdir -p $OUTPUT_DIR/$TEST_CASE
-    $PYTHON_EXE $RAML2DOC $* > $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT 2>&1
+    $PYTHON_EXE $RAML2DOC $* >> $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT 2>&1
     #compare_file $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT $REF_DIR/$TEST_CASE/$TEST_CASE$EXT
 }
 
@@ -104,6 +105,12 @@ function add_to_doc {
     #compare_file $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT $REF_DIR/$TEST_CASE/$TEST_CASE$EXT
 }
 
+containsElement () {
+  local e match="$1"
+  shift
+  for e; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
 
 crop_string_ends() {
     STR="$1"
@@ -137,19 +144,54 @@ cp $IN_DIR/examples/* $OUTPUT_DIR/copy-resolved/examples/.
 cp $IN_DIR/schemas/* $OUTPUT_DIR/copy-resolved/schemas/.
 
 
+ignorelist=( dummy oic.baseResoure.json oic.core.json oic.core-schema.json oic.oic-link-schema.json oic.baseResource.json oic.basecorecomposite.json)
+
+#for file in $IN_DIR$SCHEMA_DIR/*.json
+#do
+#    if [[ $file != *".swagger.json" ]]; then
+#        echo "converting $file to $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)"
+#        mybasename=$(basename $file)
+#        containsElement $mybasename ${ignorelist[@]}
+#        retvalue=$?
+#        if [[ $retvalue == 0 ]]; then 
+#            echo "ignoring $(basename $file)"
+#            cp $file $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+#        else    
+#            node node-resolver.js $file    >  $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+#            if [[ -s $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file) ]]; then
+#                echo "generated."
+#            else
+#                echo "empty file, deleting."
+#                rm -f $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+#            fi
+#        fi 
+#    fi
+#done
+
+
 for file in $IN_DIR$SCHEMA_DIR/*.json
 do
     if [[ $file != *".swagger.json" ]]; then
         echo "converting $file to $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)"
-        node node-resolver.js $file    >  $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
-        if [[ -s $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file) ]]; then
-            echo "generated."
-        else
-            echo "empty file, deleting."
-            rm -f $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
-        fi
+        mybasename=$(basename $file)
+        containsElement $mybasename ${ignorelist[@]}
+        retvalue=$?
+        if [[ $retvalue == 0 ]]; then 
+            echo "ignoring $(basename $file)"
+            cp $file $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+        else    
+            $PYTHON3_EXE $RESOLVER -schema  $file -out  $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+            if [[ -s $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file) ]]; then
+                echo "generated."
+            else
+                echo "empty file, deleting."
+                rm -f $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+            fi
+        fi 
     fi
 done
+
+
 
 IN_DIR=$OUTPUT_DIR/copy-resolved
 
@@ -167,11 +209,15 @@ do
         #copy stuff ....
         TEST_CASE=$basename
         mkdir -p $OUTPUT_DIR/$TEST_CASE
+        
+        rm -f $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT
         string_all=`grep ResURI: $file`
         string_1=`grep ResURI? $file`
         string_2=`grep InterfaceURI: $file`
         string_3=`grep ^/oic/ $file`
-        string_all="$string_all $string_1 $string_2 $string_3"
+        string_4=`grep URI: $file`
+        string_5=`grep /example/ $file`
+        string_all="$string_all $string_1 $string_2 $string_3 $string_4  $string_5"
         echo " url to be processed: $string_all"
         for string in $string_all
         do
@@ -185,7 +231,7 @@ do
             mydir=`pwd`
             pushd `pwd`
             cd $OUTPUT_DIR/$TEST_CASE
-            echo " running swagger valiator at $OUTPUT_DIR/$TEST_CASE on $TEST_CASE_$URI.swagger.json"
+            echo " running swagger validator at $OUTPUT_DIR/$TEST_CASE on $TEST_CASE_$URI.swagger.json"
             wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json >> $mydir/$outfile 2>&1
             popd
             echo " running swagger2doc on $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$URI.swagger.json "
