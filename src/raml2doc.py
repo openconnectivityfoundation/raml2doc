@@ -2544,7 +2544,9 @@ class CreateDoc(object):
                 print (schema_file)
                 json_dict = load_json_schema(schema_file, args['schemadir'])
                 #fix_references_dict(json_dict)
-                required = find_key_link(json_dict, 'required')
+                #equired = find_key_link(json_dict, 'required')
+                required = json_dict.get("required")
+                
                 definitions = find_key_link(json_dict, 'definitions')
                 required_inobject = find_key_link(definitions, 'required')
                 #full_definitions = self.swag_add_references_as_include(json_dict, definitions)
