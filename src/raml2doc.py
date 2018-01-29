@@ -2468,7 +2468,7 @@ class CreateDoc(object):
         verify the generated swagger file.
         easy verification: only check is that it is an valid json file
         """
-        print ("swag_verify")
+        print ("swag_verify (json syntax only)")
         input_string_schema = open(self.swagger, 'r').read()
         json_dict =json.loads(input_string_schema)
 
