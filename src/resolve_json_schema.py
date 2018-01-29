@@ -161,7 +161,8 @@ class FlattenSchema(object):
         self.tab = "  "
         self.indent =""
         self.input_file = input_file
-        self.output_file = output_file
+        self.output_temp = output_file+"temp"
+        self.output_file = output_file = output_file
         #self.dir = schema_dir
         self.schema_ignorelist = ['required', '$schema', 'type', 'definitions', 'description',
                                   'properties', ":", ":{", "minItems", "attribute", "format", "allOf", "$ref", "enum",
@@ -226,98 +227,24 @@ class FlattenSchema(object):
         # now change the reference value only
         self.fix_references_dict(definitionlist, definitionlist, propertylist, defupdate=False)
         
+      
+    
+    def processAllOf(self, mydict, propertieslist, recursion=" "):
+        if isinstance(mydict, dict) :
+            props = mydict.get("properties")
+            allOf = mydict.get("allOf")
+            if props is not None:
+                for propname, prop in props.items():
+                    propertieslist[propname] = prop
+            if allOf is not None:
+                for item in allOf:
+                    # this should be an dict.
+                    propitem = item.get("properties")
+                    if propitem is not None:
+                        for propname, prop in propitem.items():
+                            propertieslist[propname] = prop
+      
         
-               
-    
-    def processAllOf(self, all_off_list, definitions, propertieslist, recursion=" "):
-        print (recursion + "processAllOf")
-    
-        for allOfobject in all_off_list:
-                # looping over all schema names..
-                for name, refObject in allOfobject.items():
-                    if isinstance(refObject, dict):
-                        allOffKey = refObject.get("allOf")
-                        if allOffKey is not None:
-                            self.processAllOf(allOffKey, definitions, propertieslist, recursion+" ")
-                        else:
-                            propkey = find_key(refObject,"properties")
-                            if propkey is not None:
-                                for propname, propdict in propkey.items():
-                                    print (recursion + "= prop: name", propname)
-                                    propertieslist[propname] = propdict    
-                            else:
-                                for propname, propdict in refObject.items():
-                                    print (recursion + "= prop name:", propname)
-                                    propertieslist[propname] = propdict    
-                        
-                    elif isinstance(refObject, list):
-                    
-                        print(recursion +"processAllOf list", refObject)
-                                               #/definitions/
-                    elif name.startswith("$ref"):
-                        print (recursion + "===> refObject: ",refObject)
-                        if refObject.startswith("#/definitions/"):
-                            print (recursion + "==> definition found: ", refObject)
-                            
-                            print (recursion + "==> definition found: ", definitions)
-                            
-                            definitionAllOff = definitions.get("allOf")
-                            if definitionAllOff is not None:
-                                print (recursion + "==> definition AllOff:", definitionAllOff)
-                                self.processAllOf(definitionAllOff, definitions, propertieslist, recursion+" ")
-                            else:
-                                propkey = find_key(definitions, "properties")
-                                if propkey is not None:
-                                    for propname, propdict in propkey.items():
-                                        print (recursion + "= prop name:",propname)
-                                        propertieslist[propname] = propdict
-                        else:
-                            print (recursion + "==> referenced file: ", refObject)
-                            splitted_file = refObject.split("#/definitions/")
-                            filename = splitted_file[0]
-                            #if filename in ["object"]:
-                            #    continue
-                            
-                            filename_def = ""
-                            if len(splitted_file) > 1:
-                                filename_def = refObject.split("#/definitions/")[1]
-                            print (recursion + "==> referenced split file: ", filename, filename_def)
-                            file_dict = load_json_schema(filename, self.basedir)
-                            print (recursion + "==> reading file: ", filename)
-                            print (recursion + "==> reading file: ", file_dict)
-                            
-                            
-                            if file_dict is not None:
-                                fileAllOff = file_dict.get("allOf")
-                                filedefinitions = file_dict.get("definitions")
-                                if fileAllOff is not None:
-                                        print (recursion + "==> fileAllOff:", fileAllOff)
-                                        self.processAllOf(fileAllOff, filedefinitions, propertieslist, recursion+" ")
-                                else:
-                                    filedefinitions = file_dict.get("definitions")
-                                    filedefkey = find_key_link(filedefinitions, filename_def)
-                                    fileprops = find_key_link(filedefkey, "properties")
-                                    
-                                    fileallOff = filedefkey.get("allOff")
-                                    if fileallOff is not None:
-                                        self.processAllOf(fileallOff, filedefinitions, propertieslist, recursion+" ") 
-                                    else:
-                                        for propname, propdict in fileprops.items():
-                                            print (recursion + "==> propname :", propname)
-                                            if propname in ["allOf"]:
-                                                self.processAllOf(propdict, filedefinitions, propertieslist, recursion+" ")
-                                            else:
-                                                print (recursion +"= definition: name", propname)
-                                                propkey = find_key(refObject,"properties")
-                                                if propkey is not None:
-                                                    for propname, propdict in propkey.items():
-                                                        print (recursion + "= prop name:", propname)
-                                                        propertieslist[propname] = propdict    
-                                                else:
-                                                    if isinstance(refObject, dict):
-                                                        for propname, propdict in refObject.items():
-                                                            print (recursion + "= prop name:", propname)
-                                                            propertieslist[propname] = propdict    
           
     
     def process(self):
@@ -396,6 +323,49 @@ class FlattenSchema(object):
             self.write_stringln('"required":'+list_to_array(required))
         
         self.closefile()
+        
+        
+        import jsonref
+        #json_dump = json.load(open(self.output_temp))
+        json_file = open(self.output_temp,"r")
+        json_str = json_file.read()
+        #print (json_str)
+        
+        resolved_json = jsonref.loads(json_str)
+        resolved_string = json.dumps(resolved_json, sort_keys=True, indent=2, separators=(',', ': '))
+        
+        json_dict =json.loads(resolved_string)
+        
+        # remove the definitions, they are resolved!!
+        definitions = json_dict.get("definitions")
+        if definitions is not None:
+            json_dict.pop('definitions')
+            
+        #resolved_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
+        #print (resolved_string)
+       
+        # remove first level of oneOff
+        properties = {}
+        self.processAllOf(json_dict, properties);
+        json_dict["properties"] = properties
+        allOf = json_dict.get("allOf")
+        if allOf is not None:
+            json_dict.pop('allOf')
+
+        resolved_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
+        print (resolved_string)
+       
+        f = open(self.output_file, "w")
+        f.write(resolved_string)
+        f.close();
+        
+       
+        
+        
+        prop_string = json.dumps(properties, sort_keys=True, indent=2, separators=(',', ': '))
+        print (prop_string)
+        
+        
         self.verify()
     
     def increase_indent(self):
@@ -440,14 +410,11 @@ class FlattenSchema(object):
         :param version: version of the API (e.g. not the swagger version
         :param title: title of the API
         """
-        self.f = open(self.output_file, "w")
+        self.f = open(self.output_temp, "w")
         self.indent = ""
 
         self.write_stringln("{")
-        self.increase_indent()
-        #self.write_stringln('"$schema": "http://json-schema.org/draft-04/schema#",')
-        #self.write_stringln('"description" : "Copyright (c) 2016 Open Connectivity Foundation, Inc. All rights reserved.",')
-        
+        self.increase_indent()        
             
     
     def closefile(self):
@@ -465,9 +432,16 @@ class FlattenSchema(object):
         verify the generated swagger file.
         easy verification: only check is that it is an valid json file
         """
-        print ("verify")
+        
+        print ("verify json temp syntax :")
+        input_string_schema = open(self.output_temp, 'r').read()
+        json_dict =json.loads(input_string_schema)
+        
+        print ("verify json syntax :")
         input_string_schema = open(self.output_file, 'r').read()
         json_dict =json.loads(input_string_schema)
+        
+        
         
    
     def read_file(self, filename):
