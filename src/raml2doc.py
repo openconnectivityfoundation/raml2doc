@@ -2343,43 +2343,46 @@ class CreateDoc(object):
                                     #print referencetag
                                     data = find_key_link(json_dict, referencetag)
                                     print data
-                                    if data.get("allOf"):
-                                        for subItem in data.get("allOf"):
-                                            print "====>", subItem
-                                            for subsubname, subsubobject in subItem.items():
-                                                if subsubname.startswith("$ref"):
-                                                    #print "TODO handle ref"
-                                                    subrefname = self.remove_prefix(subsubobject,"#/definitions/")
-                                                    refdata = find_key_link(json_dict, subrefname)
-                                                    print "=====xxxx=====>", subrefname, refdata
-                                                    props = find_key_link(refdata, 'properties')
-                                                    if props is not None:
-                                                        for dataname, dataobject in props.items():
-                                                            properties[dataname] = dataobject
-                                                    else:
-                                                        if isinstance(refdata, dict):
-                                                            for dataname, dataobject in refdata.items():
+                                    if data is not None:
+                                        if data.get("allOf"):
+                                            for subItem in data.get("allOf"):
+                                                print "====>", subItem
+                                                for subsubname, subsubobject in subItem.items():
+                                                    if subsubname.startswith("$ref"):
+                                                        #print "TODO handle ref"
+                                                        subrefname = self.remove_prefix(subsubobject,"#/definitions/")
+                                                        refdata = find_key_link(json_dict, subrefname)
+                                                        print "=====xxxx=====>", subrefname, refdata
+                                                        props = find_key_link(refdata, 'properties')
+                                                        if props is not None:
+                                                            for dataname, dataobject in props.items():
                                                                 properties[dataname] = dataobject
-                                                else:
-                                                    props = find_key_link(subsubobject, 'properties')
-                                                    if props is not None:
-                                                        for dataname, dataobject in props.items():
-                                                            properties[dataname] = dataobject
+                                                        else:
+                                                            if isinstance(refdata, dict):
+                                                                for dataname, dataobject in refdata.items():
+                                                                    properties[dataname] = dataobject
                                                     else:
-                                                        if isinstance(subsubobject, dict):
-                                                            for dataname, dataobject in subsubobject.items():
+                                                        props = find_key_link(subsubobject, 'properties')
+                                                        if props is not None:
+                                                            for dataname, dataobject in props.items():
                                                                 properties[dataname] = dataobject
+                                                        else:
+                                                            if isinstance(subsubobject, dict):
+                                                                for dataname, dataobject in subsubobject.items():
+                                                                    properties[dataname] = dataobject
+                                                            
                                                         
-                                                    
-                                    else:
-                                        props = find_key_link(data, 'properties')
-                                        if props is not None:
-                                            for dataname, dataobject in props.items():
-                                                properties[dataname] = dataobject
                                         else:
-                                            if isinstance(subsubobject, dict):
-                                                for dataname, dataobject in subsubobject.items():
+                                            props = find_key_link(data, 'properties')
+                                            if props is not None:
+                                                for dataname, dataobject in props.items():
                                                     properties[dataname] = dataobject
+                                            else:
+                                                if isinstance(subsubobject, dict):
+                                                    for dataname, dataobject in subsubobject.items():
+                                                        properties[dataname] = dataobject
+                                    else:
+                                        print "reference tag not found!", referencetag
                                         
                             
                         required_inobject = find_key_link(definitions, 'required')
