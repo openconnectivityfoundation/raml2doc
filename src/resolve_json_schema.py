@@ -328,8 +328,12 @@ class FlattenSchema(object):
         import jsonref
         #json_dump = json.load(open(self.output_temp))
         json_file = open(self.output_temp,"r")
-        json_str = json_file.read()
-        #print (json_str)
+        json_str = ""
+        try:
+            json_str = json_file.read()
+        except:
+            print ("ERROR....")
+            traceback.print_exc()
         
         resolved_json = jsonref.loads(json_str)
         resolved_string = json.dumps(resolved_json, sort_keys=True, indent=2, separators=(',', ': '))
@@ -340,10 +344,7 @@ class FlattenSchema(object):
         definitions = json_dict.get("definitions")
         if definitions is not None:
             json_dict.pop('definitions')
-            
-        #resolved_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
-        #print (resolved_string)
-       
+                   
         # remove first level of oneOff
         properties = {}
         self.processAllOf(json_dict, properties);
@@ -363,7 +364,7 @@ class FlattenSchema(object):
         
         
         prop_string = json.dumps(properties, sort_keys=True, indent=2, separators=(',', ': '))
-        print (prop_string)
+        #print (prop_string)
         
         
         self.verify()
@@ -434,12 +435,20 @@ class FlattenSchema(object):
         """
         
         print ("verify json temp syntax :")
-        input_string_schema = open(self.output_temp, 'r').read()
-        json_dict =json.loads(input_string_schema)
+        try:
+            input_string_schema = open(self.output_temp, 'r').read()
+            json_dict =json.loads(input_string_schema)
+        except:
+            traceback.print_exc()
         
         print ("verify json syntax :")
-        input_string_schema = open(self.output_file, 'r').read()
-        json_dict =json.loads(input_string_schema)
+        try:
+            input_string_schema = open(self.output_file, 'r').read()
+            json_dict =json.loads(input_string_schema)
+        except:
+            traceback.print_exc()
+        
+        print ("verify done...")
         
         
         
