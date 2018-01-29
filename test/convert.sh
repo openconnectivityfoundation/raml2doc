@@ -45,8 +45,14 @@ fi
 IN_DIR=$1
 OUTPUT_DIR=$2
 # swagger2doc extra arguments are $3
+echo " HELLO convert.sh"
+echo "================="
+echo "IN_DIR=$1"
+echo "OUTPUT_DIR=$2"
 echo "extra arguments: $3"
 echo "extra arguments: $4"
+echo "================="
+
 
 SCHEMA_DIR=""
 if [ -d $IN_DIR/schemas ]
@@ -100,7 +106,6 @@ function my_test_in_dir {
 
 
 function add_to_doc {
-    #mkdir -p $OUTPUT_DIR/$TEST_CASE
     $PYTHON3_EXE $SWAG2DOC $*
     #compare_file $OUTPUT_DIR/$TEST_CASE/$TEST_CASE$EXT $REF_DIR/$TEST_CASE/$TEST_CASE$EXT
 }
@@ -129,6 +134,8 @@ crop_string_ends() {
 }
 
 
+
+
 TEST_CASE="testcase_1"
 outfile="outfile.txt"
 
@@ -143,8 +150,11 @@ mkdir  $OUTPUT_DIR/copy-resolved/schemas
 cp $IN_DIR/examples/* $OUTPUT_DIR/copy-resolved/examples/.
 cp $IN_DIR/schemas/* $OUTPUT_DIR/copy-resolved/schemas/.
 
+#
+# these schema's should be kept intact since they will be referenced by other schemas.. e.g. the #defintion part needs to be there.
+#
+ignorelist=(dummy oic.core-schema.json oic.types-schema.json oic.oic-link-schema.json oic.baseResoure.json oic.core.json oic.core-schema.json oic.oic-link-schema.json oic.baseResource.json oic.basecorecomposite.json )
 
-ignorelist=( dummy oic.baseResoure.json oic.core.json oic.core-schema.json oic.oic-link-schema.json oic.baseResource.json oic.basecorecomposite.json)
 
 #for file in $IN_DIR$SCHEMA_DIR/*.json
 #do
@@ -172,7 +182,7 @@ ignorelist=( dummy oic.baseResoure.json oic.core.json oic.core-schema.json oic.o
 for file in $IN_DIR$SCHEMA_DIR/*.json
 do
     if [[ $file != *".swagger.json" ]]; then
-        echo "converting $file to $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)"
+        echo "converting/resolving $file to $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)"
         mybasename=$(basename $file)
         containsElement $mybasename ${ignorelist[@]}
         retvalue=$?
@@ -191,13 +201,12 @@ do
     fi
 done
 
-
+ echo "=================="
+ echo "Resolving done.."
+ echo "=================="
 
 IN_DIR=$OUTPUT_DIR/copy-resolved
 
-#for file in $IN_DIR/AirQu*.raml
-#for file in $IN_DIR/media*.raml
-#for file in $IN_DIR/*.raml
 for file in $IN_DIR/*.raml
 do
     if [[ -f $file ]]; then
@@ -233,6 +242,7 @@ do
             cd $OUTPUT_DIR/$TEST_CASE
             echo " running swagger validator at $OUTPUT_DIR/$TEST_CASE on $TEST_CASE_$URI.swagger.json"
             wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json >> $mydir/$outfile 2>&1
+            wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json
             popd
             echo " running swagger2doc on $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$URI.swagger.json "
             add_to_doc -docx $outfile.docx -swagger $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json -resource $URI -word_out $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.docx $3 $4
