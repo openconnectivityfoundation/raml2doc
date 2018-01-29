@@ -259,17 +259,18 @@ class FlattenSchema(object):
                 
         self.remove_external_references(json_dict, definitiondict, propertiesdict)
         
-        for entry, entryobject in definition.items():
-            definitiondict[entry] = entryobject
+        if definition is not None:
+            for entry, entryobject in definition.items():
+                definitiondict[entry] = entryobject
   
         #if allOf is not None:
         #   self.processAllOf(allOf_data, definitiondict, propertiesdict)
    
-        print ("\n\n") 
+        print ("\n") 
         print ("allOf      :", allOf_data)        
         print ("properties :", propertiesdict)
         print ("required   :", required)
-        print ("\n\n") 
+        print ("\n") 
                 
         # start writing the output file       
         self.openfile()
@@ -354,7 +355,7 @@ class FlattenSchema(object):
             json_dict.pop('allOf')
 
         resolved_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
-        print (resolved_string)
+        #print (resolved_string)
        
         f = open(self.output_file, "w")
         f.write(resolved_string)
@@ -434,14 +435,14 @@ class FlattenSchema(object):
         easy verification: only check is that it is an valid json file
         """
         
-        print ("verify json temp syntax :")
+        print ("verify json syntax on temp file:",self.output_temp)
         try:
             input_string_schema = open(self.output_temp, 'r').read()
             json_dict =json.loads(input_string_schema)
         except:
             traceback.print_exc()
         
-        print ("verify json syntax :")
+        print ("verify json syntax on output file:",self.output_file)
         try:
             input_string_schema = open(self.output_file, 'r').read()
             json_dict =json.loads(input_string_schema)
@@ -559,5 +560,8 @@ if __name__ == '__main__':
 
     if processor is not None:
         processor.process()
+        
+    
+    print ("===========DONE==============")    
    
     
