@@ -154,7 +154,7 @@ cp $IN_DIR/schemas/* $OUTPUT_DIR/copy-resolved/schemas/.
 # these schema's should be kept intact since they will be referenced by other schemas.. e.g. the #defintion part needs to be there.
 #
 ignorelist=(dummy oic.core-schema.json oic.types-schema.json oic.collection.linkslist-schema.json oic.collection-schema.json oic.oic-link-schema.json oic.baseResoure.json oic.core.json oic.core-schema.json oic.oic-link-schema.json oic.baseResource.json oic.basecorecomposite.json )
-notflatten=(dummy oic.r.airqualitycollection.json oic.r.airqualitycollection-ll.json oic.r.consumablecollection.json oic.r.consumablecollection-ll.json oic.r.heatingzonecollection-ll.json oic.r.heatingzonecollection.json )
+notflatten=(dummy oic.r.airqualitycollection.json oic.r.airqualitycollection-ll.json oic.r.consumablecollection.json oic.r.consumablecollection-ll.json oic.r.heatingzonecollection-ll.json oic.r.heatingzonecollection.json oic.rd.publish-schema.json)
 
 # old node.js based...
 #for file in $IN_DIR$SCHEMA_DIR/*.json
