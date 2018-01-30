@@ -408,10 +408,11 @@ class FlattenSchema(object):
             resolved_string = json.dumps(resolved_json, sort_keys=True, indent=2, separators=(',', ': '))
             json_dict =json.loads(resolved_string)
         
-        # remove the definitions, they are resolved!!
-        definitions = json_dict.get("definitions")
-        if definitions is not None:
-            json_dict.pop('definitions')
+        if resolve_internal == True:
+            # remove the definitions, they are resolved!!
+            definitions = json_dict.get("definitions")
+            if definitions is not None:
+                json_dict.pop('definitions')
                    
         # remove first level of oneOff
         properties = {}

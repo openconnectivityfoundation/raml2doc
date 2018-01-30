@@ -686,6 +686,9 @@ class CreateDoc(object):
                                   "maxitems",
                                   "minimum", "maximum", "pattern", "readOnly", "minProperties", "additionalItems"]
         self.schema_types = ['boolean', 'array', 'object', 'enum', 'number', 'string']
+        
+        self.defintions_from_schema = {}
+        
 
     def list_resource(self, level, lt_resource, lt_obj):
         """
@@ -2324,11 +2327,16 @@ class CreateDoc(object):
                         definitions = find_key_link(json_dict, 'definitions')
                         if definitions is None:
                             print ("swag_process_definition_from_body: no definitions found for schema:", schema_name)
-                        #print definitions
-                        # getting all properties    
-                        
-                        
-                        #properties = find_key_link(json_dict, 'properties')
+                            
+                        # make sure that if there are local references in the schema that the existing defintions are copied.
+                        reference = find_key_link(json_dict, '$ref')
+                        if reference is not None:
+                            print ("swag_process_definition_from_body : definitions should be added.")
+                            if definitions is not None:
+                                for defname, defobject in definitions.items():
+                                    print ("  swag_process_definition_from_body : definition name:", defname)
+                                    self.defintions_from_schema[defname] = defobject
+            
                         properties = json_dict.get('properties')
                         if properties is None:
                             print ("swag_process_definition_from_body: no properties found for schema:", schema_name)
@@ -2393,6 +2401,8 @@ class CreateDoc(object):
                                         
                             
                         required_inobject = find_key_link(definitions, 'required')
+                        
+                        
                         #full_definitions = self.swag_add_references_as_include(json_dict, definitions)
                         full_definitions = properties
                         
@@ -2461,6 +2471,17 @@ class CreateDoc(object):
 
                                         print ("swag_add_definitions: response")
                                         self.swag_process_definition_from_body (processed_schemas, body )
+                                        
+        if self.defintions_from_schema is not None:
+            counter = len(self.defintions_from_schema)
+            print ("swag_add_definitions adding definitions:", counter)
+            for defname, defobject in self.defintions_from_schema.items():
+                print ("  swag_add_definitions adding definition:", defname)
+                object_string = json.dumps(defobject, sort_keys=True, indent=2, separators=(',', ': '))
+                adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
+                self.swag_write_stringln(',"'+defname + '" :')
+                self.swag_write_stringln(adjusted_text)
+                
         # close definitions
         self.swag_decrease_indent()
         self.swag_write_stringln('}')
