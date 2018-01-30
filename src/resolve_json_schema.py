@@ -147,14 +147,10 @@ def load_json_schema(filename, dir):
     return json_dict   
    
    
-   
-   
-   
-   
 class FlattenSchema(object):
     def __init__(self, input_file, output_file):
         """
-        initialize the class
+        initialize the Flatten/Resolve schema class.
 
 
         """
@@ -176,17 +172,24 @@ class FlattenSchema(object):
     
 
     def fix_references_dict(self, mydict, defintionlist, propertylist, iteration=0, defupdate=True):
+        """
+        fix the external reference, e.g. make them internal
+        dict part... see also the list part
+        :param mydict: dict (json schema) to work on
+        :param defintionlist: definition list to add the internal definitions to
+        :param propertylist: properties list to add the properties too, e.g. no $ref used 
+        :param iteration: recursion counter
+        :param defupdate: update the definition, default is yes, 
+        """
         if iteration == 0:
             print ("fix_references_dict: fixing references")
         for key, value in mydict.items():
             if isinstance(value, list):
-                #print ("list_value", value)
                 self.fix_references_list(value, defintionlist, propertylist, defupdate=defupdate)
             elif isinstance(value, dict):
                 self.fix_references_dict(value, defintionlist, propertylist, iteration=1, defupdate=defupdate)
             else:
                 if str(key) in ["$ref"]:
-                    #print ("fix_references_dict: $ref value:", value)
                     if value.startswith("#/definitions/") == False:
                         # external reference.. 
                         print ("fix_references_dict: $ref value:", value)
@@ -210,6 +213,14 @@ class FlattenSchema(object):
                    
 
     def fix_references_list(self, l, defintionlist, propertylist, defupdate=True):
+        """
+        fix the external reference, e.g. make them internal
+        list part... see also the dict part
+        :param l: list (json schema) to work on
+        :param defintionlist: definition list to add the internal definitions to
+        :param propertylist: properties list to add the properties too, e.g. no $ref used 
+        :param defupdate: update the definition, default is yes, 
+        """
         for index, item in enumerate(l):
             if isinstance(item, dict):
                 self.fix_references_dict(item, defintionlist, propertylist,iteration=1, defupdate=defupdate)
@@ -220,6 +231,15 @@ class FlattenSchema(object):
 
 
     def remove_external_references(self, json_dict, definitionlist, propertylist, recursion= " "):
+        """
+        remove the external references
+        2 step approach, first create the definition part from the external references
+        then fix the external reference in the just added definition part itself
+        :param json_dict: dict (json schema) to work on
+        :param defintionlist: definition list to add the internal definitions to
+        :param propertylist: properties list to add the properties too, e.g. no $ref used 
+        :param recursion: recursing indication
+        """
         print (recursion + "remove_external_references")
         self.fix_references_dict(json_dict, definitionlist, propertylist)
         # fix the references in the definition list
@@ -232,6 +252,15 @@ class FlattenSchema(object):
       
     
     def processAllOf(self, mydict, propertieslist, recursion=" "):
+        """
+        code to remove the allOff construct by flatten it.
+        this is a bit of fiddling around with dicts/lists
+        the allOff is an list, all other things are dicts.
+        this goes down 3 levels (as currently used in oneIOTA definitions)
+        :param mydict: dict (json schema) to work on
+        :param propertylist: properties list to add the properties too, e.g. no $ref used 
+        :param recursion: recursing indication
+        """
         if isinstance(mydict, dict) :
             props = mydict.get("properties")
             allOf = mydict.get("allOf")
@@ -292,7 +321,7 @@ class FlattenSchema(object):
         
           
     
-    def process(self, flatten=True):
+    def process(self, resolve_internal=True):
         print (self.input_file)
         json_dict = load_json_schema(self.input_file, "")
         #fix_references_dict(json_dict)
@@ -370,8 +399,8 @@ class FlattenSchema(object):
         # read the contents of the temp file
         json_dict = load_json_schema(self.output_temp, "")
         
-        if flatten == True:
-            # flatten the file, e.g. resolve the internal references.
+        if resolve_internal == True:
+            # resolve the internal references.
             # e.g. replace the json_dict with the resolved dict
             import jsonref
             json_str = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
@@ -526,7 +555,6 @@ class FlattenSchema(object):
 
 
     def add_justification_smart(self, depth, input_string, no_dot_split=True):
-
         """
         add the spaces for an correct indentation of the generated RAML code section
         for descriptions in the RAML definitions
@@ -561,6 +589,7 @@ if __name__ == '__main__':
 
     # version information
     my_version = "1.0"
+    program_name="resolve_json_schema"
     #try:
     #    from version import VERSION#
     #
@@ -569,22 +598,31 @@ if __name__ == '__main__':
     #    pass
 
     print ("===================================")
-    print ("resolve_json_schema")
+    print (program_name)
     print ("version: ", my_version)
 
     # argument parsing
-    parser = argparse.ArgumentParser(description='Flatten JSON schemas')
+    parser = argparse.ArgumentParser(description='Resolve and Flatten JSON schemas')
     parser.add_argument('-schema', '--schema', help='input file schema')
     parser.add_argument('-out', '--out', help='output file schema')
+    parser.add_argument('-resolveInternal', '--resolveInternal', help='resolve internal references (e.g. avoid blow up of recursion),  (--resolveInternal true)')
     args = vars(parser.parse_args())
 
     infile = args['schema']
     outfile = args['out']
-    
-    print ("===========================")
+    resolve_internal_switch = args['resolveInternal']
+
+    if resolve_internal_switch is None:
+        resolve_internal_switch = False
+    else:
+        resolve_internal_switch = True
+        
+    print ("===================================")
     print ("using current directory   :", my_dir)
     print ("using schema file         :", infile)
     print ("using outfile file        :", outfile)
+    print ("using resolveInternal     :", resolve_internal_switch)    
+    print ("===================================")
     
 
     if my_dir:
@@ -597,9 +635,9 @@ if __name__ == '__main__':
         processor = FlattenSchema(infile, outfile)
 
     if processor is not None:
-        processor.process()
+        processor.process(resolve_internal=resolve_internal_switch)
         
     
-    print ("===========DONE==============")    
+    print ("===========DONE==============",program_name)    
    
     
