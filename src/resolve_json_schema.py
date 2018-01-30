@@ -204,6 +204,8 @@ class FlattenSchema(object):
                             propkey = find_key(file_dict, reference)
                             if propkey is not None:
                                 defintionlist[reference] = propkey
+                            else:
+                                print (" ERROR could not reference ", reference, " in file", filename )
                         
                    
 
@@ -235,19 +237,62 @@ class FlattenSchema(object):
             allOf = mydict.get("allOf")
             if props is not None:
                 for propname, prop in props.items():
+                    print (recursion+"processAllOf : properties adding,", propname)
                     propertieslist[propname] = prop
             if allOf is not None:
                 for item in allOf:
                     # this should be an dict.
                     propitem = item.get("properties")
+                    allOfitem = mydict.get("allOf")
                     if propitem is not None:
+                        # add all items of the property list of the object
                         for propname, prop in propitem.items():
+                            print (recursion+"processAllOf : allof adding", propname)
                             propertieslist[propname] = prop
+                    elif allOfitem is not None:
+                        print (recursion+"handling alloff", allOfitem)
+                        # the object starts with oneOf
+                        for item_2 in allOfitem:
+                            if isinstance(item_2, dict):
+                                for item3name, item3object in item_2.items():
+                                    # add the reference
+                                    if item3name in ["$ref"]:
+                                        propertieslist[item3name] = item3object
+                                    elif item3name in ["properties"]:
+                                        # add the properties
+                                        for item4name, item4object in item3object.items():
+                                            print (recursion+"processAllOf 3: adding", item4name)
+                                            propertieslist[item4name] = item4object
+                                    elif item3name in ["allOf"]:
+                                        if isinstance(item3object, list):
+                                            for itemlistobject in item3object:
+                                                if isinstance(itemlistobject, dict):
+                                                    for item4name, item4object in itemlistobject.items():
+                                                        if item4name in ["properties"]:
+                                                            for item5name, item5object in item4object.items():
+                                                                print (recursion+"processAllOf dict props5: adding", item5name)
+                                                                propertieslist[item5name] = item5object
+                                                        else:
+                                                            print (recursion+"processAllOf ERROR: not handled (lv3): ", item4name, item4object)
+                                                elif isinstance(itemlistobject, list):
+                                                    for listitem in itemlistobject:
+                                                        for item4name, item4object in listitem.items():
+                                                            if item4name in ["properties"]:
+                                                                for item5name, item5object in item4object.items():
+                                                                    print (recursion+"processAllOf list props5: adding", item5name)
+                                                                    propertieslist[item5name] = item5object
+                                                            else:
+                                                                print (recursion+"processAllOf ERROR: not handled (lv4): ", item4name, item4object)
+                                                    
+                                    else:
+                                        print ("processAllOf ERROR: not handled: ", item3name)
+                                        
+                    
       
         
           
     
-    def process(self):
+    def process(self, flatten=True):
         print (self.input_file)
         json_dict = load_json_schema(self.input_file, "")
         #fix_references_dict(json_dict)
@@ -262,10 +307,7 @@ class FlattenSchema(object):
         if definition is not None:
             for entry, entryobject in definition.items():
                 definitiondict[entry] = entryobject
-  
-        #if allOf is not None:
-        #   self.processAllOf(allOf_data, definitiondict, propertiesdict)
-   
+                
         print ("\n") 
         print ("allOf      :", allOf_data)        
         print ("properties :", propertiesdict)
@@ -325,21 +367,17 @@ class FlattenSchema(object):
         
         self.closefile()
         
+        # read the contents of the temp file
+        json_dict = load_json_schema(self.output_temp, "")
         
-        import jsonref
-        #json_dump = json.load(open(self.output_temp))
-        json_file = open(self.output_temp,"r")
-        json_str = ""
-        try:
-            json_str = json_file.read()
-        except:
-            print ("ERROR....")
-            traceback.print_exc()
-        
-        resolved_json = jsonref.loads(json_str)
-        resolved_string = json.dumps(resolved_json, sort_keys=True, indent=2, separators=(',', ': '))
-        
-        json_dict =json.loads(resolved_string)
+        if flatten == True:
+            # flatten the file, e.g. resolve the internal references.
+            # e.g. replace the json_dict with the resolved dict
+            import jsonref
+            json_str = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
+            resolved_json = jsonref.loads(json_str)
+            resolved_string = json.dumps(resolved_json, sort_keys=True, indent=2, separators=(',', ': '))
+            json_dict =json.loads(resolved_string)
         
         # remove the definitions, they are resolved!!
         definitions = json_dict.get("definitions")

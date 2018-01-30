@@ -2342,10 +2342,11 @@ class CreateDoc(object):
                                     referencetag = self.remove_prefix(refobject,"#/definitions/")
                                     #print referencetag
                                     data = find_key_link(json_dict, referencetag)
-                                    print data
+                                    print "reference tag";, referencetag, data
                                     if data is not None:
-                                        if data.get("allOf"):
-                                            for subItem in data.get("allOf"):
+                                        data_allOf = data.get("allOf")
+                                        if data_allOf is not None:
+                                            for subItem indata_allOf:
                                                 print "====>", subItem
                                                 for subsubname, subsubobject in subItem.items():
                                                     if subsubname.startswith("$ref"):
