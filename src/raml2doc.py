@@ -943,26 +943,29 @@ class CreateDoc(object):
         """
         try:
             if isinstance(properties, dict):
-                print ("fill_properties_table: property:", prop)
-                description_text = properties[prop].get('description', "")
-                read_only = properties[prop].get('readOnly', None)
-                type = properties[prop].get('type')
-                if type is None:
-                    type = "multiple types: see schema"
-                if type == "array":
-                    type += ": see schema"
-                if type == "object":
-                    type += ": see schema"
-                row_cells = self.tableAttribute.add_row().cells
-                row_cells[0].text = str(prop)+ postfix
-                row_cells[1].text = str(type)
-                if str(prop) in required_props:
-                    row_cells[2].text = "yes"
-                if read_only is not None and read_only is True:
-                    row_cells[3].text = "Read Only"
-                if read_only is not None and read_only is False:
-                    row_cells[3].text = "Read Write"
-                row_cells[4].text = description_text
+                if isinstance( properties[prop], dict):
+                    print ("fill_properties_table: property:", prop)
+                    description_text = properties[prop].get('description', "")
+                    read_only = properties[prop].get('readOnly', None)
+                    type = properties[prop].get('type', None)
+                    if type is None:
+                        type = "multiple types: see schema"
+                    if type == "array":
+                        type += ": see schema"
+                    if type == "object":
+                        type += ": see schema"
+                    row_cells = self.tableAttribute.add_row().cells
+                    row_cells[0].text = str(prop)+ postfix
+                    row_cells[1].text = str(type)
+                    if str(prop) in required_props:
+                        row_cells[2].text = "yes"
+                    if read_only is not None and read_only is True:
+                        row_cells[3].text = "Read Only"
+                    if read_only is not None and read_only is False:
+                        row_cells[3].text = "Read Write"
+                    row_cells[4].text = description_text
+                else:
+                    print ("fill_properties_table: WARNING property not handled:", prop)
 
         except:
             traceback.print_exc()
@@ -983,14 +986,17 @@ class CreateDoc(object):
             for prop in properties:
                 # fill the table
                 self.fill_properties_table(properties, prop, required_props)
-                type = properties[prop].get('type')
-                if type in ["array", "object"]:
-                    print ("array/object found:", prop)
-                    array_properties = find_key_link(properties[prop], 'properties')
-                    if array_properties is not None:
-                        postfix = "\n("+prop+")"
-                        for a_prop in array_properties:
-                            self.fill_properties_table(array_properties, a_prop, required_props, postfix =postfix)
+                if isinstance(properties[prop], dict):
+                    type = properties[prop].get('type')
+                    if type in ["array", "object"]:
+                        print ("array/object found:", prop)
+                        array_properties = find_key_link(properties[prop], 'properties')
+                        if array_properties is not None:
+                            postfix = "\n("+prop+")"
+                            for a_prop in array_properties:
+                                self.fill_properties_table(array_properties, a_prop, required_props, postfix =postfix)
+                else:
+                    print ("parse_schema : not handled:",prop, properties[prop])
 
     def parse_schema_derived(self, input_string_schema):
         """

@@ -153,9 +153,10 @@ cp $IN_DIR/schemas/* $OUTPUT_DIR/copy-resolved/schemas/.
 #
 # these schema's should be kept intact since they will be referenced by other schemas.. e.g. the #defintion part needs to be there.
 #
-ignorelist=(dummy oic.core-schema.json oic.types-schema.json oic.oic-link-schema.json oic.baseResoure.json oic.core.json oic.core-schema.json oic.oic-link-schema.json oic.baseResource.json oic.basecorecomposite.json )
+ignorelist=(dummy oic.core-schema.json oic.types-schema.json oic.collection.linkslist-schema.json oic.collection-schema.json oic.oic-link-schema.json oic.baseResoure.json oic.core.json oic.core-schema.json oic.oic-link-schema.json oic.baseResource.json oic.basecorecomposite.json )
+notflatten=(dummy oic.r.airqualitycollection.json oic.r.airqualitycollection-ll.json oic.r.consumablecollection.json oic.r.consumablecollection-ll.json oic.r.heatingzonecollection-ll.json oic.r.heatingzonecollection.json )
 
-
+# old node.js based...
 #for file in $IN_DIR$SCHEMA_DIR/*.json
 #do
 #    if [[ $file != *".swagger.json" ]]; then
@@ -186,11 +187,20 @@ do
         mybasename=$(basename $file)
         containsElement $mybasename ${ignorelist[@]}
         retvalue=$?
+        
+        containsElement $mybasename ${notflatten[@]}
+        notflatten=$?
+        
+        resolve_arg=" --resolveInternal true"
+        if [[ $notflatten == 0 ]]; then 
+            resolve_arg=" "
+        fi
+        
         if [[ $retvalue == 0 ]]; then 
             echo "ignoring $(basename $file)"
             cp $file $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
         else    
-            $PYTHON3_EXE $RESOLVER -schema  $file -out  $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)
+            $PYTHON3_EXE $RESOLVER -schema  $file -out  $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file)  $resolve_arg
             if [[ -s $OUTPUT_DIR/copy-resolved$SCHEMA_DIR/$(basename $file) ]]; then
                 echo "generated."
             else
@@ -231,9 +241,7 @@ do
         for string in $string_all
         do
             URI=`crop_string_ends $string`
-            #VAR_URI=$(URI/\/ /_)
             VAR_URI=$(echo $URI | sed 's#/#_#g' | sed 's#?#_#g')
-            #URI=`echo $string | tail -c +2 | head -c -1`
             echo " processing $URI ($URI_VAR) from $file"
             my_test_in_dir  -docx ../input/ResourceTemplate.docx -schemadir $IN_DIR$SCHEMA_DIR -resource $URI -raml $file -outdocx $OUTPUT_DIR/$TEST_CASE_$VAR_URI.docx -swagger $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json
             echo $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json >> $outfile
@@ -241,8 +249,9 @@ do
             pushd `pwd`
             cd $OUTPUT_DIR/$TEST_CASE
             echo " running swagger validator at $OUTPUT_DIR/$TEST_CASE on $TEST_CASE_$URI.swagger.json"
-            wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json >> $mydir/$outfile 2>&1
-            wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json
+            output_swagger_validation=`wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json`
+            echo $output_swagger_validation >> $mydir/$outfile 2>&1
+            echo $output_swagger_validation
             popd
             echo " running swagger2doc on $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$URI.swagger.json "
             add_to_doc -docx $outfile.docx -swagger $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json -resource $URI -word_out $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.docx $3 $4
