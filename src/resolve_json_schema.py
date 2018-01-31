@@ -457,6 +457,26 @@ class FlattenSchema(object):
                 adjusted = self.add_justification_smart(self.indent, object_string)
                 self.write_stringln(adjusted)
                 self.decrease_indent()
+            else:
+                # write the top level but not definition, required, etc..
+                print ("process writing top level")
+                first = True
+                for topname, topobject in json_dict.items():
+                    if topname in ["$schema", "description", "id", "definitions"]:
+                        pass
+                    else:
+                        object_string = json.dumps(topobject, sort_keys=True, indent=2, separators=(',', ': '))
+                        adjusted = self.add_justification_smart(self.indent, object_string)
+                        if first == True:
+                            self.write_stringln('"'+topname+'" : ')
+                            self.write_stringln(adjusted)
+                        else:
+                            self.write_stringln(',"'+topname+'" : ')
+                            self.write_stringln(adjusted)
+                        first = False
+                            
+                        
+                
         else:
             self.write_stringln('"allOf" : ') 
             self.increase_indent()
