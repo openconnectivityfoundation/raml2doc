@@ -190,48 +190,48 @@ class FlattenSchema(object):
                 self.fix_references_dict(value, defintionlist, propertylist, iteration=1, defupdate=defupdate)
             else:
                 if str(key) in ["$ref"]:
-                    print ("fix_references_dict: reference found:", defupdate, key, value)
+                    print (" fix_references_dict: reference found:", defupdate, key, value)
                     if value.startswith("#/definitions/") == False:
                         # external reference.. 
-                        print (" fix_references_dict: $ref value:", value)
+                        print ("  fix_references_dict: $ref value:", value)
                         filename = value.split('#')[0]
-                        print (" fix_references_dict: fixing $ref file:", filename)
+                        print ("  fix_references_dict: fixing $ref file:", filename)
                         whole_file = True
                         reference = filename
                         try:
                             reference = value.split('#/definitions/')[1]
-                            print (" fix_references_dict: reference found:", reference)
+                            print ("  fix_references_dict: reference found:", reference)
                             whole_file = False
                         except:
-                            print (" fix_references_dict: reference NOT found (filename):", reference)
+                            print ("  fix_references_dict: reference NOT found (filename):", reference)
                             pass
                         new_reference = "#/definitions/"+reference
-                        print (" fix_references_dict: new reference:", new_reference)
-
+                        print ("  fix_references_dict: new reference:", new_reference)
                         mydict[key] = new_reference
+                        
                         if defupdate == True:
                             # add reference to the defintionlist
                             file_dict = load_json_schema(filename, self.basedir)
                             if whole_file == False:
                                 propkey = find_key(file_dict, reference)
                                 if propkey is not None:
-                                    print (" fix_references_dict: adding definition (reference):", reference)
+                                    print ("  fix_references_dict: adding definition (reference):", reference)
                                     defintionlist[reference] = propkey
                                 else:
                                     lastkey = reference.split("/")[-1]
-                                    print (" fix_references_dict: reference only key :", reference, lastkey)
+                                    print ("  fix_references_dict: reference only key :", reference, lastkey)
                                     propkey = find_key(file_dict, lastkey)
                                     if propkey is not None:
-                                        print (" fix_references_dict: adding definition (reference):", reference)
+                                        print ("  fix_references_dict: adding definition (reference):", reference)
                                         defintionlist[lastkey] = propkey
                                 
                                 
-                                    print (" ERROR could not reference ", reference, " in file", filename )
+                                    print ("  ERROR could not reference ", reference, " in file", filename )
                             else:
-                                print (" fix_references_dict: adding definition (file):", reference)
+                                print ("  fix_references_dict: adding definition (file):", reference)
                                 defintionlist[reference] = file_dict
                     else:
-                        print (" fix_references_dict: no need to update:", value)
+                        print ("  fix_references_dict: no need to update:", value)
                         
                    
 
@@ -263,13 +263,24 @@ class FlattenSchema(object):
         :param propertylist: properties list to add the properties too, e.g. no $ref used 
         :param recursion: recursing indication
         """
-        print (recursion + "remove_external_references")
+        print ("remove_external_references")
         self.fix_references_dict(json_dict, definitionlist, propertylist)
         # fix the references in the definition list
         # the following code adds the missing definitions in the defintionlist
+        
+        print ("=>remove_external_references 2rd pass: update the definition list")
         new_dict_deepcopy = deepcopy(definitionlist)
         self.fix_references_dict(new_dict_deepcopy, definitionlist, propertylist)
         # now change the reference value only
+        print ("=>remove_external_references 3rd pass: update the references")
+        new_dict_deepcopy = deepcopy(definitionlist)
+        self.fix_references_dict(new_dict_deepcopy, definitionlist, propertylist)
+        print ("=>remove_external_references 4th pass: the references")
+        new_dict_deepcopy = deepcopy(definitionlist)
+        self.fix_references_dict(new_dict_deepcopy, definitionlist, propertylist)
+        
+        # now change the reference value only
+        print ("=>remove_external_references 5th pass: update the references")
         self.fix_references_dict(definitionlist, definitionlist, propertylist, defupdate=False)
         
       
@@ -405,6 +416,10 @@ class FlattenSchema(object):
             self.write_stringln('"properties" : ')
             # the created property dict
             self.increase_indent()
+            if propertiesdict.get("type") is not None:
+                # remove type
+                propertiesdict.pop("type", None)
+            
             object_string = json.dumps(propertiesdict, sort_keys=True, indent=2, separators=(',', ': '))
             adjusted = self.add_justification_smart(self.indent, object_string)
             self.write_stringln(adjusted)
@@ -447,6 +462,7 @@ class FlattenSchema(object):
         self.processAllOf(json_dict, properties);
         if properties.get("items") is  None:
             # this is an object... so add the properties layer
+            properties.pop("type", None)
             json_dict["properties"] = properties
         else:
             # this is an array (without a name) so it should not have the properties layer, e.g. add all the items one by one..
