@@ -413,17 +413,19 @@ class FlattenSchema(object):
                
         if allOf_data is None:
             # add the properties tag
-            self.write_stringln('"properties" : ')
-            # the created property dict
-            self.increase_indent()
-            if propertiesdict.get("type") is not None:
-                # remove type
-                propertiesdict.pop("type", None)
             
-            object_string = json.dumps(propertiesdict, sort_keys=True, indent=2, separators=(',', ': '))
-            adjusted = self.add_justification_smart(self.indent, object_string)
-            self.write_stringln(adjusted)
-            self.decrease_indent()
+            # the created property dict
+            if propertiesdict is not None:
+                if propertiesdict.get("type") is not None:
+                    # remove type
+                    propertiesdict.pop("type", None)
+                    
+                self.increase_indent()    
+                self.write_stringln('"properties" : ')
+                object_string = json.dumps(propertiesdict, sort_keys=True, indent=2, separators=(',', ': '))
+                adjusted = self.add_justification_smart(self.indent, object_string)
+                self.write_stringln(adjusted)
+                self.decrease_indent()
         else:
             self.write_stringln('"allOf" : ') 
             self.increase_indent()
@@ -463,7 +465,23 @@ class FlattenSchema(object):
         if properties.get("items") is  None:
             # this is an object... so add the properties layer
             properties.pop("type", None)
-            json_dict["properties"] = properties
+            if properties.get("$ref") is not None:
+                # resolve the $ref at the top level of schema
+                value = properties.get("$ref")
+                #if value.startswith("#/definitions/"):
+                reference = value [len("#/definitions/"):]
+                #reference = value.split("#/definitions/", 1)[0]
+                print ("reference on top level:", value, reference)
+                proplist = find_key_link(definitiondict, reference)
+                if proplist.get("items") is not None:
+                    # top level is an array
+                    for prop, propitem in proplist.items():
+                        json_dict["prop"] = propitem
+                else:
+                    json_dict["properties"] = proplist.get("properties")
+            else:
+                # normal dict... just copy
+                json_dict["properties"] = properties
         else:
             # this is an array (without a name) so it should not have the properties layer, e.g. add all the items one by one..
             for propname, propobject in properties.items():
