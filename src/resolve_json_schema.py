@@ -181,8 +181,8 @@ class FlattenSchema(object):
         :param iteration: recursion counter
         :param defupdate: update the definition, default is yes, 
         """
-        if iteration == 0:
-            print ("fix_references_dict: fixing references")
+
+        #print ("fix_references_dict: fixing references")
         for key, value in mydict.items():
             if isinstance(value, list):
                 self.fix_references_list(value, defintionlist, propertylist, defupdate=defupdate)
@@ -190,25 +190,48 @@ class FlattenSchema(object):
                 self.fix_references_dict(value, defintionlist, propertylist, iteration=1, defupdate=defupdate)
             else:
                 if str(key) in ["$ref"]:
+                    print ("fix_references_dict: reference found:", defupdate, key, value)
                     if value.startswith("#/definitions/") == False:
                         # external reference.. 
-                        print ("fix_references_dict: $ref value:", value)
+                        print (" fix_references_dict: $ref value:", value)
                         filename = value.split('#')[0]
-                        reference = value.split('#/definitions/')[1]
-                        print ("fix_references_dict: fixing $ref file:", filename)
-                        
-                        print ("fix_references_dict: reference:", reference)
+                        print (" fix_references_dict: fixing $ref file:", filename)
+                        whole_file = True
+                        reference = filename
+                        try:
+                            reference = value.split('#/definitions/')[1]
+                            print (" fix_references_dict: reference found:", reference)
+                            whole_file = False
+                        except:
+                            print (" fix_references_dict: reference NOT found (filename):", reference)
+                            pass
                         new_reference = "#/definitions/"+reference
+                        print (" fix_references_dict: new reference:", new_reference)
 
                         mydict[key] = new_reference
                         if defupdate == True:
                             # add reference to the defintionlist
                             file_dict = load_json_schema(filename, self.basedir)
-                            propkey = find_key(file_dict, reference)
-                            if propkey is not None:
-                                defintionlist[reference] = propkey
+                            if whole_file == False:
+                                propkey = find_key(file_dict, reference)
+                                if propkey is not None:
+                                    print (" fix_references_dict: adding definition (reference):", reference)
+                                    defintionlist[reference] = propkey
+                                else:
+                                    lastkey = reference.split("/")[-1]
+                                    print (" fix_references_dict: reference only key :", reference, lastkey)
+                                    propkey = find_key(file_dict, lastkey)
+                                    if propkey is not None:
+                                        print (" fix_references_dict: adding definition (reference):", reference)
+                                        defintionlist[lastkey] = propkey
+                                
+                                
+                                    print (" ERROR could not reference ", reference, " in file", filename )
                             else:
-                                print (" ERROR could not reference ", reference, " in file", filename )
+                                print (" fix_references_dict: adding definition (file):", reference)
+                                defintionlist[reference] = file_dict
+                    else:
+                        print (" fix_references_dict: no need to update:", value)
                         
                    
 
@@ -273,6 +296,7 @@ class FlattenSchema(object):
                     # this should be an dict.
                     propitem = item.get("properties")
                     allOfitem = mydict.get("allOf")
+                    typeitem = item.get("type")
                     if propitem is not None:
                         # add all items of the property list of the object
                         for propname, prop in propitem.items():
@@ -313,8 +337,12 @@ class FlattenSchema(object):
                                                             else:
                                                                 print (recursion+"processAllOf ERROR: not handled (lv4): ", item4name, item4object)
                                                     
+                                    elif item3name in ["type", "items", "minItems", "description", "maxItems", "uniqueItems"] :
+                                        # e.g all keywords of an array
+                                        propertieslist[item3name] = item3object
                                     else:
                                         print ("processAllOf ERROR: not handled: ", item3name)
+                                        
                                         
                     
       
@@ -417,7 +445,15 @@ class FlattenSchema(object):
         # remove first level of oneOff
         properties = {}
         self.processAllOf(json_dict, properties);
-        json_dict["properties"] = properties
+        if properties.get("items") is  None:
+            # this is an object... so add the properties layer
+            json_dict["properties"] = properties
+        else:
+            # this is an array (without a name) so it should not have the properties layer, e.g. add all the items one by one..
+            for propname, propobject in properties.items():
+                json_dict[propname] = propobject
+        
+            
         allOf = json_dict.get("allOf")
         if allOf is not None:
             json_dict.pop('allOf')

@@ -153,7 +153,7 @@ cp $IN_DIR/schemas/* $OUTPUT_DIR/copy-resolved/schemas/.
 #
 # these schema's should be kept intact since they will be referenced by other schemas.. e.g. the #defintion part needs to be there.
 #
-ignorelist=(dummy oic.core-schema.json oic.types-schema.json oic.collection.linkslist-schema.json oic.collection-schema.json oic.oic-link-schema.json oic.baseResoure.json oic.core.json oic.core-schema.json oic.oic-link-schema.json oic.baseResource.json oic.basecorecomposite.json )
+ignorelist=(dummy oic.core-schema.json oic.core-schema.rw.json oic.types-schema.json oic.collection.linkslist-schema.json oic.collection-schema.json oic.oic-link-schema.json oic.baseResoure.json oic.core.json oic.core-schema.json oic.oic-link-schema.json oic.baseResource.json oic.basecorecomposite.json )
 notflatten=(dummy oic.r.airqualitycollection.json oic.r.airqualitycollection-ll.json oic.r.consumablecollection.json oic.r.consumablecollection-ll.json oic.r.heatingzonecollection-ll.json oic.r.heatingzonecollection.json oic.rd.publish-schema.json)
 
 # old node.js based...
@@ -249,9 +249,11 @@ do
             pushd `pwd`
             cd $OUTPUT_DIR/$TEST_CASE
             echo " running swagger validator at $OUTPUT_DIR/$TEST_CASE on $TEST_CASE_$URI.swagger.json"
-            output_swagger_validation=`wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json`
-            echo $output_swagger_validation >> $mydir/$outfile 2>&1
-            echo $output_swagger_validation
+            wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json >> $mydir/$outfile 2>&1
+            wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json
+            #output_swagger_validation=`wb-swagger validate $TEST_CASE_$VAR_URI.swagger.json`
+            #echo $output_swagger_validation >> $mydir/$outfile 2>&1
+            #echo $output_swagger_validation
             popd
             echo " running swagger2doc on $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$URI.swagger.json "
             add_to_doc -docx $outfile.docx -swagger $OUTPUT_DIR/$TEST_CASE/$TEST_CASE_$VAR_URI.swagger.json -resource $URI -word_out $OUTPUT_DIR_DOCS/$TEST_CASE/$TEST_CASE.docx $3 $4

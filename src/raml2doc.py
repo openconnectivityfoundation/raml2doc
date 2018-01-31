@@ -2153,7 +2153,7 @@ class CreateDoc(object):
                     self.swag_write_stringln('"parameters": [')
                     self.swag_increase_indent()
                     # query parameters from the path variable..
-                    self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
+                    #self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
                     # TODO:
                     #if method_obj.is_ is not None:
                     #    self.swag_write_stringln(',')
@@ -2242,55 +2242,6 @@ class CreateDoc(object):
         self.swag_decrease_indent()
         self.swag_write_stringln('},')
 
-    def swag_add_references_as_include(self, full_source, dict_to_add_to ):
-        """
-        write the generic query parameters as referenced parameters block
-        :param full_source: dict of an json schema object
-        :param dict_to_add_to: dict of the properties block of an json object to add the missing properties too
-        :return: adjusted dict
-        """
-        # find the first level of allOf... most of the time this is the definition part..
-        allOf = find_key_link(full_source, 'allOf')
-        #get the pointer to the properties dict, there is where we have to add all the referenced properties
-        to_property_list = find_key_link(dict_to_add_to, "properties")
-        # make sure we skip duplicate ones, other wise we will overwrite
-        tag_add = ["None"]
-        if to_property_list is not None:
-            for name, object in to_property_list.items():
-                tag_add.append(name)
-            # loop over the array of the allOf properties, only 1 level...
-            if allOf is not None:
-                for property_list in allOf:
-                    for name2, value in property_list.items():
-                        print ("swag_add_references_as_include", name2, value)
-                        if str(value)[0] != "#" and str(name2) == "$ref":
-                            # get the filename, it is the first part..
-                            filename = value.split('#', 1)[0]
-                            print ("swag_add_references_as_include: filename", filename)
-                            schema_string = self.read_file(filename)
-                            if schema_string is not None:
-                                json_dict = json.loads(schema_string)
-                                clean_dict(json_dict)
-                                properties = find_key_link(json_dict, 'properties')
-                                for name3, object in properties.items():
-                                    print ("  swag_add_references_as_include: property name found (from reference):", name3)
-                                    if name3 not in tag_add:
-                                        to_property_list[name3] = object
-                                        tag_add.append(name3)
-                                        print ("  swag_add_references_as_include: adding property name:", name3)
-                        else:
-                            # find the properties tag and add them..
-                            print ("swag_add_references_as_include: name-value:", name2, value)
-                            if str(name2) == "properties" :
-                            #properties = find_key_link(value, 'properties')
-                            #if properties is not None:
-                                for name3, object in value.items():
-                                        if name3 not in tag_add:
-                                            to_property_list[name3] = object
-                                            tag_add.append(name3)
-                                            print ("  swag_add_references_as_include: adding property name (direct list):", name3)
-
-        return dict_to_add_to
         
     def remove_prefix(self, text, prefix):
         return text[text.startswith(prefix) and len(prefix):]
