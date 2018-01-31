@@ -284,6 +284,30 @@ class FlattenSchema(object):
         self.fix_references_dict(definitionlist, definitionlist, propertylist, defupdate=False)
         
       
+    def get_reference_from_ref(self, value):
+
+        print ("get_reference_from_ref", value)
+        if value.startswith("#/definitions/"):
+            reference = value [len("#/definitions/"):]
+            print ("get_reference_from_ref", reference)
+            return reference
+            
+        filename = value.split('#')[0]
+        print (" get_reference_from_ref file:", filename)
+        whole_file = True
+        reference = filename
+        try:
+            reference = value.split('#/definitions/')[1]
+            print ("  get_reference_from_ref: reference found:", reference)
+        except:
+            print ("  get_reference_from_ref: reference NOT found (filename):", reference)
+            pass
+        return reference
+        #ew_reference = "#/definitions/"+reference
+        #print ("  fix_references_dict: new reference:", new_reference)
+        #mydict[key] = new_reference
+                
+      
     
     def processAllOf(self, mydict, propertieslist, recursion=" "):
         """
@@ -308,13 +332,25 @@ class FlattenSchema(object):
                     propitem = item.get("properties")
                     allOfitem = mydict.get("allOf")
                     typeitem = item.get("type")
+                    refitem = item.get("$ref")
                     if propitem is not None:
                         # add all items of the property list of the object
                         for propname, prop in propitem.items():
                             print (recursion+"processAllOf : allof adding", propname)
                             propertieslist[propname] = prop
+                    elif refitem is not None:
+                        # add all items of the property list of the object
+                        reference = self.get_reference_from_ref(refitem)
+                        proplist_properties = find_key_link(mydict, reference)
+                        proplist = proplist_properties.get("properties")
+                        if proplist is not None:
+                            for propname, prop in proplist.items():
+                                print (recursion+"processAllOf : $ref adding", propname)
+                                propertieslist[propname] = prop
+                        else:
+                            print (recursion+"processAllOf : ERROR could not find reference of $ref ", reference)
                     elif allOfitem is not None:
-                        print (recursion+"handling alloff", allOfitem)
+                        print (recursion+"handling alloff", item, allOfitem)
                         # the object starts with oneOf
                         for item_2 in allOfitem:
                             if isinstance(item_2, dict):
@@ -353,12 +389,7 @@ class FlattenSchema(object):
                                         propertieslist[item3name] = item3object
                                     else:
                                         print ("processAllOf ERROR: not handled: ", item3name)
-                                        
-                                        
-                    
-      
-        
-          
+                                               
     
     def process(self, resolve_internal=True):
         print (self.input_file)
