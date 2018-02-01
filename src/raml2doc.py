@@ -2292,14 +2292,14 @@ class CreateDoc(object):
                                     print ("  swag_process_definition_from_body : definition name:", defname)
                                     self.defintions_from_schema[defname] = defobject
             
-
-                        if schema_items is not None:
+                        if properties is not None:  
+                            print ("swag_process_definition_from_body: properties found for schema:", schema_name)
+                        elif schema_items is not None:
                             print ("swag_process_definition_from_body: no properties found for schema:", schema_name)
-                            
                             print ("swag_process_definition_from_body: writing top level items (is an array)")
                             first = True
                             for topname, topobject in json_dict.items():
-                                if topname in ["$schema", "description", "id", "definitions"]:
+                                if topname in ["$schema", "description", "id", "definitions", "properties"]:
                                     pass
                                 else:
                                     object_string = json.dumps(topobject, sort_keys=True, indent=2, separators=(',', ': '))
@@ -2311,10 +2311,10 @@ class CreateDoc(object):
                                         self.swag_write_stringln(',"'+topname+'" : ')
                                         self.swag_write_stringln(adjusted)
                                     first = False
-                            #self.swag_write_stringln(',')
                             
                         elif allOf is not None:
                             # note: this creates also an property list to be put in the file.
+                            print ("swag_process_definition_from_body: allOf")
                             for item in allOf:
                                 for ref, refobject in item.items():
                                     referencetag = self.remove_prefix(refobject,"#/definitions/")
@@ -2361,35 +2361,32 @@ class CreateDoc(object):
                                         print "reference tag not found!", referencetag
                                         
                     if properties is not None:
-                        full_definitions = properties
                         self.swag_write_stringln('"properties": {')
                         self.swag_increase_indent()
-                        
                         # writer loop... processing is above to make the correct list
-                        if full_definitions is not None:
-                            counter = 0
-                            num_items = len (full_definitions)
-                            for name, object in full_definitions.items():
-                                counter +=1
-                                # looping over all schema names..
-                                print ("swag_process_definition_from_body: name", name, object)
+                        counter = 0
+                        num_items = len (properties)
+                        for name, object in properties.items():
+                            counter +=1
+                            # looping over all schema names..
+                            print ("swag_process_definition_from_body: name", name, object)
 
-                                if name != "None":
-                                    object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
-                                    print ("swag_process_definition_from_body: name :", name)
-                                    print ("swag_process_definition_from_body: adding :", object_string)
-                                    if counter < num_items:
-                                        object_string += ","
-                                    adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
-                                    self.swag_write_stringln('"'+name + '" :')
-                                    self.swag_write_stringln(adjusted_text)
+                            if name != "None":
+                                object_string = json.dumps(object, sort_keys=True, indent=2, separators=(',', ': '))
+                                print ("swag_process_definition_from_body: name :", name)
+                                print ("swag_process_definition_from_body: adding :", object_string)
+                                if counter < num_items:
+                                    object_string += ","
+                                adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
+                                self.swag_write_stringln('"'+name + '" :')
+                                self.swag_write_stringln(adjusted_text)
                     
                         if required is None:
                             self.swag_write_stringln('}')
                         else:
                             self.swag_write_stringln('},')
                         
-                    self.swag_decrease_indent()
+                        self.swag_decrease_indent()
                     # add required statement 
                     if required is not None:
                         print ("required properties", required)

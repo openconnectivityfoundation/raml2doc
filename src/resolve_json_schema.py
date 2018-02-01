@@ -470,7 +470,7 @@ class FlattenSchema(object):
                 print ("process writing top level")
                 first = True
                 for topname, topobject in json_dict.items():
-                    if topname in ["$schema", "description", "id", "definitions"]:
+                    if topname in ["$schema", "description", "id", "definitions", "properties"]:
                         pass
                     else:
                         object_string = json.dumps(topobject, sort_keys=True, indent=2, separators=(',', ': '))
@@ -546,25 +546,23 @@ class FlattenSchema(object):
             for propname, propobject in properties.items():
                 json_dict[propname] = propobject
         
-            
+        # remove the allOf tag, we have handled it
         allOf = json_dict.get("allOf")
         if allOf is not None:
             json_dict.pop('allOf')
+        propdict = json_dict.get("properties")
+        if propdict is not None:
+            if len(propdict) == 0:
+                json_dict.pop('properties')
 
         resolved_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
-        #print (resolved_string)
        
         f = open(self.output_file, "w")
         f.write(resolved_string)
         f.close();
         
-       
-        
-        
         prop_string = json.dumps(properties, sort_keys=True, indent=2, separators=(',', ': '))
         #print (prop_string)
-        
-        
         self.verify()
     
     def increase_indent(self):
