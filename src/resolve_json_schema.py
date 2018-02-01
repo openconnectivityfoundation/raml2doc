@@ -343,10 +343,18 @@ class FlattenSchema(object):
                         reference = self.get_reference_from_ref(refitem)
                         proplist_properties = find_key_link(mydict, reference)
                         proplist = proplist_properties.get("properties")
+                        itemlist = proplist_properties.get("items")
                         if proplist is not None:
+                            # add the properties from the properties tag
                             for propname, prop in proplist.items():
                                 print (recursion+"processAllOf : $ref adding", propname)
                                 propertieslist[propname] = prop
+                        elif itemlist is not None:
+                            # it is an array
+                            for item_name, item_object in proplist_properties.items():
+                                if item_name in ["type", "items", "minItems", "description", "maxItems", "uniqueItems"] :
+                                    # e.g all keywords of an array
+                                    propertieslist[item_name] = item_object
                         else:
                             print (recursion+"processAllOf : ERROR could not find reference of $ref ", reference)
                     elif allOfitem is not None:
