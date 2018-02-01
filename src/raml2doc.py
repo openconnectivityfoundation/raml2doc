@@ -2275,11 +2275,15 @@ class CreateDoc(object):
                         # getting the required field, only at the top level
                         required = json_dict.get('required')
                         # getting all definitions
-                        definitions = find_key_link(json_dict, 'definitions')
+                        definitions = json_dict.get('definitions')
+                        properties = json_dict.get('properties')
+                        allOf = json_dict.get('allOf')
+                        schema_items = json_dict.get('items')
+                        
                         if definitions is None:
                             print ("swag_process_definition_from_body: no definitions found for schema:", schema_name)
                             
-                        # make sure that if there are local references in the schema that the existing defintions are copied.
+                        # make sure that if there are local references in the schema that the existing definitions are copied.
                         reference = find_key_link(json_dict, '$ref')
                         if reference is not None:
                             print ("swag_process_definition_from_body : definitions should be added.")
@@ -2288,25 +2292,34 @@ class CreateDoc(object):
                                     print ("  swag_process_definition_from_body : definition name:", defname)
                                     self.defintions_from_schema[defname] = defobject
             
-                        properties = json_dict.get('properties')
-                        if properties is None:
+
+                        if schema_items is not None:
                             print ("swag_process_definition_from_body: no properties found for schema:", schema_name)
-                            properties = {}
-                        #else:
-                        #    print ("properties:", properties)
-                        
-                        allOf = json_dict.get("allOf")                        
-                        if allOf is None:
-                            print ("swag_process_definition_from_body: no allOf found for schema:", schema_name)
-                        else:
-                            #print ("allOf:", allOf)
+                            
+                            print ("swag_process_definition_from_body: writing top level items (is an array)")
+                            first = True
+                            for topname, topobject in json_dict.items():
+                                if topname in ["$schema", "description", "id", "definitions"]:
+                                    pass
+                                else:
+                                    object_string = json.dumps(topobject, sort_keys=True, indent=2, separators=(',', ': '))
+                                    adjusted = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
+                                    if first == True:
+                                        self.swag_write_stringln('"'+topname+'" : ')
+                                        self.swag_write_stringln(adjusted)
+                                    else:
+                                        self.swag_write_stringln(',"'+topname+'" : ')
+                                        self.swag_write_stringln(adjusted)
+                                    first = False
+                            #self.swag_write_stringln(',')
+                            
+                        elif allOf is not None:
+                            # note: this creates also an property list to be put in the file.
                             for item in allOf:
-                                #print "=====>",item
                                 for ref, refobject in item.items():
-                                    #print refobject
                                     referencetag = self.remove_prefix(refobject,"#/definitions/")
-                                    #print referencetag
                                     data = find_key_link(json_dict, referencetag)
+                                    properties = {}
                                     print "reference tag", referencetag, data
                                     if data is not None:
                                         data_allOf = data.get("allOf")
@@ -2347,8 +2360,8 @@ class CreateDoc(object):
                                     else:
                                         print "reference tag not found!", referencetag
                                         
+                    if properties is not None:
                         full_definitions = properties
-                        
                         self.swag_write_stringln('"properties": {')
                         self.swag_increase_indent()
                         
@@ -2371,10 +2384,10 @@ class CreateDoc(object):
                                     self.swag_write_stringln('"'+name + '" :')
                                     self.swag_write_stringln(adjusted_text)
                     
-                    if required is None:
-                        self.swag_write_stringln('}')
-                    else:
-                        self.swag_write_stringln('},')
+                        if required is None:
+                            self.swag_write_stringln('}')
+                        else:
+                            self.swag_write_stringln('},')
                         
                     self.swag_decrease_indent()
                     # add required statement 
