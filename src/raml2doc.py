@@ -1973,15 +1973,19 @@ class CreateDoc(object):
         self.swag_decrease_indent()
         self.swag_write_stringln('}')
 
-    def swag_write_query_reference_parameter_block(self, method_obj, query=None, body=None):
+    def swag_write_query_reference_parameter_block(self, method_obj, query=None, body=None, items_in_block=False):
         """
         write the query reference as swagger parameter block as reference
         query and body are needed to determine if an additional comma is needed.
         :param method_obj: raml method_obj
         :param query: raml query obj
         :param body:  raml body obj
+        :param items_in_block: already written items in the block, e.g. add an comma
         """
+        added_item = False
         add_comma = False
+        if items_in_block is True:
+           add_comma = True 
         if body is not None:
             add_comma = True
         if query is not None:
@@ -1997,7 +2001,9 @@ class CreateDoc(object):
                     if add_comma is True:
                         text +=","
                 self.swag_write_stringln(text)
+                added_item = True
                 num_items = num_items - 1
+        return added_item
 
 
     def swag_write_query_parameter_block(self, query_parameters, body=None):
@@ -2153,11 +2159,11 @@ class CreateDoc(object):
                     self.swag_write_stringln('"parameters": [')
                     self.swag_increase_indent()
                     # query parameters from the path variable..
-                    #self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
+                    added_item = self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
                     # TODO:
-                    #if method_obj.is_ is not None:
-                    #    self.swag_write_stringln(',')
-                    self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body)
+                    if added_item is TRUE:
+                        self.swag_write_stringln(',')
+                    self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body, items_in_block=added_item)
                     self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_body_parameter_block(method_obj.body)
                     # close parameters block
