@@ -2160,9 +2160,6 @@ class CreateDoc(object):
                     self.swag_increase_indent()
                     # query parameters from the path variable..
                     added_item = self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
-                    # TODO:
-                    if added_item is True:
-                        self.swag_write_stringln(',')
                     self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body, items_in_block=added_item)
                     self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_body_parameter_block(method_obj.body)
