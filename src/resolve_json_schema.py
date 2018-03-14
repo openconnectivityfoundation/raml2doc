@@ -307,7 +307,6 @@ class FlattenSchema(object):
         #print ("  fix_references_dict: new reference:", new_reference)
         #mydict[key] = new_reference
                 
-      
     
     def processAllOf(self, mydict, propertieslist, recursion=" "):
         """
@@ -319,9 +318,12 @@ class FlattenSchema(object):
         :param propertylist: properties list to add the properties too, e.g. no $ref used 
         :param recursion: recursing indication
         """
+        
+        anyOf = None
         if isinstance(mydict, dict) :
             props = mydict.get("properties")
             allOf = mydict.get("allOf")
+            anyOf = mydict.get("anyOf")
             if props is not None:
                 for propname, prop in props.items():
                     print (recursion+"processAllOf : properties adding,", propname)
@@ -331,12 +333,15 @@ class FlattenSchema(object):
                     # this should be an dict.
                     propitem = item.get("properties")
                     allOfitem = mydict.get("allOf")
+                    anyOfitem = item.get("anyOf")
+                    if anyOfitem is not None:
+                        anyOf = anyOfitem
                     typeitem = item.get("type")
                     refitem = item.get("$ref")
                     if propitem is not None:
                         # add all items of the property list of the object
                         for propname, prop in propitem.items():
-                            print (recursion+"processAllOf : allof adding", propname)
+                            print (recursion+"processAllOf : allOf adding", propname)
                             propertieslist[propname] = prop
                     elif refitem is not None:
                         # add all items of the property list of the object
@@ -344,6 +349,10 @@ class FlattenSchema(object):
                         proplist_properties = find_key_link(mydict, reference)
                         proplist = proplist_properties.get("properties")
                         itemlist = proplist_properties.get("items")
+                        anyOfitem = proplist_properties.get("anyOf")
+                        if anyOfitem is not None:
+                            anyOf = anyOfitem
+                        
                         if proplist is not None:
                             # add the properties from the properties tag
                             for propname, prop in proplist.items():
@@ -358,7 +367,7 @@ class FlattenSchema(object):
                         else:
                             print (recursion+"processAllOf : ERROR could not find reference of $ref ", reference)
                     elif allOfitem is not None:
-                        print (recursion+"handling alloff", item, allOfitem)
+                        print (recursion+"handling allOf", item, allOfitem)
                         # the object starts with oneOf
                         for item_2 in allOfitem:
                             if isinstance(item_2, dict):
@@ -397,7 +406,8 @@ class FlattenSchema(object):
                                         propertieslist[item3name] = item3object
                                     else:
                                         print ("processAllOf ERROR: not handled: ", item3name)
-                                               
+        print ("processAllOf return: ", anyOf)                                
+        return anyOf                                       
     
     def process(self, resolve_internal=True):
         print (self.input_file)
@@ -406,6 +416,7 @@ class FlattenSchema(object):
         required = json_dict.get("required")
         definition = json_dict.get("definitions")
         allOf_data = json_dict.get("allOf")
+        type_data = json_dict.get("type")
         propertiesdict = json_dict.get("properties")
         definitiondict = {}
                 
@@ -482,9 +493,6 @@ class FlattenSchema(object):
                             self.write_stringln(',"'+topname+'" : ')
                             self.write_stringln(adjusted)
                         first = False
-                            
-                        
-                
         else:
             self.write_stringln('"allOf" : ') 
             self.increase_indent()
@@ -499,9 +507,13 @@ class FlattenSchema(object):
             self.write_stringln('"required":'+list_to_array(required))
         
         self.closefile()
-        
+        # ###################################
         # read the contents of the temp file
+        # ###################################
         json_dict = load_json_schema(self.output_temp, "")
+        
+        oneOf_data = json_dict.get("oneOf")
+        anyOf_data = json_dict.get("anyOf")  # on the top level
         
         if resolve_internal == True:
             # resolve the internal references.
@@ -512,6 +524,12 @@ class FlattenSchema(object):
             resolved_string = json.dumps(resolved_json, sort_keys=True, indent=2, separators=(',', ': '))
             json_dict =json.loads(resolved_string)
         
+            #print ("process : resolved string:",resolved_string)
+        
+        oneOf_data = json_dict.get("oneOf")
+        anyOf_data = json_dict.get("anyOf")  # on the top level
+        
+        
         if resolve_internal == True:
             # remove the definitions, they are resolved!!
             definitions = json_dict.get("definitions")
@@ -520,7 +538,8 @@ class FlattenSchema(object):
                    
         # remove first level of oneOff
         properties = {}
-        self.processAllOf(json_dict, properties);
+        anyOf_data = self.processAllOf(json_dict, properties)
+        
         if properties.get("items") is  None:
             # this is an object... so add the properties layer
             properties.pop("type", None)
@@ -555,6 +574,15 @@ class FlattenSchema(object):
             if len(propdict) == 0:
                 json_dict.pop('properties')
 
+        if oneOf_data is not None:
+            json_dict["oneOf"] = oneOf_data
+            
+        if anyOf_data is not None:
+            json_dict["anyOf"] = anyOf_data
+            
+        if type_data is not None:
+            json_dict["type"] = type_data
+            
         resolved_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
        
         f = open(self.output_file, "w")
