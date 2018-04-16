@@ -151,9 +151,6 @@ to make this work correctly the schemas have to be
 - no (or at least as minimal as possible) oneOff/allOf constructs
 These functions are implemented in node.js with the ```test\node-resolver.js``` tool.
 
-# node-resolver.js
-The external dependencies for this tool can be installed by running:
-- ```install_node_packages.sh```
 
 
 # Issues:

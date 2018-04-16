@@ -35,6 +35,10 @@ from os.path import isfile, join
 #
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
 # fix for py2exe
 from jsonschema import _utils
 import json
@@ -486,6 +490,61 @@ draft4schemafile = """{
 }
 """
 
+
+# see https://github.com/python-openxml/python-docx/issues/359
+
+def MarkIndexEntry(entry,paragraph):
+    run = paragraph.add_run()
+    r = run._r
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'begin')
+    r.append(fldChar)
+
+    run = paragraph.add_run()
+    r = run._r
+    instrText = OxmlElement('w:instrText')
+    instrText.set(qn('xml:space'), 'preserve')
+    #instrText.text = ' XE "%s" '%(entry)
+    #r.append(instrText)
+
+    run = paragraph.add_run()
+    r = run._r
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'end')
+    r.append(fldChar)
+
+
+def Figure(paragraph):
+    run = run = paragraph.add_run()
+    r = run._r
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'begin')
+    r.append(fldChar)
+    instrText = OxmlElement('w:instrText')
+    instrText.text = ' SEQ Figure \* ARABIC'
+    r.append(instrText)
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'end')
+    r.append(fldChar)
+
+
+def Table(paragraph):
+    run = run = paragraph.add_run()
+    r = run._r
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'begin')
+    r.append(fldChar)
+    instrText = OxmlElement('w:instrText')
+    instrText.text = ' SEQ Table \* ARABIC'
+    r.append(instrText)
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'end')
+    r.append(fldChar)
+
+
+
+
+
 try:
     from jsonschema import Draft4Validator
     from jsonschema import ValidationError
@@ -739,6 +798,10 @@ class CreateDoc(object):
         :param select_resource:
         """
         level = 0
+        # create the caption
+        paragraph = self.document.add_paragraph('Table ', style='Caption')
+        Table (paragraph)
+        paragraph.add_run(" The CRUDN operations")
         # create the table
         self.table = self.document.add_table(rows=1, cols=6, style='TABLE-A')
         hdr_cells = self.table.rows[0].cells
@@ -1078,6 +1141,11 @@ class CreateDoc(object):
         :param parse_tree:
         :param select_resource:
         """
+        # create the caption
+        paragraph = self.document.add_paragraph('Table ', style='Caption')
+        Table (paragraph)
+        paragraph.add_run(" The properties definitions.")
+        # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = 'Property name'
@@ -1122,6 +1190,11 @@ class CreateDoc(object):
         :param parse_tree:
         :param select_resource:
         """
+        # create the caption
+        paragraph = self.document.add_paragraph('Table ', style='Caption')
+        Table (paragraph)
+        paragraph.add_run(" The derived properties.")
+        # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = str(self.derived_name) +' Property name'
@@ -1755,6 +1828,11 @@ class CreateDoc(object):
 
                 schema_text = open(schema_file, 'r').read()
 
+                # create the caption
+                paragraph = self.document.add_paragraph('Table ', style='Caption')
+                Table (paragraph)
+                paragraph.add_run(" Property Definition of schema file "+schema_file)
+                # create the table
                 self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
 
                 hdr_cells = self.tableAttribute.rows[0].cells
