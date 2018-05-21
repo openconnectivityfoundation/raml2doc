@@ -1145,8 +1145,8 @@ class CreateDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" " + self.title + " Property Definitions.")
-        paragraph.style 'TABLE-title'
+        paragraph.add_run(" " + self.title + " Property Definitions")
+        paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
@@ -1195,7 +1195,7 @@ class CreateDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" " + self.title + " Derived Properties.")
+        paragraph.add_run(" " + self.title + " Derived Properties")
         paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
