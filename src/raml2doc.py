@@ -745,9 +745,9 @@ class CreateDoc(object):
                                   "maxitems",
                                   "minimum", "maximum", "pattern", "readOnly", "minProperties", "additionalItems"]
         self.schema_types = ['boolean', 'array', 'object', 'enum', 'number', 'string']
-        
+
         self.defintions_from_schema = {}
-        
+
 
     def list_resource(self, level, lt_resource, lt_obj):
         """
@@ -801,7 +801,8 @@ class CreateDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" The CRUDN operations")
+        paragraph.add_run(" " + self.title + " CRUDN operations")
+        paragraph.style = 'TABLE-title'
         # create the table
         self.table = self.document.add_table(rows=1, cols=6, style='TABLE-A')
         hdr_cells = self.table.rows[0].cells
@@ -950,7 +951,7 @@ class CreateDoc(object):
             if len(tokens) >= 4:
                 if tokens[1] == "rt":
                     return tokens[3]
-                    
+
         return None
 
     def get_resource_type_by_resources(self, parse_tree, resource_name):
@@ -1144,7 +1145,8 @@ class CreateDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" The properties definitions.")
+        paragraph.add_run(" " + self.title + " Property Definitions")
+        paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
@@ -1193,7 +1195,8 @@ class CreateDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" The derived properties.")
+        paragraph.add_run(" " + self.title + " Derived Properties")
+        paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
@@ -1956,8 +1959,8 @@ class CreateDoc(object):
         self.generate_sections(parsetree, self.resource_name)
         self.document.save(self.resource_out)
         print ("document saved..", self.resource_out)
-        
-        
+
+
     def swag_sanitize_description(self, description):
         """
         escapes line breaks, quotes  etc
@@ -2063,7 +2066,7 @@ class CreateDoc(object):
         added_item = False
         add_comma = False
         if items_in_block is True:
-           add_comma = True 
+           add_comma = True
         if body is not None:
             add_comma = True
         if query is not None:
@@ -2323,7 +2326,7 @@ class CreateDoc(object):
         self.swag_decrease_indent()
         self.swag_write_stringln('},')
 
-        
+
     def remove_prefix(self, text, prefix):
         return text[text.startswith(prefix) and len(prefix):]
 
@@ -2363,11 +2366,11 @@ class CreateDoc(object):
                         anyOf = json_dict.get('anyOf')
                         schema_items = json_dict.get('items')
                         type_data = json_dict.get('type')
-                        print 
-                        
+                        print
+
                         if definitions is None:
                             print ("swag_process_definition_from_body: no definitions found for schema:", schema_name)
-                            
+
                         # make sure that if there are local references in the schema that the existing definitions are copied.
                         reference = find_key_link(json_dict, '$ref')
                         if reference is not None:
@@ -2376,8 +2379,8 @@ class CreateDoc(object):
                                 for defname, defobject in definitions.items():
                                     print ("  swag_process_definition_from_body : definition name:", defname)
                                     self.defintions_from_schema[defname] = defobject
-            
-                        if properties is not None:  
+
+                        if properties is not None:
                             print ("swag_process_definition_from_body: properties found for schema:", schema_name)
                         elif schema_items is not None:
                             print ("swag_process_definition_from_body: no properties found for schema:", schema_name)
@@ -2396,7 +2399,7 @@ class CreateDoc(object):
                                         self.swag_write_stringln(',"'+topname+'" : ')
                                         self.swag_write_stringln(adjusted)
                                     first = False
-                            
+
                         elif allOf is not None:
                             # note: this creates also an property list to be put in the file.
                             print ("swag_process_definition_from_body: allOf")
@@ -2444,7 +2447,7 @@ class CreateDoc(object):
                                                         properties[dataname] = dataobject
                                     else:
                                         print "reference tag not found!", referencetag
-                                        
+
                     if properties is not None:
                         self.swag_write_stringln('"properties": {')
                         self.swag_increase_indent()
@@ -2465,10 +2468,10 @@ class CreateDoc(object):
                                 adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
                                 self.swag_write_stringln('"'+name + '" :')
                                 self.swag_write_stringln(adjusted_text)
-                        
+
                         self.swag_write_stringln('}')
-                        
-                        
+
+
                         # add the oneOf construct above required (some definitions have those)
                         if oneOf is not None:
                             write_oneOf = False
@@ -2483,7 +2486,7 @@ class CreateDoc(object):
                                 object_string = json.dumps(oneOf, sort_keys=True, indent=2, separators=(',', ': '))
                                 adjusted = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
                                 self.swag_write_stringln(adjusted)
-                                
+
                          # add the anyOf construct above required (some definitions have those)
                         if anyOf is not None:
                             write_anyOf = False
@@ -2497,19 +2500,19 @@ class CreateDoc(object):
                                 self.swag_write_stringln(',"anyOf" : ')
                                 object_string = json.dumps(anyOf, sort_keys=True, indent=2, separators=(',', ': '))
                                 adjusted = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
-                                self.swag_write_stringln(adjusted) 
-                            
+                                self.swag_write_stringln(adjusted)
+
                         # add the type
                         if type_data is not None:
                             print ("swag_process_definition_from_body: adding type :", type_data)
                             self.swag_write_stringln(',"type" : "' + type_data + '"')
-                        
+
                         self.swag_decrease_indent()
-                    # add required statement 
+                    # add required statement
                     if required is not None:
                         print ("required properties", required)
                         self.swag_write_stringln(',"required": '+self.list_to_array(required)+"")
-                                                            
+
                 self.swag_decrease_indent()
                 self.swag_write_stringln('}')
 
@@ -2542,7 +2545,7 @@ class CreateDoc(object):
 
                                         print ("swag_add_definitions: response")
                                         self.swag_process_definition_from_body (processed_schemas, body )
-                                        
+
         if self.defintions_from_schema is not None:
             counter = len(self.defintions_from_schema)
             print ("swag_add_definitions adding definitions:", counter)
@@ -2552,7 +2555,7 @@ class CreateDoc(object):
                 adjusted_text = self.add_justification_smart(self.swag_indent, object_string, no_dot_split=True)
                 self.swag_write_stringln(',"'+defname + '" :')
                 self.swag_write_stringln(adjusted_text)
-                
+
         # close definitions
         self.swag_decrease_indent()
         self.swag_write_stringln('}')
