@@ -2,8 +2,11 @@
 # note that this script needs to be execute with python 2.7...
 #
 
-#python_exe=python3
-python_exe="c:/python27/python.exe"
+#python_exe="python3"
+python_exe="python"
+#python_exe=/c/Python36-32/python
+
+#python_exe="c:/python27/python.exe"
 
 import os
 
@@ -34,3 +37,10 @@ except:
     print("missing jsonschema:")
     print ("Trying to Install required module: jsonschema")
     os.system(python_exe+' -m pip install jsonschema')
+    
+try:
+    import wget
+except:
+    print("missing wget:")
+    print ("Trying to Install required module: wget")
+    os.system(python_exe+' -m pip install wget')

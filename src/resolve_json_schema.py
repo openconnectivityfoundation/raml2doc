@@ -27,6 +27,8 @@ from os import listdir
 from os.path import isfile, join
 import json
 from copy import deepcopy
+
+import wget
    
 
 def list_to_array(input_list):
@@ -136,11 +138,19 @@ def load_json_schema(filename, dir):
     :param dir: path to the file
     :return: json dict
     """
-    full_path = os.path.join(dir,filename)
-    if os.path.isfile(full_path) is False:
-        print ("json file does not exist:", full_path)
 
+    fname = filename
+    if filename.startswith("http://openconnectivityfoundation.github.io"):
+        fname = "temp.file"
+        fullpath = os.path.join(dir,fname)
+        print ("load_json_schema downloading url ", filename, " to ", fullpath)
+        wget.download(filename,fullpath)
+        
+    full_path = os.path.join(dir,fname)
+    if os.path.isfile(full_path) is False:
+        print ("load_json_schema: json file does not exist:", full_path)
     linestring = open(full_path, 'r').read()
+        
     json_dict =json.loads(linestring)
     clean_dict(json_dict)
 
