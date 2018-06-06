@@ -131,6 +131,12 @@ def find_key_link(rec_dict, target, depth=0):
             if r is not None:
                 return r #[list(r.items())]
                 
+                
+def basename(p):
+    """Returns the final component of a pathname"""
+    i = p.rfind('/') + 1
+    return p[i:]
+    
 def load_json_schema(filename, dir):
     """
     load the JSON schema file
@@ -141,7 +147,7 @@ def load_json_schema(filename, dir):
 
     fname = filename
     if filename.startswith("http://openconnectivityfoundation.github.io"):
-        fname = "temp.file"
+        fname = basename(filename)
         fullpath = os.path.join(dir,fname)
         print ("load_json_schema downloading url ", filename, " to ", fullpath)
         wget.download(filename,fullpath)

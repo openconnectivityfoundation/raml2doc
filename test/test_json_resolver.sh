@@ -82,7 +82,9 @@ function coreTests {
 #my_test -schema ../test/test_schema_collection/oic.collection.batch-update-schema.json  -out ../test/test_schema_collection/raml/schemas/oic.collection.batch-update-schema.json
 #my_test -schema ../test/test_schema_collection/oic.collection.linkslist-schema.json  -out ../test/test_schema_collection/raml/schemas/oic.collection.linkslist-schema.json.json
 
-my_test -schema ../test/test_schemas/urlref.json  -out ./urlref_resolved.json
+my_test -schema ../test/test_resolver/urlref.json  -out ../test/out/urlref_resolved.json
+my_test -schema ../test/test_resolver/oic.r.icon-schema.json  -out ../test/out/oic.r.icon-schema_resolved.json
+
 
 #my_doc -docx ../input/ResourceTemplate.docx -schemadir ../test/test_schema_collection/raml/schemas -resource CollectionBaselineInterfaceURI -raml ../test/test_schema_collection/raml/oic.wk.col.raml -outdocx ../test/test_schema_collection/raml/col.docx -swagger ../test/test_schema_collection/raml/col.swagger.json
 #wb-swagger validate ../test/test_schema_collection/raml/col.swagger.json
