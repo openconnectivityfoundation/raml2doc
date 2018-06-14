@@ -324,7 +324,7 @@ class FlattenSchema(object):
         #mydict[key] = new_reference
                 
     
-    def processAllOf(self, mydict, propertieslist, recursion=" "):
+    def processAllOf(self, mydict, propertieslist, requiredlist, recursion=" "):
         """
         code to remove the allOff construct by flatten it.
         this is a bit of fiddling around with dicts/lists
@@ -362,10 +362,16 @@ class FlattenSchema(object):
                     elif refitem is not None:
                         # add all items of the property list of the object
                         reference = self.get_reference_from_ref(refitem)
+                        print("processAllOf: handling reference:", reference)
                         proplist_properties = find_key_link(mydict, reference)
+                        required_ref = proplist_properties.get("required")
                         proplist = proplist_properties.get("properties")
                         itemlist = proplist_properties.get("items")
                         anyOfitem = proplist_properties.get("anyOf")
+                        print (" required:", required_ref)
+                        if required_ref is not None:
+                            for x in required_ref:
+                                requiredlist.append(x)
                         if anyOfitem is not None:
                             anyOf = anyOfitem
                         
@@ -424,6 +430,15 @@ class FlattenSchema(object):
                                         print ("processAllOf ERROR: not handled: ", item3name)
         print ("processAllOf return: ", anyOf)                                
         return anyOf                                       
+    
+    def get_required_from_definition(self, json_dict, defintion_name):
+        name = defintion_name [len("#/definitions/"):]
+        print ("get_required_from_definition: name:", name)
+        definitions = json_dict.get("definitions")
+        if definitions == None:
+            return None
+        schema_props = definitions.get(name)
+        print (schema_props)
     
     def process(self, resolve_internal=True):
         print (self.input_file)
@@ -521,6 +536,8 @@ class FlattenSchema(object):
         if required is not None:
             self.write_stringln(',')
             self.write_stringln('"required":'+list_to_array(required))
+        else:
+            required = []
         
         self.closefile()
         # ###################################
@@ -554,7 +571,7 @@ class FlattenSchema(object):
                    
         # remove first level of oneOff
         properties = {}
-        anyOf_data = self.processAllOf(json_dict, properties)
+        anyOf_data = self.processAllOf(json_dict, properties, required)
         
         if properties.get("items") is  None:
             # this is an object... so add the properties layer
@@ -598,7 +615,12 @@ class FlattenSchema(object):
             
         if type_data is not None:
             json_dict["type"] = type_data
-            
+        
+        req = json_dict.get("required")
+        if req is None:
+            if len(required) > 0:
+                json_dict["required"] = required
+        
         resolved_string = json.dumps(json_dict, sort_keys=True, indent=2, separators=(',', ': '))
        
         f = open(self.output_file, "w")
