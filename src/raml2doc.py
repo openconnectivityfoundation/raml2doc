@@ -1121,7 +1121,7 @@ class CreateDoc(object):
                     # default method get...
                     if method == self.table_method:
                         for res_name, res in mobj.responses.items():
-                            if res_name == 200:
+                            if res_name == 200 or res_name == 204:
                                 # we only want the succesfull case
                                 for response_type, body in res.body.items():
                                     if response_type == "application/json":
@@ -1131,6 +1131,15 @@ class CreateDoc(object):
                                                 self.parse_schema(text)
                                             else:
                                                 self.parse_schema_derived(text)
+                        if self.table_method == 'post':
+                            print ("Post table method ", mobj)
+                            print ("Request Body ", mobj.body)
+                            text = self.get_schema_string_from_body(mobj.body)
+                            if text is not None:
+                                if derived is False:
+                                    self.parse_schema(text)
+                                else:
+                                    self.parse_schema_derived(text)
 
         for res_name, res_obj in obj.resources.items():
             self.list_attribute(level + 1, res_name, res_obj)
@@ -2747,7 +2756,7 @@ if __name__ == '__main__':
     parser.add_argument('-derived', '--derived', nargs='*', help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table')
     parser.add_argument('-swagger', '--swagger', help='generate swagger output file (--swagger <outputfile>) ')
     parser.add_argument('-fixed', '--fixed', help='generate wellknown URI heading (--fixed XXX) e.g. -fixed /oic/res ')
-    parser.add_argument('-put', '--put', help='uses put command as property table input instead of get (--put true)')
+    parser.add_argument('-post', '--post', help='uses post command as property table input instead of get (--post true)')
     parser.add_argument('-composite', '--composite',
          help='treats the resource as an composite resource, e.g. no property definition table (--composite true)')
     parser.add_argument('-sensor', '--sensor',
@@ -2764,7 +2773,7 @@ if __name__ == '__main__':
     ramlName = args['raml']
     header0 = args['heading1']
     annex_switch = args['annex']
-    put_switch = args['put']
+    post_switch = args['post']
     composite_switch = args['composite']
     sensor_switch = args['sensor']
     schema_file = args['schema']
@@ -2779,12 +2788,12 @@ if __name__ == '__main__':
     else:
         annex_switch = True
 
-    if put_switch is None:
-        put_switch = False
+    if post_switch is None:
+        post_switch = False
         table_method = 'get'
     else:
-        put_switch = True
-        table_method = 'put'
+        post_switch = True
+        table_method = 'post'
 
     if composite_switch is None:
         composite_switch = False
@@ -2821,7 +2830,7 @@ if __name__ == '__main__':
     print ("using header0                :", header0)
     print ("using annex                  :", annex_switch)
     print ("using fixed uri              :", fixed_uri)
-    print ("using put for property table :", put_switch)
+    print ("using post for property table :", post_switch)
     print ("using composite              :", composite_switch)
     print ("using sensor                 :", sensor_switch)
     print ("schema switch                :", schema_switch)
