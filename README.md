@@ -10,7 +10,7 @@ Tool to generate document section in word files from an RAML file.
     - this is due to the pyraml parser, which only works with python 2.7
 - Clone git repo
 - Run the install script for 2.7 dependencies (in src) with python2.7 :
-  - pip2.7 install -r requirements-2.7.txt
+  - pip2 install -r requirements-2.7.txt
 
 
 
@@ -25,9 +25,9 @@ python code uses:
 based on:
 (https://github.com/an2deg/pyraml-parser)
 
-note that this package should NOT be installed, if it installed uninstall with pip2.7
+note that this package should NOT be installed, if it installed uninstall with pip2
 
-pip2.7 uninstall pyraml
+pip2 uninstall pyraml
 
 
 note that the pyramloic directory contains these changes.
@@ -39,10 +39,9 @@ pip install jsonschema
 https://pypi.python.org/pypi/jsonschema
 using version 2.5.1
 
-~~
-note that it might that you have to install an missing dependency package "functools32" when using python 2.7.
-this can be installed with: 
-pip install functools32~~
+~~note that it might that you have to install an missing dependency package "functools32" when using python 2.7.~~
+~~this can be installed with: ~~
+~~pip install functools32~~
 
  
 
