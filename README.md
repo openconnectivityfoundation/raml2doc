@@ -25,6 +25,10 @@ python code uses:
 based on:
 (https://github.com/an2deg/pyraml-parser)
 
+note that this package should NOT be installed, if it installed uninstall with pip2.7
+
+pip2.7 uninstall pyraml
+
 
 note that the pyramloic directory contains these changes.
 - this needs unipath installed though, which is included in install.py
@@ -34,33 +38,26 @@ note that the pyramloic directory contains these changes.
 pip install jsonschema
 https://pypi.python.org/pypi/jsonschema
 using version 2.5.1
+
+~~
 note that it might that you have to install an missing dependency package "functools32" when using python 2.7.
 this can be installed with: 
-pip install functools32
+pip install functools32~~
 
  
-# commandline
-
-C:\Python27\python.exe  raml2doc.py <<raml.file>>
-
-
-note that the resource should NOT have leading slash
-example: /airqualityURI
-input: airqualityURI
-
 
 ## Usage
 
 usage: raml2doc.py [-h] 
 (see current version for all options)
 
-
-
 start tool:
 
 C:\Python27\python.exe  raml2doc.py <args>
 
-
+note that the resource should NOT have leading slash
+example: /airqualityURI
+input: airqualityURI
 
 # how it works - word document generation
 generating documentation:
