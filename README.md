@@ -40,7 +40,7 @@ https://pypi.python.org/pypi/jsonschema
 using version 2.5.1
 
 ~~note that it might that you have to install an missing dependency package "functools32" when using python 2.7.~~
-~~this can be installed with: ~~
+~~this can be installed with:~~
 ~~pip install functools32~~
 
  
