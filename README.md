@@ -54,51 +54,7 @@ input: airqualityURI
 usage: raml2doc.py [-h] 
 (see current version for all options)
 
-```
-<<current version>>
-===================================
-version:  201511171441
-===================================
-===================================
-HTTPPRoxy: serving at port 4321
-usage: raml2doc [-h] [-docx DOCX] [-raml RAML] [-heading1 HEADING1]
-                [-resource RESOURCE] [-annex ANNEX] [-put PUT]
-                [-composite COMPOSITE] [-sensor SENSOR]
-                [-schema [SCHEMA [SCHEMA ...]]]
-                [-schemaWT [SCHEMAWT [SCHEMAWT ...]]]
 
-Process RAML files.
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -docx DOCX, --docx DOCX
-                        word template file
-  -raml RAML, --raml RAML
-                        raml input file
-  -heading1 HEADING1, --heading1 HEADING1
-                        creates an heading 1 to the document (and exit)
-  -resource RESOURCE, --resource RESOURCE
-                        resource to be processed
-  -annex ANNEX, --annex ANNEX
-                        uses a annex heading instead of normal heading
-                        (--annex true)
-  -put PUT, --put PUT   uses put command as property table input instead of
-                        get (--put true)
-  -composite COMPOSITE, --composite COMPOSITE
-                        treats the resource as an composite resource, e.g. no
-                        property definition table (--composite true)
-  -sensor SENSOR, --sensor SENSOR
-                        treats the resource as an sensor resource, e.g. add
-                        the value "value" to the property table (--sensor
-                        true)
-  -schema [SCHEMA [SCHEMA ...]], --schema [SCHEMA [SCHEMA ...]]
-                        additional (referenced) schema used in the resource
-                        (--schema "schema file1" "schema file2" )
-  -schemaWT [SCHEMAWT [SCHEMAWT ...]], --schemaWT [SCHEMAWT [SCHEMAWT ...]]
-                        additional (referenced) schema (section With Table)
-                        used in the resource (--schema "schema file1" "schema
-                        file2" )
-```
 
 start tool:
 
@@ -148,6 +104,13 @@ Since the v2.0.0 version this also works for $ref with a URL as value.
 e.g. uses WGET to get the file and processes it as a local file.
 
 Note: to run the swagger generation, please run this tool to resolve all references.
+
+## Installation resolve_json_schema
+
+- Install python3.5 
+- Run the install script for 3.5 dependencies (in src) with python3.5 :
+  - pip3 install -r requirements-3.5.txt
+
 
 # convert.sh script (in test folder)
 script to convert an directory of RAML files to swagger2.0
