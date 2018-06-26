@@ -15,7 +15,7 @@
 #############################
 
 #try:
-from pyramloic import parser as ramlparser
+from pyraml import parser as ramlparser
 #except ImportError:
     #import pyraml.parser as ramlparser
 #    pass
@@ -2865,6 +2865,10 @@ if __name__ == '__main__':
 
     if my_dir:
         os.chdir(my_dir)
+        sys.path.append("./pyraml")
+        #import oicpyraml
+        #print sys.path
+
 
     if len(sys.argv) == 1:
         parser.print_help()

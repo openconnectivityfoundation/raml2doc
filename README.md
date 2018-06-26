@@ -1,32 +1,30 @@
 # raml2doc
 RAML to doc conversion tool
 
-Tool to generate document section in word files from an RAMK file.
+Tool to generate document section in word files from an RAML file.
 
-## Dependencies
-python code uses: 
-- python2.7 (default instalation on C:)
 
-run ```src\install.py``` to install the dependencies.
+## Installation raml2doc
 
+- Install python2.7 
+    - this is due to the pyraml parser, which only works with python 2.7
+- Clone git repo
+- Run the install script for 2.7 dependencies (in src) with python2.7 :
+  - pip2.7 install -r requirements-2.7.txt
+
+
+
+## Dependencies raml2doc
 
 python code uses: 
 - docx - 0.76 (https://python-docx.readthedocs.org/en/latest/)
   For installing python-docx use the command “pip install python-docx” or “easy_install ….”. 
   If you are using “python setup.py install” then “lxml” needs to be installed manually.
 
-- pyraml 
+- pyraml (as part of the raml2doc tree)
 based on:
 (https://github.com/an2deg/pyraml-parser)
-but use uploaded version at:
-pyraml-parser-385f952ed352fcaa9bb810de72d541767d433b09.zip
-  Before installing pyraml-parser-master, “pyyaml” and “ImportHelpers” should be manually installed
- PYRAML fix
- default pyraml is installed at:
- C:\Python27\Lib\site-packages\pyraml
- the file fields.py needs to be replaced with the supplied version.
- the file entities.py needs to be replaced with the supplied version.
- the file parser.py needs to be replaced with the supplied version.
+
 
 note that the pyramloic directory contains these changes.
 - this needs unipath installed though, which is included in install.py
@@ -139,6 +137,31 @@ http://openinterconnect.org/schemas/oic.rd.publish.json
 will be resolved to
 oic.rd.publish.json 
 in the local directory.
+if not found in the local directory, the url will be used.
+
+
+# resolve_json_schema
+Python code to resolve schemas references.
+
+The script looks for instances of $ref and replaces the tuple with the actual values.
+Since the v2.0.0 version this also works for $ref with a URL as value.
+e.g. uses WGET to get the file and processes it as a local file.
+
+Note: to run the swagger generation, please run this tool to resolve all references.
+
+# convert.sh script (in test folder)
+script to convert an directory of RAML files to swagger2.0
+
+usage:
+
+convert.sh <input dir>  <output dir>
+
+
+Where the <input dir> and <output dir> can be relative paths to the script.
+The script needs to be run from the test folder.
+
+
+
 
 # how it works - swagger generation
 generating swagger:
@@ -149,8 +172,7 @@ The swagger file is 1 file, that includes all the schema definitions.
 to make this work correctly the schemas have to be 
 - resolved (e.g. no external dependencies)
 - no (or at least as minimal as possible) oneOff/allOf constructs
-These functions are implemented in node.js with the ```test\node-resolver.js``` tool.
-
+These functions are implemented with resolve_json_schema
 
 
 # Issues:
