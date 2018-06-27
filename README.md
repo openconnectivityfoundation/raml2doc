@@ -43,7 +43,18 @@ using version 2.5.1
 ~~this can be installed with:~~
 ~~pip install functools32~~
 
- 
+### typical instalation & verification instructions
+-	uninstalled python 3.5 and python 2.7 and re-installed python 2.7 only on my Window 7 64-bit (https://www.python.org/ftp/python/2.7.13/python-2.7.13.amd64.msi).
+-	added “C:\Python27” and “C:\Python27\Scripts” to the system path
+-	cloned the raml2doc from the Git hub (“git clone https://github.com/openconnectivityfoundation/raml2doc.git”)
+-	moved to /raml2doc/src in the cmd shell and installed the dependencies (“pip2 install –r requriements-2.7.txt)
+-	created test_0 folder in /raml2doc/test/in and copied the contents of test_1 except binarySwitch.raml.docx
+-	copied raml2doc.py, version.py pyraml (folder), draft3.json, draft4.json from /raml2doc/src to test_0
+-	copied ResourceTemplate.docx from /raml2doc/input to test_0
+-	executed the command-line in the cmd shell shown below
+    - python2 raml2doc.py -raml binarySwitch.raml
+-	should generate binarySwitch.raml.docx in the same folder!
+
 
 ## Usage
 
