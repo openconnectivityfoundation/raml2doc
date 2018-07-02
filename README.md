@@ -18,8 +18,8 @@ Tool to generate document section in word files from an RAML file.
 
 python code uses: 
 - docx - 0.76 (https://python-docx.readthedocs.org/en/latest/)
-  For installing python-docx use the command “pip install python-docx” or “easy_install ….”. 
-  If you are using “python setup.py install” then “lxml” needs to be installed manually.
+  For installing python-docx use the command "pip install python-docx" or "easy_install ...".
+  If you are using "python setup.py install" then "lxml" needs to be installed manually.
 
 - pyraml (as part of the raml2doc tree)
 based on:
@@ -43,17 +43,17 @@ using version 2.5.1
 ~~this can be installed with:~~
 ~~pip install functools32~~
 
-### typical instalation & verification instructions
--	uninstalled python 3.5 and python 2.7 and re-installed python 2.7 only on my Window 7 64-bit (https://www.python.org/ftp/python/2.7.13/python-2.7.13.amd64.msi).
--	added “C:\Python27” and “C:\Python27\Scripts” to the system path
--	cloned the raml2doc from the Git hub (“git clone https://github.com/openconnectivityfoundation/raml2doc.git”)
--	moved to /raml2doc/src in the cmd shell and installed the dependencies (“pip2 install –r requriements-2.7.txt)
--	created test_0 folder in /raml2doc/test/in and copied the contents of test_1 except binarySwitch.raml.docx
--	copied raml2doc.py, version.py pyraml (folder), draft3.json, draft4.json from /raml2doc/src to test_0
--	copied ResourceTemplate.docx from /raml2doc/input to test_0
--	executed the command-line in the cmd shell shown below
-    - python2 raml2doc.py -raml binarySwitch.raml
--	should generate binarySwitch.raml.docx in the same folder!
+### typical installation & verification instructions
+-   uninstall python 3.5 and python 2.7 and re-install python 2.7 only on my Window 7 64-bit (https://www.python.org/ftp/python/2.7.13/python-2.7.13.amd64.msi).
+-   added "C:\Python27" and "C:\Python27\Scripts" to the system path
+-   cloned the raml2doc from the Git hub ("git clone https://github.com/openconnectivityfoundation/raml2doc.git")
+-   moved to /raml2doc/src in the cmd shell and installed the dependencies ("pip install -r requirements-2.7.txt")
+-   created test_0 folder in /raml2doc/test/in and copied the contents of test_1 except binarySwitch.raml.docx
+-   copied raml2doc.py, version.py pyraml (folder), draft3.json, draft4.json from /raml2doc/src to test_0
+-   copied ResourceTemplate.docx from /raml2doc/input to test_0
+-   executed the command-line in the cmd shell shown below
+    - python raml2doc.py -raml binarySwitch.raml
+-   should generate binarySwitch.raml.docx in the same folder!
 
 
 ## Usage
@@ -76,7 +76,7 @@ generating documentation:
 - opens the raml file
     create parse tree of the raml file
 - adds sections to the word file, using the raml parse tree
-	(can use existing styles of opened word file)
+    (can use existing styles of opened word file)
 - saves word file as <<>>.docx
 
 ## syntax checking
@@ -157,8 +157,7 @@ These functions are implemented with resolve_json_schema
 # TODO list
  - replace proxy with direct calls
  - add mechanism to compare word output
- 
- 
+
 # Fixes
 - add derived modeling
 - swagger2.0 generation
