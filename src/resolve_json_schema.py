@@ -28,6 +28,7 @@ from os.path import isfile, join
 import json
 from copy import deepcopy
 
+import jsonref
 import wget
    
 

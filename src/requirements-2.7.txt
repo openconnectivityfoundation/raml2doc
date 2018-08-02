@@ -3,7 +3,7 @@
 importhelpers
 #pyraml
 unipath
-docx
+python-docx
 pyyaml
 jsonschema
 wget
