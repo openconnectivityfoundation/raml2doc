@@ -2292,44 +2292,48 @@ class CreateDoc(object):
         processed_query_params = []
         traits = parse_tree.traits
         # write all the generic parameters
-        num_traits = len (traits.items())
-        for query_name, query_obj in traits.items():
-            self.swag_write_stringln('"'+query_name+'" : {')
-            self.swag_increase_indent()
-            self.swag_write_stringln('"in" : "query",')
-            query_param_len = len(query_obj.queryParameters)
-            for name, q_obj in query_obj.queryParameters.items():
-                self.swag_write_stringln('"name" : "'+name+'",')
-                num_items = len (q_obj.items())
-                # add type = string if not available
-                is_type_available = False
-                for tag, tag_value in q_obj.items():
-                    if tag == "type":
-                        is_type_available
-                if is_type_available is False:
-                    self.swag_write_stringln('"type" : "string",')
-                for tag, tag_value in q_obj.items():
-                    print ("tag:",tag)
-                    print ("tag_value:", tag_value)
-                    text = ""
-                    text = '"'+tag+'" : '
-                    if tag == "enum":
-                        text += self.list_to_array(tag_value)
-                    else:
-                        text += '"'+self.list_to_string(q_obj)+'"'
-                    if num_items > 1:
-                        text += ","
-                    num_items -= 1
-                    self.swag_write_stringln(text)
-                if query_param_len > 1:
-                    self.swag_write_stringln(',')
-                query_param_len-=1
-            self.swag_decrease_indent()
-            if num_traits > 1:
-                self.swag_write_stringln('},')
-            else:
-                self.swag_write_stringln('}')
-            num_traits -= 1
+        try:
+            num_traits = len (traits.items())
+            for query_name, query_obj in traits.items():
+                self.swag_write_stringln('"'+query_name+'" : {')
+                self.swag_increase_indent()
+                self.swag_write_stringln('"in" : "query",')
+                query_param_len = len(query_obj.queryParameters)
+                for name, q_obj in query_obj.queryParameters.items():
+                    self.swag_write_stringln('"name" : "'+name+'",')
+                    num_items = len (q_obj.items())
+                    # add type = string if not available
+                    is_type_available = False
+                    for tag, tag_value in q_obj.items():
+                        if tag == "type":
+                            is_type_available
+                    if is_type_available is False:
+                        self.swag_write_stringln('"type" : "string",')
+                    for tag, tag_value in q_obj.items():
+                        print ("tag:",tag)
+                        print ("tag_value:", tag_value)
+                        text = ""
+                        text = '"'+tag+'" : '
+                        if tag == "enum":
+                            text += self.list_to_array(tag_value)
+                        else:
+                            text += '"'+self.list_to_string(q_obj)+'"'
+                        if num_items > 1:
+                            text += ","
+                        num_items -= 1
+                        self.swag_write_stringln(text)
+                    if query_param_len > 1:
+                        self.swag_write_stringln(',')
+                    query_param_len-=1
+                self.swag_decrease_indent()
+                if num_traits > 1:
+                    self.swag_write_stringln('},')
+                else:
+                    self.swag_write_stringln('}')
+                num_traits -= 1
+        except:
+            print ("no traits found!!")
+            pass
 
         # close definitions
         self.swag_decrease_indent()
