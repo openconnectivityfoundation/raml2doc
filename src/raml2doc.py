@@ -729,6 +729,8 @@ class CreateDoc(object):
         self.table = None
         self.title = None
         self.inputname = name
+        self.force_read_only_properties = None
+        self.force_write_only_properties = None
 
         if docx_name is not None:
             if os.path.isfile(docx_name):
@@ -1014,6 +1016,15 @@ class CreateDoc(object):
                     print ("fill_properties_table: property:", prop)
                     description_text = properties[prop].get('description', "")
                     read_only = properties[prop].get('readOnly', None)
+                    write_only = False
+
+                    if self.force_read_only_properties is not None:
+                        if prop in self.force_read_only_properties:
+                            read_only = True
+                    if self.force_write_only_properties is not None:
+                        if prop in self.force_write_only_properties:
+                            write_only = True
+
                     type = properties[prop].get('type', None)
                     if type is None:
                         type = "multiple types: see schema"
@@ -1028,7 +1039,9 @@ class CreateDoc(object):
                         row_cells[2].text = "yes"
                     if read_only is not None and read_only is True:
                         row_cells[3].text = "Read Only"
-                    if read_only is not None and read_only is False:
+                    elif write_only is not None and write_only is True:
+                        row_cells[3].text = "Write Only"
+                    elif read_only is not None and read_only is False:
                         row_cells[3].text = "Read Write"
                     row_cells[4].text = description_text
                 else:
@@ -1049,6 +1062,9 @@ class CreateDoc(object):
         json_dict =json.loads(input_string_schema)
 
         properties = find_key_link(json_dict, 'properties')
+
+#Check if add forced read-only & write-only properties should be done here?
+
         if properties is not None:
             for prop in properties:
                 # fill the table
@@ -2769,6 +2785,8 @@ if __name__ == '__main__':
          help='additional (referenced) schema used in the resource (--schema "schema file1" "schema file2" )')
     parser.add_argument('-schemaWT', '--schemaWT', nargs='*',
          help='additional (referenced) schema (section With Table) used in the resource (--schema "schema file1" "schema file2" )')
+    parser.add_argument('-fro','--fro', action='append',help='force property to be marked as read-only')
+    parser.add_argument('-fwo','--fwo', action='append',help='force property to be marked as write-only')
 
     args = vars(parser.parse_args())
 
@@ -2786,6 +2804,8 @@ if __name__ == '__main__':
     swagger = args['swagger']
     fixed_uri = args['fixed']
     rt_provided_name = args['rtname']
+    force_read_only_properties = args['fro']
+    force_write_only_properties = args['fwo']
 
     if annex_switch is None:
         annex_switch = False
@@ -2821,6 +2841,16 @@ if __name__ == '__main__':
     else:
         schemaWT_switch = True
 
+    if force_read_only_properties is None:
+        force_read_only_switch = False
+    else:
+        force_read_only_switch = True
+
+    if force_write_only_properties is None:
+        force_write_only_switch = False
+    else:
+        force_write_only_switch = True
+
     if docxName is None:
         docxName = resourcedoc
 
@@ -2841,6 +2871,10 @@ if __name__ == '__main__':
     print ("schema (WT) switch           :", schemaWT_switch)
     print ("derived                      :", derived_name)
     print ("swagger                      :", swagger)
+    if force_read_only_switch == True:
+        print ("force read only properties :", force_read_only_properties)
+    if force_write_only_switch == True:
+        print ("force write only properties :", force_write_only_properties)
     if schema_switch == True:
         print ("schema file                  :", schema_file)
     if schemaWT_switch == True:
@@ -2895,6 +2929,10 @@ if __name__ == '__main__':
         processor.dir = args['schemadir']
         if args['outdocx'] is not None:
             processor.resource_out = args['outdocx']
+        if force_read_only_switch == True:
+            processor.force_read_only_properties = force_read_only_properties
+        if force_write_only_switch == True:
+            processor.force_write_only_properties = force_write_only_properties
         if schema_switch is True:
             processor.schema_files = schema_file
         if schemaWT_switch is True:
