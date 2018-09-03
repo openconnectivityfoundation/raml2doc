@@ -2090,8 +2090,7 @@ class CreateDoc(object):
         """
         added_item = False
         add_comma = False
-        if items_in_block is True:
-           add_comma = True
+        text = ""
         if body is not None:
             add_comma = True
         if query is not None:
@@ -2099,7 +2098,10 @@ class CreateDoc(object):
         if method_obj.is_ is not None:
             num_items = len(method_obj.is_)
             for ref_value in method_obj.is_:
-                text = '{"$ref": "#/parameters/'+str(ref_value)+'"}'
+                if items_in_block is True:
+                    text = ","
+                    items_in_block = False
+                text += '{"$ref": "#/parameters/'+str(ref_value)+'"}'
                 if num_items > 1:
                     text +=","
 
@@ -2109,6 +2111,11 @@ class CreateDoc(object):
                 self.swag_write_stringln(text)
                 added_item = True
                 num_items = num_items - 1
+        else:
+            if items_in_block is True and add_comma is True:
+                text =","
+                self.swag_write_stringln(text)
+            
         return added_item
 
 
@@ -2265,7 +2272,7 @@ class CreateDoc(object):
                     self.swag_write_stringln('"parameters": [')
                     self.swag_increase_indent()
                     # query parameters from the path variable..
-                    added_item = self.swag_write_query_reference_parameter_block(obj, query=method_obj.queryParameters, body=method_obj.body)
+                    added_item = self.swag_write_query_reference_parameter_block(obj)
                     self.swag_write_query_reference_parameter_block(method_obj, query=method_obj.queryParameters, body=method_obj.body, items_in_block=added_item)
                     self.swag_write_query_parameter_block(method_obj.queryParameters, body=method_obj.body)
                     self.swag_write_body_parameter_block(method_obj.body)
