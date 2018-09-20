@@ -43,6 +43,7 @@ from docx.oxml.ns import qn
 from jsonschema import _utils
 import json
 from yaml import load, dump
+from __builtin__ import isinstance
 
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
@@ -2329,7 +2330,7 @@ class CreateDoc(object):
                     is_type_available = False
                     for tag, tag_value in q_obj.items():
                         if tag == "type":
-                            is_type_available
+                            is_type_available = True
                     if is_type_available is False:
                         self.swag_write_stringln('"type" : "string",')
                     for tag, tag_value in q_obj.items():
@@ -2340,7 +2341,16 @@ class CreateDoc(object):
                         if tag == "enum":
                             text += self.list_to_array(tag_value)
                         else:
-                            text += '"'+self.list_to_string(q_obj)+'"'
+                            #TODO: Check if other data types need to be handled separately?
+                            if isinstance(tag_value,bool) is True:
+                                if tag_value is True:
+                                    text += 'true'
+                                else:
+                                    text += 'false'
+                            elif isinstance(tag_value,int) is True:
+                                text += str(tag_value)
+                            else:
+                                text += '"'+ str(tag_value) +'"'
                         if num_items > 1:
                             text += ","
                         num_items -= 1
