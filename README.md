@@ -3,6 +3,8 @@ RAML to doc conversion tool
 
 Tool to generate document section in word files from an RAML file.
 
+DEPRICATED, USE SWAGGER2DOC
+
 
 ## Installation raml2doc
 
